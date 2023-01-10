@@ -7,3 +7,27 @@ UFT, on the other hand, is a more mature tool that has been around for a while. 
 In summary, Cypress is a modern, JavaScript-based tool that is easy to use and has a simple API. UFT is a more mature tool that supports a wide range of technologies and has a variety of features for creating and running automated tests. Cypress is open source and free while UFT is commercial tool.
 
 It depends on your project requirements, if you are working on modern web applications with JavaScript-based stack, Cypress is a good fit, but if you are working with a wide range of technologies, UFT is a better option, and if you are in a regulated Industry UFT might be mandated by security and compliance standards.
+Cypress and UFT (Unified Functional Testing, also known as HP UFT or QTP) are both functional testing tools that are used to automate the testing of web applications and other software. However, they have some key differences that make them better suited for different types of testing and use cases.
+
+Cypress is a modern, open-source test automation framework that is specifically designed for end-to-end testing of web applications. Some of the benefits of using Cypress include:
+
+It runs directly in the browser, which allows it to have tight control over the application and to more closely emulate user interactions.
+Cypress has a simple and easy-to-use API that makes it relatively quick to learn and get started with.
+Cypress has built-in support for waiting and retrying, which makes it more resilient to flaky tests.
+Cypress supports real-time reloading, which means that as soon as you save changes to your test code, the tests will automatically re-run.
+However, Cypress also has some limitations:
+
+Cypress currently only supports Chrome and Firefox, so if you need to test against other browsers, you will need to use a different tool.
+Cypress does not support testing of desktop applications.
+On the other hand, UFT is a commercial, proprietary test automation tool that is designed for both functional and regression testing of desktop, web and mobile applications. Some of the benefits of using UFT include:
+
+UFT supports a wide range of test types including functional, regression, integration, and end-to-end testing.
+UFT has support for a wide variety of technologies and platforms, including web, mobile, and desktop.
+UFT has built-in support for data-driven testing and can easily integrate with other tools like ALM (Application Lifecycle Management) for test management.
+However, UFT also has some limitations:
+
+UFT is a commercial tool, which can be expensive to purchase and maintain.
+UFT has a steeper learning curve and can be more difficult to use than Cypress.
+UFT's support is focused on Internet Explorer and Windows environment, which limit its usage if you need to test against other browsers or OS.
+The UFT's script requires maintenance and can be brittle if not managed carefully.
+In summary, Cypress is well-suited for end-to-end testing of web applications, and UFT is a more general-purpose testing tool that is good for both functional and regression testing across a wide range of technologies and platforms.
