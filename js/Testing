@@ -78,3 +78,19 @@ On the other hand, UFT would be a good choice for automating the testing of the 
 In this scenario, the company could use Cypress to automate the front-end testing and UFT to automate the back-end testing or test other aspects of the application that are not covered by Cypress.
 
 It's worth noting that both tools have their own benefits and drawbacks, and the choice between them will depend on the specific needs of the application and the team. Cypress is relatively new and has a small community of users, but it is easy to use, fast and reliable. UFT is a mature tool with a large community of users, but it is more expensive and has a steeper learning curve.
+
+
+
+Cypress And UFT Comparison
+
+
+Suresh C
+Cypress vs uft with respect to testing customizations
+
+Cypress and UFT (Unified Functional Testing) are both test automation tools, but they have different strengths and are designed for different types of testing. Cypress is a modern, JavaScript-based tool that is designed for testing web applications. It is built on top of a browser and uses a real browser to execute tests, which makes it very fast and reliable. Cypress also has a simple and intuitive API that makes it easy to write tests.
+
+UFT, on the other hand, is a more traditional test automation tool that is designed for testing desktop and mobile applications. It uses a proprietary scripting language called VBScript and can be integrated with other testing tools such as HP Quality Center and HP ALM. UFT is more suitable for teams that already have existing test automation frameworks and want to continue using them.
+
+In terms of customization, Cypress is more flexible and allows you to easily add custom commands and plugins to the test framework. UFT is more limited in this regard, as it relies on proprietary scripting language and a proprietary test framework.
+
+In short, Cypress is a better choice for testing web applications, and UFT is a better choice for testing desktop and mobile applications and if you already have an existing test automation framework in place.
