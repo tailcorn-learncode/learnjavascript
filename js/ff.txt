@@ -1,12 +1,9 @@
-public ResponseEntity<Resource> downloadFile(@RequestParam("fileName") String fileName) {
-  Path path = Paths.get(UPLOADED_FOLDER + fileName);
-  Resource resource = null;
-  try {
-    resource = new UrlResource(path.toUri());
-  } catch (MalformedURLException e) {
-    e.printStackTrace();
-  }
-  return ResponseEntity.ok()
-      .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-      .body(resource);
-}
+const a = document.createElement('a');
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      const url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
