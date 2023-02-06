@@ -1,0 +1,4 @@
+String originalFileName = file.getOriginalFilename();
+      String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+      String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+      String updatedFileName = timestamp + fileExtension;
