@@ -1,28 +1,58 @@
-Keep it simple and clean: A minimalist design with clean lines and simple color palettes can help create a modern and sophisticated look.
-
-Use typography effectively: Choose appropriate font styles and sizes to create a consistent and attractive look throughout the interface.
-
-Utilize whitespace: Don't be afraid to use whitespace to create a more spacious and uncluttered look.
-
-Use color judiciously: Use color to create visual interest and guide users' attention, but be careful not to overuse it and create a chaotic look.
-
-Make use of icons: Icons can help simplify complex information and improve the overall look and feel of the interface.
-
-Focus on usability: A good user interface should prioritize ease of use, with clear and intuitive navigation, consistent elements, and responsive design.
-
-Make it responsive: Design the interface to look great on all devices, from desktop computers to mobile phones, to ensure a consistent and attractive user experience.
-
-Test and iterate: Regularly test the interface with users to identify areas for improvement, and iterate on the design to refine and improve it over time.
+public class InvalidCredentialsException extends RuntimeException {
+    public InvalidCredentialsException(String message) {
+        super(message);
+    }
+}
 
 
-Here is a sample data set that can be used to train a machine learning model for a retirement service website:
 
-Demographic information: age, gender, occupation, income, marital status, number of dependents
-Retirement savings: current savings, expected savings at retirement, expected retirement age, expected expenses in retirement
-Investment portfolio: type of investment, current value, expected returns, risk tolerance
-Retirement goals: desired lifestyle in retirement, desired travel, desired leisure activities
-Current benefits: employer-sponsored retirement plans, government benefits, pension plans
-Financial habits: spending habits, debt levels, saving habits
-Health status: current health, health conditions, likelihood of needing long-term care
-Attitudes towards retirement: level of concern about retirement, level of preparedness, level of financial literacy
-This data set can be used to train a model to predict an individual's likelihood of reaching their retirement goals and make recommendations on how to improve their financial situation.
+@PostMapping("/login")
+public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginRequest.getUsername(),
+            loginRequest.getPassword()
+        )
+    );
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    String jwt = jwtProvider.generateJwtToken(authentication);
+    return ResponseEntity.ok(new JwtResponse(jwt));
+}
+
+if (!authentication.isAuthenticated()) {
+    throw new InvalidCredentialsException("Invalid username or password");
+}
+
+
+
+@ControllerAdvice
+public class RestExceptionHandler {
+
+    @ExceptionHandler(value = { InvalidCredentialsException.class })
+    protected ResponseEntity<Object> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        return new ResponseEntity<>(new ApiResponse(false, ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+}
+
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  login(username: string, password: string): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>('/api/auth/login', { username, password })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            // Display an error message to the user
+            this.snackBar.open('Invalid username or password', 'Close', { duration: 3000 });
+          }
+          return throwError(error);
+        })
+      );
+  }
+}
