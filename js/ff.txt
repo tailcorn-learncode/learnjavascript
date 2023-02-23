@@ -56,3 +56,28 @@ export class AuthService {
       );
   }
 }
+
+export class ErrorInterceptor implements HttpInterceptor {
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(request).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          // Unauthorized error, redirect to login page
+          this.authService.logout();
+          this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url }});
+        } else if (error.status === 403) {
+          // Forbidden error, redirect to home page
+          this.router.navigate(['/']);
+        } else {
+          // Other error, log the error to the console
+          console.error(error);
+        }
+        // Return an observable with a user-friendly error message
+        return throwError('An error occurred. Please try again later.');
+      })
+    );
+  }
+}
