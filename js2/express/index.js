@@ -5,7 +5,7 @@ const port = 3000
 const { Configuration, OpenAIApi } = require("openai");
 
 const configuration = new Configuration({
-    apiKey: "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",
+    apiKey: "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",
 });
 
  const openai = new OpenAIApi(configuration);
