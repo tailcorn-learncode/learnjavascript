@@ -1,0 +1,47 @@
+const openai = require('openai');
+const apiKey = 'YOUR_API_KEY';
+openai.apiKey = apiKey;
+
+function cosineSimilarity(u, v) {
+  const dotProduct = u.reduce((acc, cur, i) => acc + cur * v[i], 0);
+  const uMagnitude = Math.sqrt(u.reduce((acc, cur) => acc + cur * cur, 0));
+  const vMagnitude = Math.sqrt(v.reduce((acc, cur) => acc + cur * cur, 0));
+  return dotProduct / (uMagnitude * vMagnitude);
+}
+
+async function searchReviews(df, productDescription, n = 3, pprint = true) {
+  const embedding = await openai.embedding.create({
+    input: [productDescription],
+    model: 'text-embedding-ada-002',
+  });
+  const embeddings = df.map(row => row.ada_embedding);
+  const similarities = embeddings.map(e => cosineSimilarity(e, embedding.data[0].embedding));
+  df.forEach((row, i) => (row.similarities = similarities[i]));
+  const res = df.sort((a, b) => b.similarities - a.similarities).slice(0, n);
+  if (pprint) {
+    console.log(res);
+  }
+  return res;
+}
+
+// Example usage
+const df = [
+  {
+    combined: 'These beans are delicious!\nThey are so flavorful and aromatic.',
+    ada_embedding: [
+      -0.00236265,
+      -0.0245694,
+      ...
+    ],
+  },
+  {
+    combined: 'I was disappointed by these beans.\nThey were dry and bland.',
+    ada_embedding: [
+      -0.00308085,
+      -0.0218649,
+      ...
+    ],
+  },
+  // more rows...
+];
+const res = await searchReviews(df, 'delicious beans', 3);
