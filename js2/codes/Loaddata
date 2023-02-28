@@ -1,0 +1,13 @@
+const fs = require('fs');
+const csv = require('csv-parser');
+const results = [];
+fs.createReadStream('output/embedded_1k_reviews.csv')
+  .pipe(csv())
+  .on('data', data => {
+    data.ada_embedding = eval(data.ada_embedding);
+    data.ada_embedding = Array.from(data.ada_embedding);
+    results.push(data);
+  })
+  .on('end', () => {
+    console.log(results);
+  });
