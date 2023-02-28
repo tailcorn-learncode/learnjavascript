@@ -1,0 +1,21 @@
+const openai = require('openai');
+const apiKey = 'YOUR_API_KEY';
+openai.apiKey = apiKey;
+
+async function getEmbedding(text, model = 'text-embedding-ada-002') {
+  text = text.replace('\n', ' ');
+  const response = await openai.embedding.create({
+    input: [text],
+    model: model,
+  });
+  return response.data[0].embedding;
+}
+
+// Example usage
+const df = [
+  { combined: 'This is the first review\nIt has two sentences.' },
+  { combined: 'This is the second review\nIt also has two sentences.' },
+];
+const embeddings = await Promise.all(df.map(row => getEmbedding(row.combined, 'text-embedding-ada-002')));
+df.forEach((row, i) => (row.ada_embedding = embeddings[i]));
+console.log(df);
