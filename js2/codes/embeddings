@@ -1,0 +1,62 @@
+const openai = require('openai');
+const apiKey = 'YOUR_API_KEY';
+openai.apiKey = apiKey;
+
+async function semanticSearch(searchQuery, documents) {
+  // Generate embeddings for the search query and documents
+  const model = 'text-embedding-ada-002';
+  const embeddings = await openai.embed({
+    text: [searchQuery, ...documents],
+    model: model,
+  });
+
+  // Get the embedding for the search query
+  const queryEmbedding = embeddings.embeddings[0];
+
+  // Get the embeddings for the documents
+  const documentEmbeddings = embeddings.embeddings.slice(1);
+
+  // Compute cosine similarity between the query and each document
+  const results = [];
+  for (let i = 0; i < documentEmbeddings.length; i++) {
+    const documentEmbedding = documentEmbeddings[i];
+    const similarity = cosineSimilarity(queryEmbedding, documentEmbedding);
+    results.push({ documentIndex: i, similarity: similarity });
+  }
+
+  // Sort results by similarity in descending order
+  results.sort((a, b) => b.similarity - a.similarity);
+
+  // Return the sorted results
+  return results;
+}
+
+function cosineSimilarity(a, b) {
+  let dotProduct = 0;
+  let aMagnitude = 0;
+  let bMagnitude = 0;
+  for (let i = 0; i < a.length; i++) {
+    dotProduct += a[i] * b[i];
+    aMagnitude += a[i] * a[i];
+    bMagnitude += b[i] * b[i];
+  }
+  aMagnitude = Math.sqrt(aMagnitude);
+  bMagnitude = Math.sqrt(bMagnitude);
+  return dotProduct / (aMagnitude * bMagnitude);
+}
+
+// Example usage
+const searchQuery = 'What is the capital of France?';
+const documents = [
+  'Paris is the capital and most populous city of France',
+  'France is a country located in Western Europe',
+  'The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris',
+  'The Louvre is the world\'s largest art museum and a historic monument in Paris',
+];
+semanticSearch(searchQuery, documents)
+  .then(results => {
+    console.log(results);
+  })
+  .catch(error => {
+    console.log(error);
+  });
