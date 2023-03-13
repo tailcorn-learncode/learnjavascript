@@ -37,3 +37,31 @@ cy.contains('Welcome').should('exist')
 
 
 
+When using Cypress, you may encounter situations where your tests need to handle scenarios where a new window or tab is opened. Cypress does not natively support handling new windows or tabs, but there are several workarounds you can use to handle this situation.
+
+Here are some techniques you can use to handle new windows or tabs in Cypress:
+
+Using the window:alert and window:confirm events: When a new window or tab is opened due to an alert or confirmation dialog, Cypress automatically captures these events and blocks the dialog from opening. You can then use the cy.on() command to listen for these events and handle them accordingly.
+
+Using the window:before:load event: When a new window or tab is opened due to a link or button click, Cypress does not automatically capture the event. However, you can use the cy.window() command to access the new window's window object and listen for the beforeunload event. You can then use the cy.stub() command to stub the window.open() method and return a reference to the new window.
+
+Here's an example of using the cy.window() command to handle a new window or tab:
+
+it('opens a new window', () => {
+  cy.visit('https://example.com')
+  cy.get('a').click()
+  
+  cy.window().then(win => {
+    cy.stub(win, 'open').as('windowOpen')
+  })
+  
+  cy.get('button').click()
+  
+  cy.get('@windowOpen').should('be.calledOnce')
+})
+
+
+In this example, we use cy.get('a').click() to click on a link that opens a new window. We then use cy.window() to access the new window's window object and use cy.stub() to stub the window.open() method. We can then use the @windowOpen alias to assert that the new window was opened.
+
+Overall, handling new windows or tabs in Cypress requires a bit of extra work, but the techniques above should help you handle most situations.
+
