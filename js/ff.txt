@@ -13,6 +13,27 @@ Use cy.get() with find(): If you have a static parent element that contains dyna
 These techniques can help you handle dynamic selectors in Cypress and make your tests more reliable and predictable.
 
 
+Whether or not you need to include a correlation ID when navigating to a URL in Cypress depends on your application and how you are using the correlation ID.
+
+A correlation ID is a unique identifier that is used to track a specific request or transaction across multiple systems. It is often used in distributed systems or microservice architectures to help identify issues that span multiple services.
+
+If your application requires a correlation ID to be passed with each request, then you will need to include it when navigating to a URL in Cypress. In this case, you can pass the correlation ID as a query parameter in the URL, or you can set it as a custom header using the cy.visit() command's headers option.
+
+However, if your application does not require a correlation ID to be passed with each request, then you do not need to include it when navigating to a URL in Cypress. In this case, you can simply use the cy.visit() command to navigate to the URL without specifying any additional headers or query parameters.
+
+It's important to note that if your application requires a correlation ID to be passed with each request, you should ensure that your Cypress tests include this ID to accurately reflect the behavior of the application.
+
+
+// Visit the page
+cy.visit('https://example.com')
+
+// Verify if a button with text "Click Me" exists on the page
+cy.contains('button', 'Click Me').should('exist')
+
+
+// Verify if the text "Welcome" exists on the page
+cy.contains('Welcome').should('exist')
+
 
 
 
