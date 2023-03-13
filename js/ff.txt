@@ -24,6 +24,36 @@ However, if your application does not require a correlation ID to be passed with
 It's important to note that if your application requires a correlation ID to be passed with each request, you should ensure that your Cypress tests include this ID to accurately reflect the behavior of the application.
 
 
+
+
+In Cypress, fixtures are used to store and load data for your tests. Fixtures can be used to configure your tests by providing data or settings that can be loaded at runtime. Here's an example of how you can use fixtures to configure your tests:
+
+Create a fixture file: Create a fixture file in your project's fixtures folder. This fixture file can contain any data or configuration options that you want to use in your tests. For example, you can create a config.json fixture file that contains configuration options:
+
+{
+  "baseUrl": "https://example.com",
+  "timeout": 5000
+}
+
+Load the fixture data: You can use the cy.fixture() command to load the fixture data into your tests. Here's an example of how to load the config.json fixture file:
+
+describe('My Test Suite', () => {
+  beforeEach(() => {
+    cy.fixture('config').as('config')
+  })
+  
+  it('loads the configuration data', () => {
+    cy.visit(this.config.baseUrl)
+    cy.get('button').click()
+    cy.url().should('include', '/dashboard')
+  })
+})
+
+
+In this example, we use the cy.fixture() command to load the config.json fixture file and assign it to the config alias. We can then use this.config to access the fixture data in our tests. In the it() block, we use the baseUrl configuration option to visit a website and then click on a button to navigate to the dashboard.
+
+Using fixtures to configure your tests can make your tests more modular and easier to maintain. You can create multiple fixture files with different configuration options for different test scenarios, and easily load them into your tests as needed.
+
 // Visit the page
 cy.visit('https://example.com')
 
