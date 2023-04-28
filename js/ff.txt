@@ -1,130 +1,16 @@
-Dynamic selectors can be challenging to handle in Cypress because they change frequently and unpredictably, making it difficult to identify and interact with elements on the page. However, there are several techniques you can use to handle dynamic selectors in Cypress:
-
-Use data attributes: Adding data attributes to your HTML elements is a good way to make selectors more specific and predictable. You can use the data-* attribute to add custom data to elements and then use those attributes in your selectors.
-
-Use contains() method: If you can't rely on a static selector, you can use the contains() method to find elements that contain a specific text. This method is useful when the text content is consistent across dynamic elements.
-
-Use cy.get() with as(): Cypress allows you to use as() to alias an element, so you can refer to it later in your code. You can use cy.get() to find an element using a dynamic selector and then alias it with as(). This allows you to refer to the element by a static name throughout your code.
-
-Use cy.wrap() with invoke(): If you have a dynamic selector that changes frequently, you can use cy.wrap() to wrap the element and then use invoke() to call a method on it. This allows you to interact with the element without having to use a static selector.
-
-Use cy.get() with find(): If you have a static parent element that contains dynamic child elements, you can use cy.get() to find the parent element and then use find() to locate the dynamic child elements. This allows you to interact with the child elements without having to use a dynamic selector.
-
-These techniques can help you handle dynamic selectors in Cypress and make your tests more reliable and predictable.
-
-
-Whether or not you need to include a correlation ID when navigating to a URL in Cypress depends on your application and how you are using the correlation ID.
-
-A correlation ID is a unique identifier that is used to track a specific request or transaction across multiple systems. It is often used in distributed systems or microservice architectures to help identify issues that span multiple services.
-
-If your application requires a correlation ID to be passed with each request, then you will need to include it when navigating to a URL in Cypress. In this case, you can pass the correlation ID as a query parameter in the URL, or you can set it as a custom header using the cy.visit() command's headers option.
-
-However, if your application does not require a correlation ID to be passed with each request, then you do not need to include it when navigating to a URL in Cypress. In this case, you can simply use the cy.visit() command to navigate to the URL without specifying any additional headers or query parameters.
-
-It's important to note that if your application requires a correlation ID to be passed with each request, you should ensure that your Cypress tests include this ID to accurately reflect the behavior of the application.
-
-
-
-
-In Cypress, fixtures are used to store and load data for your tests. Fixtures can be used to configure your tests by providing data or settings that can be loaded at runtime. Here's an example of how you can use fixtures to configure your tests:
-
-Create a fixture file: Create a fixture file in your project's fixtures folder. This fixture file can contain any data or configuration options that you want to use in your tests. For example, you can create a config.json fixture file that contains configuration options:
-
-{
-  "baseUrl": "https://example.com",
-  "timeout": 5000
-}
-
-Load the fixture data: You can use the cy.fixture() command to load the fixture data into your tests. Here's an example of how to load the config.json fixture file:
-
-describe('My Test Suite', () => {
-  beforeEach(() => {
-    cy.fixture('config').as('config')
-  })
-  
-  it('loads the configuration data', () => {
-    cy.visit(this.config.baseUrl)
-    cy.get('button').click()
-    cy.url().should('include', '/dashboard')
+describe('Test Suite', () => {
+  it('should read Excel file and execute multiple test cases', () => {
+    cy.fixture('testdata.xlsx').then((fileContent) => {
+      cy.parseXlsx(fileContent).then((data) => {
+        data.forEach((testcase) => {
+          it(`should do something with ${testcase.columnName}`, () => {
+            cy.wrap(null).then(() => {
+              // your test code here
+              // you can access the data for this test case using testcase.columnName
+            })
+          })
+        })
+      })
+    })
   })
 })
-
-
-In this example, we use the cy.fixture() command to load the config.json fixture file and assign it to the config alias. We can then use this.config to access the fixture data in our tests. In the it() block, we use the baseUrl configuration option to visit a website and then click on a button to navigate to the dashboard.
-
-Using fixtures to configure your tests can make your tests more modular and easier to maintain. You can create multiple fixture files with different configuration options for different test scenarios, and easily load them into your tests as needed.
-
-// Visit the page
-cy.visit('https://example.com')
-
-// Verify if a button with text "Click Me" exists on the page
-cy.contains('button', 'Click Me').should('exist')
-
-
-// Verify if the text "Welcome" exists on the page
-cy.contains('Welcome').should('exist')
-
-
-
-
-When using Cypress, you may encounter situations where your tests need to handle scenarios where a new window or tab is opened. Cypress does not natively support handling new windows or tabs, but there are several workarounds you can use to handle this situation.
-
-Here are some techniques you can use to handle new windows or tabs in Cypress:
-
-Using the window:alert and window:confirm events: When a new window or tab is opened due to an alert or confirmation dialog, Cypress automatically captures these events and blocks the dialog from opening. You can then use the cy.on() command to listen for these events and handle them accordingly.
-
-Using the window:before:load event: When a new window or tab is opened due to a link or button click, Cypress does not automatically capture the event. However, you can use the cy.window() command to access the new window's window object and listen for the beforeunload event. You can then use the cy.stub() command to stub the window.open() method and return a reference to the new window.
-
-Here's an example of using the cy.window() command to handle a new window or tab:
-
-it('opens a new window', () => {
-  cy.visit('https://example.com')
-  cy.get('a').click()
-  
-  cy.window().then(win => {
-    cy.stub(win, 'open').as('windowOpen')
-  })
-  
-  cy.get('button').click()
-  
-  cy.get('@windowOpen').should('be.calledOnce')
-})
-
-
-In this example, we use cy.get('a').click() to click on a link that opens a new window. We then use cy.window() to access the new window's window object and use cy.stub() to stub the window.open() method. We can then use the @windowOpen alias to assert that the new window was opened.
-
-Overall, handling new windows or tabs in Cypress requires a bit of extra work, but the techniques above should help you handle most situations.
-
-
-In Cypress, fixtures are used to store and load data for your tests. Fixtures can be used to configure your tests by providing data or settings that can be loaded at runtime. Here's an example of how you can use fixtures to configure your tests:
-
-Create a fixture file: Create a fixture file in your project's fixtures folder. This fixture file can contain any data or configuration options that you want to use in your tests. For example, you can create a config.json fixture file that contains configuration options:
-
-{
-  "baseUrl": "https://example.com",
-  "timeout": 5000
-}
-
-
-Load the fixture data: You can use the cy.fixture() command to load the fixture data into your tests. Here's an example of how to load the config.json fixture file:
-
-describe('My Test Suite', () => {
-  beforeEach(() => {
-    cy.fixture('config').as('config')
-  })
-  
-  it('loads the configuration data', () => {
-    cy.visit(this.config.baseUrl)
-    cy.get('button').click()
-    cy.url().should('include', '/dashboard')
-  })
-})
-
-
-In this example, we use the cy.fixture() command to load the config.json fixture file and assign it to the config alias. We can then use this.config to access the fixture data in our tests. In the it() block, we use the baseUrl configuration option to visit a website and then click on a button to navigate to the dashboard.
-
-Using fixtures to configure your tests can make your tests more modular and easier to maintain. You can create multiple fixture files with different configuration options for different test scenarios, and easily load them into your tests as needed.
-
-In this example, we use the cy.fixture() command to load the config.json fixture file and assign it to the config alias. We can then use this.config to access the fixture data in our tests. In the it() block, we use the baseUrl configuration option to visit a website and then click on a button to navigate to the dashboard.
-
-Using fixtures to configure your tests can make your tests more modular and easier to maintain. You can create multiple fixture files with different configuration options for different test scenarios, and easily load them into your tests as needed.
