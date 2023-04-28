@@ -14,3 +14,20 @@ describe('Test Suite', () => {
     })
   })
 })
+
+
+describe('Test Suite', () => {
+  it('should execute multiple test cases', () => {
+    const testData = [
+      { name: 'test1', value: 1 },
+      { name: 'test2', value: 2 },
+      { name: 'test3', value: 3 },
+    ]
+    cy.wrap(testData).each((testcase) => {
+      it(`should do something with ${testcase.name}`, () => {
+        // your test code here
+        // you can access the data for this test case using testcase.name and testcase.value
+      })
+    })
+  })
+})
