@@ -1,0 +1,193 @@
+New chat
+Today
+New chat
+
+
+New chat
+Yesterday
+Triggering Click in JavaScript
+Google Maps API Autocomplete
+Previous 7 Days
+Remove Input Text Highlight
+PUT Mapping 403 Error
+Angular Parent-Child Communication
+Stripe Payment Form Code
+Unknown Movie "Virupaksha"
+Previous 30 Days
+Fixing Dell Touchpad Issue
+Cypress: Read Excel, Loop.
+Secure API with AzureAD
+Charminar: Hyderabad's Iconic Monument
+Get Table Schema Details
+Sticky Header Animation
+JavaScript Phone Validation
+Scroll to Div JavaScript
+Spring Boot API Query
+JavaScript Delivery Code
+JavaScript Audio Recording
+InvalidDataAccessResourceUsageException Issue
+Indian Bank Job Roles
+Indian Bank Positions
+
+
+User
+info tailcorn
+Model: Plugins
+ALPHA
+
+User
+Ngrx complete sample code with actions,reducers,effects,state,selectors,app module,  subscribe
+
+ChatGPT
+Here's a simple example of an NgRx store for a list of items. This example includes actions, reducers, effects, selectors, and a subscription in a component.
+
+Please note that this is a simplified example and doesn't include all the best practices for a production-level application.
+
+Actions (items.actions.ts)
+typescript
+Copy code
+import { createAction, props } from '@ngrx/store';
+
+export const loadItems = createAction('[Items] Load Items');
+export const loadItemsSuccess = createAction('[Items] Load Items Success', props<{ items: string[] }>());
+export const loadItemsFailure = createAction('[Items] Load Items Failure', props<{ error: any }>());
+Reducer (items.reducer.ts)
+typescript
+Copy code
+import { createReducer, on } from '@ngrx/store';
+import * as ItemsActions from './items.actions';
+
+export const itemsFeatureKey = 'items';
+
+export interface State {
+  items: string[];
+  error: any;
+}
+
+export const initialState: State = {
+  items: [],
+  error: null,
+};
+
+export const reducer = createReducer(
+  initialState,
+  on(ItemsActions.loadItemsSuccess, (state, action) => ({ ...state, items: action.items })),
+  on(ItemsActions.loadItemsFailure, (state, action) => ({ ...state, error: action.error })),
+);
+Effects (items.effects.ts)
+typescript
+Copy code
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { EMPTY } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import { ItemsService } from '../items.service';
+import * as ItemsActions from './items.actions';
+
+@Injectable()
+export class ItemsEffects {
+  loadItems$ = createEffect(() => this.actions$.pipe(
+    ofType(ItemsActions.loadItems),
+    mergeMap(() => this.itemsService.getAll()
+      .pipe(
+        map(items => ItemsActions.loadItemsSuccess({ items })),
+        catchError(() => EMPTY)
+      ))
+    )
+  );
+
+  constructor(
+    private actions$: Actions,
+    private itemsService: ItemsService
+  ) {}
+}
+Selectors (items.selectors.ts)
+typescript
+Copy code
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import * as fromItems from './items.reducer';
+
+export const selectItemsState = createFeatureSelector<fromItems.State>(
+  fromItems.itemsFeatureKey
+);
+
+export const selectItems = createSelector(
+  selectItemsState,
+  (state: fromItems.State) => state.items
+);
+
+export const selectError = createSelector(
+  selectItemsState,
+  (state: fromItems.State) => state.error
+);
+App Module (app.module.ts)
+typescript
+Copy code
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { StoreModule }
+
+
+
+
+User
+Continue
+
+ChatGPT
+Sure, here's the continuation of the app.module.ts file:
+
+typescript
+Copy code
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { AppComponent } from './app.component';
+import { itemsFeatureKey, reducer as itemsReducer } from './store/items.reducer';
+import { ItemsEffects } from './store/items.effects';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    StoreModule.forRoot({ [itemsFeatureKey]: itemsReducer }),
+    EffectsModule.forRoot([ItemsEffects]),
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+Component (app.component.ts)
+In your component, you can now dispatch the loadItems action and subscribe to the items from the store:
+
+typescript
+Copy code
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import * as ItemsActions from './store/items.actions';
+import * as fromItems from './store/items.reducer';
+import * as ItemsSelectors from './store/items.selectors';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <div *ngFor="let item of items$ | async">
+      {{ item }}
+    </div>
+  `,
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent implements OnInit {
+  items$: Observable<string[]>;
+
+  constructor(private store: Store) {}
+
+  ngOnInit() {
+    this.store.dispatch(ItemsActions.loadItems());
+    this.items$ = this.store.select(ItemsSelectors.selectItems);
+  }
+}
+This is a basic example and doesn't include things like handling asynchronous operations with effects, normalizing state shape, or managing entities. For more complex state management, you might want to look into libraries like @ngrx/entity and @ngrx/data, or techniques like container/presenter components.
