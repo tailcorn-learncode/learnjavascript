@@ -1,0 +1,177 @@
+Table: activity_detail_log
+
+activity_detail_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+effective_ts
+work_status_cd [REFERENCES applicationConfig.dbo.work_status_ref(work_status_id)]
+reason_dsc
+user_profile_id [REFERENCES applicationConfig.dbo.user_profile(user_profile_id)]
+reason_id [REFERENCES applicationConfig.dbo.reason_ref(reason_id)]
+work_status_id [REFERENCES applicationConfig.dbo.work_status_ref(work_status_id)]
+activity_log_id [REFERENCES applicationConfig.dbo.activity_log(activity_log_id)]
+
+
+Table: activity_log
+
+activity_log_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+process_cd
+activity_start_ts
+activity_end_ts
+process_id [REFERENCES applicationConfig.dbo.process_ref(process_id)]
+
+
+Table: application_ref
+
+application_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+application_cd
+application_nm
+date_overide_ind
+as_of_dt
+maintenance_ind
+active_ind
+application_ord
+
+
+Table: login_session
+
+login_session_id
+opt_lck_ctl
+rcd_crt_nm
+application_cd
+access_token_dsc
+reference_token_dsc
+user_profile_id [REFERENCES applicationConfig.dbo.user_profile(user_profile_id)]
+
+
+Table: menu_ref
+
+menu_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+application_cd
+menu_cd
+menu_nm
+menu_ord
+active_ind
+
+
+Table: notification
+
+notification_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+message_dsc
+notification_ts
+notification_ind
+notification_typ
+assigned_to_id [REFERENCES applicationConfig.dbo.user_profile(user_profile_id)]
+
+
+Table: policy_permission_ref
+
+permission_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+application_cd
+create_ind
+update_ind
+read_ind
+delete_ind
+policy_id [REFERENCES applicationConfig.dbo.policy_ref(policy_id)]
+role_id [REFERENCES applicationConfig.dbo.role_ref(role_id)]
+user_profile_id [REFERENCES applicationConfig.dbo.user_profile(user_profile_id)]
+
+
+Table: policy_ref
+
+policy_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+application_cd
+policy_cd
+policy_nm
+policy_ord
+active_ind
+
+
+Table: resource
+
+resource_id
+opt_lck_ctl
+rcd_crt_nm
+
+Table: reason_ref
+
+reason_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+reason_group_cd
+reason_group_dsc
+reason_dsc
+reason_ord
+
+
+
+
+Table: resource
+
+resource_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+resource_cd
+resource_nm
+resource_typ
+resource_desc
+active_ind
+
+
+Table: role_ref
+
+role_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+application_cd
+role_cd
+role_nm
+role_ord
+active_ind
+
+Table: user_profile
+user_profile_id
+opt_lck_ctl
+rcd_crt_nm
+sys_start_ts
+sys_end_ts
+application_cd
+user_id
+password_dsc
+user_nm
+user_email
+user_phone
+active_ind
+user_role_id [REFERENCES applicationConfig.dbo.role_ref(role_id)]
