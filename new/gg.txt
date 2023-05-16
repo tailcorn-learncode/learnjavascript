@@ -1,0 +1,425 @@
+activity_detail_log
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+activity_detail_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+effective_ts	datetime2	no	6	19   	0    	yes	(n/a)	(n/a)	NULL
+work_status_cd	varchar	no	4	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+reason_dsc	varchar	no	100	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+reason_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+work_status_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+activity_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+FOREIGN KEY	fk_work_status_id	No Action	No Action	Enabled	Is_For_Replication	work_status_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.work_status_ref (work_status_id)
+PRIMARY KEY (clustered)	PK__activity__539DF2F725A1646A	(n/a)	(n/a)	(n/a)	(n/a)	activity_detail_id
+FOREIGN KEY	Refactivity_log19	No Action	No Action	Enabled	Is_For_Replication	activity_log_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.activity_log (activity_log_id)
+FOREIGN KEY	Refreason_ref17	No Action	No Action	Enabled	Is_For_Replication	reason_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.reason_ref (reason_id)
+FOREIGN KEY	Refuser_profiles14	No Action	No Action	Enabled	Is_For_Replication	user_profile_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
+
+
+activity_log
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+activity_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+process_cd	varchar	no	10	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+activity_start_ts	datetime	no	8	     	     	yes	(n/a)	(n/a)	NULL
+activity_end_ts	datetime	no	8	     	     	yes	(n/a)	(n/a)	NULL
+process_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__activity__D6C83EC27D405C18	(n/a)	(n/a)	(n/a)	(n/a)	activity_log_id
+FOREIGN KEY	Refprocess_ref24	No Action	No Action	Enabled	Is_For_Replication	process_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.process_ref (process_id)
+
+Table is referenced by foreign key
+applicationConfig.dbo.activity_detail_log: Refactivity_log19
+applicationConfig.dbo.resource_log: Refactivity_log18
+
+
+
+application_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+application_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+application_nm	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+date_overide_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+as_of_dt	datetime2	no	6	19   	0    	yes	(n/a)	(n/a)	NULL
+maintenance_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+active_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+application_ord	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__applicat__3BCBDCF2C574E745	(n/a)	(n/a)	(n/a)	(n/a)	application_id
+
+
+
+login_session
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+login_session_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+access_token_dsc	varchar	no	500	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+reference_token_dsc	varchar	no	500	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__login_se__AB2A97A53B490CB2	(n/a)	(n/a)	(n/a)	(n/a)	login_session_id
+FOREIGN KEY	Refrole_ref9	No Action	No Action	Enabled	Is_For_Replication	user_profile_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
+
+
+
+
+menu_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+menu_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+menu_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+menu_nm	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+menu_ord	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+active_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__menu_ref__4CA0FADC0E9D46C0	(n/a)	(n/a)	(n/a)	(n/a)	menu_id
+
+applicationConfig.dbo.process_ref: Refmenu_ref10
+
+
+notification
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+notification_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+message_dsc	varchar	no	240	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+notification_ts	datetime2	no	6	19   	0    	yes	(n/a)	(n/a)	NULL
+notification_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+notification_typ	varchar	no	10	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+assigned_to_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__notifica__E059842FDFA38FCE	(n/a)	(n/a)	(n/a)	(n/a)	notification_id
+FOREIGN KEY	Refuser_profiles28	No Action	No Action	Enabled	Is_For_Replication	assigned_to_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
+
+
+
+policy_permission_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+permission_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+create_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+update_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+read_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+delete_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+policy_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+role_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__policy_p__E5331AFA0962E21A	(n/a)	(n/a)	(n/a)	(n/a)	permission_id
+FOREIGN KEY	Refpolicy_ref17	No Action	No Action	Enabled	Is_For_Replication	policy_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.policy_ref (policy_id)
+FOREIGN KEY	Refrole_ref22	No Action	No Action	Enabled	Is_For_Replication	role_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.role_ref (role_id)
+FOREIGN KEY	Refuser_profiles26	No Action	No Action	Enabled	Is_For_Replication	user_profile_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
+
+
+
+policy_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+policy_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+policy_cd	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+policy_nm	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+policy_ord	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+active_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__policy_r__47DA3F03E455746B	(n/a)	(n/a)	(n/a)	(n/a)	policy_id
+
+
+Table is referenced by foreign key
+applicationConfig.dbo.policy_permission_ref: Refpolicy_ref17
+
+
+
+reason_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+reason_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+reason_group_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+reason_group_dsc	varchar	no	20	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+reason_dsc	varchar	no	50	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+reason_ord	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__reason_r__846BB554F210AF4B	(n/a)	(n/a)	(n/a)	(n/a)	reason_id
+
+Table is referenced by foreign key
+applicationConfig.dbo.activity_detail_log: Refreason_ref17
+
+
+
+resource
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+resource_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	varchar	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+resource_nm	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+resource_dsc	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+resource_title_dsc	varchar	no	20	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+resource_typ_nm	varchar	no	20	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+grid_dsc	varchar	no	18	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+resource_ord	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+active_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+process_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__resource__4985FC737FABB8E9	(n/a)	(n/a)	(n/a)	(n/a)	resource_id
+
+Table is referenced by foreign key
+applicationConfig.dbo.resource_log: Refresources25
+applicationConfig.dbo.resource_permission_ref: Refresources14
+
+
+resource_log
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+resource_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+action_perform_dsc	varchar	no	10	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+action_dt	date	no	3	10   	0    	yes	(n/a)	(n/a)	NULL
+activity_log_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+resource_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__resource__C0F25C42F068823B	(n/a)	(n/a)	(n/a)	(n/a)	resource_log_id
+FOREIGN KEY	Refactivity_log18	No Action	No Action	Enabled	Is_For_Replication	activity_log_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.activity_log (activity_log_id)
+FOREIGN KEY	Refresources25	No Action	No Action	Enabled	Is_For_Replication	resource_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.resource (resource_id)
+
+
+resource_permission_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+resource_permission_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+create_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+update_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+read_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+delete_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+resource_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__resource__2A97DCB96D0D25DD	(n/a)	(n/a)	(n/a)	(n/a)	resource_permission_id
+FOREIGN KEY	Refresources14	No Action	No Action	Enabled	Is_For_Replication	resource_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.resource (resource_id)
+FOREIGN KEY	Refuser_profiles13	No Action	No Action	Enabled	Is_For_Replication	user_profile_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
+
+
+
+role_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+role_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+role_nm	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+active_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__role_ref__760965CC1DF2850B	(n/a)	(n/a)	(n/a)	(n/a)	role_id
+
+applicationConfig.dbo.policy_permission_ref: Refrole_ref22
+applicationConfig.dbo.process_ref: Refrole_ref19
+
+
+security_level_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+security_level_id	smallint	no	2	5    	0    	no	(n/a)	(n/a)	NULL
+security_level_cd	char	no	4	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+security_level_dsc	varchar	no	40	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__security__7A82F1A89E94CBA3	(n/a)	(n/a)	(n/a)	(n/a)	security_level_id
+
+
+
+user_deny
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+user_deny_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+source_record_nm	varchar	no	18	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+userid_num	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+active_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__user_den__CEA240710C80FDCE	(n/a)	(n/a)	(n/a)	(n/a)	user_deny_id
+FOREIGN KEY	Refuser_profiles32	No Action	No Action	Enabled	Is_For_Replication	user_profile_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
+
+
+user_log
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+user_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+last_visit_dt	datetime2	no	8	27   	7    	yes	(n/a)	(n/a)	NULL
+ip_address_num	varchar	no	80	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+attempts_num	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+attempted_duration_num	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+first_failed_duration_dt	date	no	3	10   	0    	yes	(n/a)	(n/a)	NULL
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__user_log__96AE0D9D9767AACB	(n/a)	(n/a)	(n/a)	(n/a)	user_log_id
+FOREIGN KEY	Refrole_ref32	No Action	No Action	Enabled	Is_For_Replication	user_profile_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
+
+
+
+user_profile
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+source_record_nm	varchar	no	18	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+login_nm	varchar	no	80	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+full_nm	varchar	no	100	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+email_nm	varchar	no	100	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+active_ind	tinyint	no	1	3    	0    	no	(n/a)	(n/a)	NULL
+security_agreement_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+lock_released_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+security_level_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+user_type_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__user_pro__151D386E5725F36B	(n/a)	(n/a)	(n/a)	(n/a)	user_profile_id
+
+
+Table is referenced by foreign key
+applicationConfig.dbo.activity_detail_log: Refuser_profiles14
+applicationConfig.dbo.login_session: Refrole_ref9
+applicationConfig.dbo.notification: Refuser_profiles28
+applicationConfig.dbo.policy_permission_ref: Refuser_profiles26
+applicationConfig.dbo.resource_permission_ref: Refuser_profiles13
+applicationConfig.dbo.user_deny: Refuser_profiles32
+applicationConfig.dbo.user_log: Refrole_ref32
+
+
+
+user_type_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+user_type_id	smallint	no	2	5    	0    	no	(n/a)	(n/a)	NULL
+user_type_cd	char	no	4	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+user_type_dsc	varchar	no	40	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__user_typ__9424CFA6744671AC	(n/a)	(n/a)	(n/a)	(n/a)	user_type_id
+
+
+work_status_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+work_status_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+work_status_cd	varchar	no	4	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+work_nm	varchar	no	40	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+active_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+work_ord	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__work_sta__4D68F27B0DDF9AE8	(n/a)	(n/a)	(n/a)	(n/a)	work_status_id
+
+
+Table is referenced by foreign key
+applicationConfig.dbo.activity_detail_log: fk_work_status_id
