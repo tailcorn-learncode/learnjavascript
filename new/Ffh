@@ -187,6 +187,31 @@ Table is referenced by foreign key
 applicationConfig.dbo.policy_permission_ref: Refpolicy_ref17
 
 
+table name : process_ref
+
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+process_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	22   	2    	no	(n/a)	(n/a)	NULL
+application_cd	varchar	no	5	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+process_cd	varchar	no	5	     	     	no	no	no	SQL_Latin1_General_CP1_CI_AS
+process_nm	varchar	no	60	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+grid_dsc	varchar	no	12	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+process_ord	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+days_to_complete_num	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+workflow_ind	tinyint	no	1	3    	0    	yes	(n/a)	(n/a)	NULL
+menu_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+role_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+PRIMARY KEY (clustered)	PK__process___9446C3E14261CD8D	(n/a)	(n/a)	(n/a)	(n/a)	process_id
+FOREIGN KEY	Refmenu_ref10	No Action	No Action	Enabled	Is_For_Replication	menu_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.menu_ref (menu_id)
+FOREIGN KEY	Refrole_ref19	No Action	No Action	Enabled	Is_For_Replication	role_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.role_ref (role_id)
+
 
 table name : reason_ref
 
