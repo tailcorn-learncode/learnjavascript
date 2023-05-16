@@ -1,0 +1,25 @@
+Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
+activity_detail_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+opt_lck_ctl	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+rcd_crt_nm	char	no	8	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+sys_start_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+sys_end_ts	datetime2	no	6	19   	0    	no	(n/a)	(n/a)	NULL
+effective_ts	datetime2	no	6	19   	0    	yes	(n/a)	(n/a)	NULL
+work_status_cd	varchar	no	4	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+reason_dsc	varchar	no	100	     	     	yes	no	yes	SQL_Latin1_General_CP1_CI_AS
+user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+reason_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+work_status_id	int	no	4	10   	0    	yes	(n/a)	(n/a)	NULL
+activity_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
+
+
+constraint_type	constraint_name	delete_action	update_action	status_enabled	status_for_replication	constraint_keys
+FOREIGN KEY	fk_work_status_id	No Action	No Action	Enabled	Is_For_Replication	work_status_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.work_status_ref (work_status_id)
+PRIMARY KEY (clustered)	PK__activity__539DF2F725A1646A	(n/a)	(n/a)	(n/a)	(n/a)	activity_detail_id
+FOREIGN KEY	Refactivity_log19	No Action	No Action	Enabled	Is_For_Replication	activity_log_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.activity_log (activity_log_id)
+FOREIGN KEY	Refreason_ref17	No Action	No Action	Enabled	Is_For_Replication	reason_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.reason_ref (reason_id)
+FOREIGN KEY	Refuser_profiles14	No Action	No Action	Enabled	Is_For_Replication	user_profile_id
+ 	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
