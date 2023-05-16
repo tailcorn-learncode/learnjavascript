@@ -1,0 +1,183 @@
+Table: activity_detail_log
+
+activity_detail_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+effective_ts [datetime2]
+work_status_cd [varchar(4)]
+reason_dsc [varchar(100)]
+user_profile_id [int]
+reason_id [int] (Foreign Key: reason_ref.reason_id)
+work_status_id [int] (Foreign Key: work_status_ref.work_status_id)
+activity_log_id [int] (Foreign Key: activity_log.activity_log_id)
+Table: activity_log
+
+activity_log_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+process_cd [varchar(10)]
+activity_start_ts [datetime]
+activity_end_ts [datetime]
+process_id [int] (Foreign Key: process_ref.process_id)
+Table: application_ref
+
+application_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+application_cd [varchar(5)]
+application_nm [varchar(60)]
+date_overide_ind [tinyint]
+as_of_dt [datetime2]
+maintenance_ind [tinyint]
+active_ind [tinyint]
+application_ord [int]
+Table: login_session
+
+login_session_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+application_cd [varchar(5)]
+access_token_dsc [varchar(500)]
+reference_token_dsc [varchar(500)]
+user_profile_id [int] (Foreign Key: user_profile.user_profile_id)
+Table: menu_ref
+
+menu_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+application_cd [varchar(5)]
+menu_cd [varchar(5)]
+menu_nm [varchar(60)]
+menu_ord [int]
+active_ind [tinyint]
+Table: notification
+
+notification_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+message_dsc [varchar(240)]
+notification_ts [datetime2]
+notification_ind [tinyint]
+notification_typ [varchar(10)]
+assigned_to_id [int] (Foreign Key: user_profile.user_profile_id)
+
+
+Table: policy_permission_ref
+
+permission_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+application_cd [varchar(5)]
+create_ind [tinyint]
+update_ind [tinyint]
+read_ind [tinyint]
+delete_ind [tinyint]
+policy_id [int] (Foreign Key: policy_ref.policy
+_id)
+
+role_id [int] (Foreign Key: role_ref.role_id)
+Table: policy_ref
+
+policy_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+application_cd [varchar(5)]
+policy_cd [varchar(10)]
+policy_nm [varchar(60)]
+policy_ord [int]
+active_ind [tinyint]
+Table: process_ref
+
+process_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+application_cd [varchar(5)]
+process_cd [varchar(10)]
+process_nm [varchar(60)]
+grid_dsc [varchar(200)]
+process_ord [int]
+days_to_complete_num [int]
+workflow_ind [tinyint]
+menu_id [int] (Foreign Key: menu_ref.menu_id)
+role_id [int] (Foreign Key: role_ref.role_id)
+
+Table: reason_ref
+
+reason_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+reason_group_cd [varchar(10)]
+reason_group_dsc [varchar(60)]
+reason_dsc [varchar(100)]
+reason_ord [int]
+Table: resource
+
+resource_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+application_cd [varchar(5)]
+resource_nm [varchar(100)]
+resource_dsc [varchar(240)]
+resource_title_dsc [varchar(100)]
+resource_typ_nm [varchar(30)]
+grid_dsc [varchar(200)]
+resource_ord [int]
+active_ind [tinyint]
+
+
+Table: resource_log
+resource_log_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+resource_id [int] (Foreign Key: resource.resource_id)
+action_id [int] (Foreign Key: action_ref.action_id)
+user_profile_id [int] (Foreign Key: user_profile.user_profile_id)
+
+Table: user_profile
+user_profile_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+user_nm [varchar(50)]
+password_dsc [varchar(100)]
+active_ind [tinyint]
+Table: work_status_ref
+work_status_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+work_status_cd [varchar(4)]
+work_status_dsc [varchar(50)]
+Table: role_ref
+role_id [int]
+opt_lck_ctl [int]
+rcd_crt_nm [char(8)]
+sys_start_ts [datetime2]
+sys_end_ts [datetime2]
+role_cd [varchar(10)]
+role_nm [varchar(50)]
+
