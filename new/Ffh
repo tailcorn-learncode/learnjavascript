@@ -1,4 +1,4 @@
-activity_detail_log
+table name : activity_detail_log
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 activity_detail_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -27,7 +27,7 @@ FOREIGN KEY	Refuser_profiles14	No Action	No Action	Enabled	Is_For_Replication	us
  	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
 
 
-activity_log
+table name : activity_log
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 activity_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -52,7 +52,7 @@ applicationConfig.dbo.resource_log: Refactivity_log18
 
 
 
-application_ref
+table name : application_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 application_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -74,7 +74,7 @@ PRIMARY KEY (clustered)	PK__applicat__3BCBDCF2C574E745	(n/a)	(n/a)	(n/a)	(n/a)	a
 
 
 
-login_session
+table name : login_session
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 login_session_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -94,7 +94,7 @@ FOREIGN KEY	Refrole_ref9	No Action	No Action	Enabled	Is_For_Replication	user_pro
 
 
 
-menu_ref
+table name : menu_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 menu_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -114,7 +114,7 @@ PRIMARY KEY (clustered)	PK__menu_ref__4CA0FADC0E9D46C0	(n/a)	(n/a)	(n/a)	(n/a)	m
 applicationConfig.dbo.process_ref: Refmenu_ref10
 
 
-notification
+table name : notification
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 notification_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -136,7 +136,7 @@ FOREIGN KEY	Refuser_profiles28	No Action	No Action	Enabled	Is_For_Replication	as
 
 
 
-policy_permission_ref
+table name : policy_permission_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 permission_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -165,7 +165,7 @@ FOREIGN KEY	Refuser_profiles26	No Action	No Action	Enabled	Is_For_Replication	us
 
 
 
-policy_ref
+table name : policy_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 policy_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -188,7 +188,7 @@ applicationConfig.dbo.policy_permission_ref: Refpolicy_ref17
 
 
 
-reason_ref
+table name : reason_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 reason_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -209,7 +209,7 @@ applicationConfig.dbo.activity_detail_log: Refreason_ref17
 
 
 
-resource
+table name : resource
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 resource_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -236,7 +236,7 @@ applicationConfig.dbo.resource_log: Refresources25
 applicationConfig.dbo.resource_permission_ref: Refresources14
 
 
-resource_log
+table name : resource_log
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 resource_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -257,7 +257,7 @@ FOREIGN KEY	Refresources25	No Action	No Action	Enabled	Is_For_Replication	resour
  	 	 	 	 	 	REFERENCES applicationConfig.dbo.resource (resource_id)
 
 
-resource_permission_ref
+table name : resource_permission_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 resource_permission_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -282,7 +282,7 @@ FOREIGN KEY	Refuser_profiles13	No Action	No Action	Enabled	Is_For_Replication	us
 
 
 
-role_ref
+table name : role_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 role_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -301,7 +301,7 @@ applicationConfig.dbo.policy_permission_ref: Refrole_ref22
 applicationConfig.dbo.process_ref: Refrole_ref19
 
 
-security_level_ref
+table name : security_level_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 security_level_id	smallint	no	2	5    	0    	no	(n/a)	(n/a)	NULL
@@ -313,7 +313,7 @@ PRIMARY KEY (clustered)	PK__security__7A82F1A89E94CBA3	(n/a)	(n/a)	(n/a)	(n/a)	s
 
 
 
-user_deny
+table name : user_deny
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 user_deny_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -332,7 +332,7 @@ FOREIGN KEY	Refuser_profiles32	No Action	No Action	Enabled	Is_For_Replication	us
  	 	 	 	 	 	REFERENCES applicationConfig.dbo.user_profile (user_profile_id)
 
 
-user_log
+table name : user_log
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 user_log_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -356,7 +356,7 @@ FOREIGN KEY	Refrole_ref32	No Action	No Action	Enabled	Is_For_Replication	user_pr
 
 
 
-user_profile
+table name : user_profile
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 user_profile_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
@@ -391,7 +391,7 @@ applicationConfig.dbo.user_log: Refrole_ref32
 
 
 
-user_type_ref
+table name : user_type_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 user_type_id	smallint	no	2	5    	0    	no	(n/a)	(n/a)	NULL
@@ -403,7 +403,7 @@ constraint_type	constraint_name	delete_action	update_action	status_enabled	statu
 PRIMARY KEY (clustered)	PK__user_typ__9424CFA6744671AC	(n/a)	(n/a)	(n/a)	(n/a)	user_type_id
 
 
-work_status_ref
+table name : work_status_ref
 
 Column_name	Type	Computed	Length	Prec	Scale	Nullable	TrimTrailingBlanks	FixedLenNullInSource	Collation
 work_status_id	int	no	4	10   	0    	no	(n/a)	(n/a)	NULL
