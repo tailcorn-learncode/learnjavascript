@@ -1,0 +1,227 @@
+Table: activity_detail_log
+
+activity_detail_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+effective_ts (datetime2)
+work_status_cd (varchar)
+reason_dsc (varchar)
+user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+reason_id (int) [Foreign Key: reason_ref.reason_id]
+work_status_id (int) [Foreign Key: work_status_ref.work_status_id]
+activity_log_id (int) [Foreign Key: activity_log.activity_log_id]
+Table: activity_log
+
+activity_log_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+process_cd (varchar)
+activity_start_ts (datetime)
+activity_end_ts (datetime)
+process_id (int) [Foreign Key: process_ref.process_id]
+Table: application_ref
+
+application_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+application_nm (varchar)
+date_overide_ind (tinyint)
+as_of_dt (datetime2)
+maintenance_ind (tinyint)
+active_ind (tinyint)
+application_ord (int)
+Table: login_session
+
+login_session_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+application_cd (varchar)
+access_token_dsc (varchar)
+reference_token_dsc (varchar)
+user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+
+Table: menu_ref
+
+menu_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+menu_cd (varchar)
+menu_nm (varchar)
+menu_ord (int)
+active_ind (tinyint)
+Table: notification
+
+notification_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+message_dsc (varchar)
+notification_ts (datetime2)
+notification_ind (tinyint)
+notification_typ (varchar)
+assigned_to_id (int) [Foreign Key: user_profile.user_profile_id]
+Table: policy_permission_ref
+
+permission_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+create_ind (tinyint)
+update_ind (tinyint)
+read_ind (tinyint)
+delete_ind (tinyint)
+policy_id (int) [Foreign Key: policy_ref.policy_id]
+role_id (int) [Foreign Key: role_ref.role_id]
+user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+Table: policy_ref
+
+policy_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+policy_cd (char)
+policy_nm (varchar)
+policy_ord (int)
+active_ind (tinyint)
+
+Table: reason_ref
+
+reason_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+reason_group_cd (varchar)
+reason_group_dsc (varchar)
+reason_dsc (varchar)
+reason_ord (int)
+Table: resource
+
+resource_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (varchar)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+resource_nm (varchar)
+resource_dsc (varchar)
+resource_title_dsc (varchar)
+resource_typ_nm (varchar)
+grid_dsc (varchar)
+resource_ord (int)
+active_ind (tinyint)
+process_id (int)
+Table: resource_log
+
+resource_log_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+action_perform_dsc (varchar)
+action_dt (date)
+activity_log_id (int) [Foreign Key: activity_log.activity_log_id]
+resource_id (int) [Foreign Key: resource.resource_id]
+Table: resource_permission_ref
+
+resource_permission_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+create_ind (tinyint)
+update_ind (tinyint)
+read_ind (tinyint)
+delete_ind (tinyint)
+user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+resource_id (int) [Foreign Key: resource.resource_id]
+
+Table: role_ref
+
+role_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+role_nm (varchar)
+active_ind (tinyint)
+Table: security_level_ref
+
+security_level_id (smallint)
+security_level_cd (char)
+security_level_dsc (varchar)
+Table: user_deny
+
+user_deny_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+source_record_nm (varchar)
+userid_num (varchar)
+active_ind (tinyint)
+user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+Table: user_log
+
+user_log_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+last_visit_dt (datetime2)
+ip_address_num (varchar)
+attempts_num (int)
+attempted_duration_num (tinyint)
+first_failed_duration_dt (date)
+user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+Table: user_profile
+
+user_profile_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+application_cd (varchar)
+source_record_nm (varchar)
+login_nm (varchar)
+full_nm (varchar)
+email_nm (varchar)
+active_ind (tinyint)
+security_agreement_ind (tinyint)
+lock_released_ind (tinyint)
+security_level_id (int) [Foreign Key: security_level_ref.security_level_id]
+user_type_id (int) [Foreign Key: user_type_ref.user_type_id]
+Table: user_type_ref
+
+user_type_id (smallint)
+user_type_cd (char)
+user_type_dsc (varchar)
+Table: work_status_ref
+
+work_status_id (int)
+opt_lck_ctl (int)
+rcd_crt_nm (char)
+sys_start_ts (datetime2)
+sys_end_ts (datetime2)
+work_status_cd (varchar)
+work_nm (varchar)
+active_ind (tinyint)
+work_ord (int)
