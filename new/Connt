@@ -1,0 +1,103 @@
+public class ActivityLogDTO {
+    private String processName;
+    private Date activityStartTime;
+    private Date activityEndTime;
+    private String createdBy;
+    private String workStatus;
+    private String loginName;
+
+    // Add constructors, getters, and setters
+}
+
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> {
+
+    @Query(value = "SELECT DISTINCT p.process_nm, a.activity_start_ts, a.activity_end_ts, a.rcd_crt_nm, a.work_status_cd, u.login_nm " +
+                   "FROM activity_log a, process_ref p, activity_detail_log d, user_profile u " +
+                   "WHERE a.process_id = p.process_id " +
+                   "AND a.activity_log_id = d.activity_log_id " +
+                   "AND u.user_profile_id = d.user_profile_id", nativeQuery = true)
+    List<Object[]> findDistinctActivityLogs();
+}
+
+
+
+import java.util.List;
+
+public interface ActivityLogService {
+    List<ActivityLogDTO> getDistinctActivityLogs();
+}
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ActivityLogServiceImpl implements ActivityLogService {
+
+    private final ActivityLogRepository activityLogRepository;
+
+    @Autowired
+    public ActivityLogServiceImpl(ActivityLogRepository activityLogRepository) {
+        this.activityLogRepository = activityLogRepository;
+    }
+
+    @Override
+    public List<ActivityLogDTO> getDistinctActivityLogs() {
+        List<ActivityLogDTO> activityLogDTOList = new ArrayList<>();
+
+        List<Object[]> activityLogs = activityLogRepository.findDistinctActivityLogs();
+
+        for (Object[] result : activityLogs) {
+            ActivityLogDTO dto = new ActivityLogDTO();
+            dto.setProcessName((String) result[0]);
+            dto.setActivityStartTime((Date) result[1]);
+            dto.setActivityEndTime((Date) result[2]);
+            dto.setCreatedBy((String) result[3]);
+            dto.setWorkStatus((String) result[4]);
+            dto.setLoginName((String) result[5]);
+            activityLogDTOList.add(dto);
+        }
+
+        return activityLogDTOList;
+    }
+}
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/activity-logs")
+public class ActivityLogController {
+
+    private final ActivityLogService activityLogService;
+
+    @Autowired
+    public ActivityLogController(ActivityLogService activityLogService) {
+        this.activityLogService = activityLogService;
+    }
+
+    @GetMapping
+    public List<ActivityLogDTO> getDistinctActivityLogs() {
+        return activityLogService.getDistinctActivityLogs();
+    }
+}
+
+
+
+
