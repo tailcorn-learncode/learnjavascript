@@ -12,6 +12,7 @@ user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
 reason_id (int) [Foreign Key: reason_ref.reason_id]
 work_status_id (int) [Foreign Key: work_status_ref.work_status_id]
 activity_log_id (int) [Foreign Key: activity_log.activity_log_id]
+
 Table: activity_log
 
 activity_log_id (int)
@@ -23,6 +24,7 @@ process_cd (varchar)
 activity_start_ts (datetime)
 activity_end_ts (datetime)
 process_id (int) [Foreign Key: process_ref.process_id]
+
 Table: application_ref
 
 application_id (int)
@@ -37,6 +39,7 @@ as_of_dt (datetime2)
 maintenance_ind (tinyint)
 active_ind (tinyint)
 application_ord (int)
+
 Table: login_session
 
 login_session_id (int)
@@ -59,6 +62,7 @@ menu_cd (varchar)
 menu_nm (varchar)
 menu_ord (int)
 active_ind (tinyint)
+
 Table: notification
 
 notification_id (int)
@@ -71,6 +75,7 @@ notification_ts (datetime2)
 notification_ind (tinyint)
 notification_typ (varchar)
 assigned_to_id (int) [Foreign Key: user_profile.user_profile_id]
+
 Table: policy_permission_ref
 
 permission_id (int)
@@ -86,6 +91,7 @@ delete_ind (tinyint)
 policy_id (int) [Foreign Key: policy_ref.policy_id]
 role_id (int) [Foreign Key: role_ref.role_id]
 user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+
 Table: policy_ref
 
 policy_id (int)
@@ -110,6 +116,7 @@ reason_group_cd (varchar)
 reason_group_dsc (varchar)
 reason_dsc (varchar)
 reason_ord (int)
+
 Table: resource
 
 resource_id (int)
@@ -126,6 +133,7 @@ grid_dsc (varchar)
 resource_ord (int)
 active_ind (tinyint)
 process_id (int)
+
 Table: resource_log
 
 resource_log_id (int)
@@ -137,6 +145,7 @@ action_perform_dsc (varchar)
 action_dt (date)
 activity_log_id (int) [Foreign Key: activity_log.activity_log_id]
 resource_id (int) [Foreign Key: resource.resource_id]
+
 Table: resource_permission_ref
 
 resource_permission_id (int)
@@ -162,11 +171,13 @@ sys_end_ts (datetime2)
 application_cd (varchar)
 role_nm (varchar)
 active_ind (tinyint)
+
 Table: security_level_ref
 
 security_level_id (smallint)
 security_level_cd (char)
 security_level_dsc (varchar)
+
 Table: user_deny
 
 user_deny_id (int)
@@ -178,6 +189,7 @@ source_record_nm (varchar)
 userid_num (varchar)
 active_ind (tinyint)
 user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+
 Table: user_log
 
 user_log_id (int)
@@ -192,6 +204,7 @@ attempts_num (int)
 attempted_duration_num (tinyint)
 first_failed_duration_dt (date)
 user_profile_id (int) [Foreign Key: user_profile.user_profile_id]
+
 Table: user_profile
 
 user_profile_id (int)
@@ -209,11 +222,13 @@ security_agreement_ind (tinyint)
 lock_released_ind (tinyint)
 security_level_id (int) [Foreign Key: security_level_ref.security_level_id]
 user_type_id (int) [Foreign Key: user_type_ref.user_type_id]
+
 Table: user_type_ref
 
 user_type_id (smallint)
 user_type_cd (char)
 user_type_dsc (varchar)
+
 Table: work_status_ref
 
 work_status_id (int)
