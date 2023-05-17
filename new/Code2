@@ -1,0 +1,136 @@
+@Entity
+@Table(name = "activity_log")
+public class ActivityLog {
+
+    @Id
+    @Column(name = "activity_log_id")
+    private int activityLogId;
+
+    @Column(name = "rcd_crt_nm")
+    private String createdBy;
+
+    @Column(name = "activity_start_ts")
+    private LocalDateTime activityStartTs;
+
+    @Column(name = "activity_end_ts")
+    private LocalDateTime activityEndTs;
+
+    // Other columns and getters/setters
+
+}
+
+@Entity
+@Table(name = "process_ref")
+public class ProcessRef {
+
+    @Id
+    @Column(name = "process_id")
+    private int processId;
+
+    @Column(name = "process_nm")
+    private String processName;
+
+    // Other columns and getters/setters
+
+}
+
+@Entity
+@Table(name = "activity_detail_log")
+public class ActivityDetailLog {
+
+    @Id
+    @Column(name = "activity_detail_id")
+    private int activityDetailId;
+
+    // Define relationships with other tables using @ManyToOne or @OneToOne annotations
+
+    // Other columns and getters/setters
+
+}
+
+@Entity
+@Table(name = "user_profile")
+public class UserProfile {
+
+    @Id
+    @Column(name = "user_profile_id")
+    private int userProfileId;
+
+    @Column(name = "login_nm")
+    private String loginName;
+
+    // Other columns and getters/setters
+
+}
+
+
+
+
+public class ActivityDTO {
+
+    private String processName;
+    private LocalDateTime activityStartTs;
+    private LocalDateTime activityEndTs;
+    private String createdBy;
+    private String workStatus;
+    private String loginName;
+
+    // Constructors, getters, and setters
+}
+
+
+
+
+@Repository
+public interface ActivityLogRepository extends JpaRepository<ActivityLog, Integer> {
+
+    @Query("SELECT DISTINCT p.processName, a.activityStartTs, a.activityEndTs, a.createdBy, a.workStatus, u.loginName " +
+           "FROM ActivityLog a " +
+           "JOIN a.processRef p " +
+           "JOIN a.activityDetailLog d " +
+           "JOIN d.userProfile u")
+    List<ActivityDTO> findDistinctProcessDetails();
+}
+
+
+
+public interface ActivityService {
+    List<ActivityDTO> getDistinctProcessDetails();
+}
+
+@Service
+public class ActivityServiceImpl implements ActivityService {
+
+    private final ActivityLogRepository activityLogRepository;
+
+    public ActivityServiceImpl(ActivityLogRepository activityLogRepository) {
+        this.activityLogRepository = activityLogRepository;
+    }
+
+    @Override
+    public List<ActivityDTO> getDistinctProcessDetails() {
+        return activityLogRepository.findDistinctProcessDetails();
+    }
+}
+
+
+@RestController
+@RequestMapping("/activities")
+public class ActivityController {
+
+    private final ActivityService activityService;
+
+    public ActivityController(ActivityService activityService) {
+        this.activityService = activityService;
+    }
+
+    @GetMapping("/distinct-process-details")
+    public List<ActivityDTO> getDistinctProcessDetails() {
+        return activityService.getDistinctProcessDetails();
+    }
+}
+
+
+
+
+
