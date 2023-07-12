@@ -1,0 +1,47 @@
+routing unopinionated...
+
+routing attached to css selector like id,
+so free to add route when required wherever possible
+
+we can put history only for urls we want
+
+
+less coding..
+
+alpine - less boilerplate code to write component js
+angular - minimum boiler plate code needed in angular component js
+
+alpinejs heavily declarative (we can even skip js file)
+angular less declarative
+
+less coding with declarations, updates, reactivity etc., 
+alpine js - straight forward - x-data="{x:null}" x='test'
+angular js - functional - x = signal(null) x.update('test')
+
+
+integration with visual editing (pinegrow) because we can catch html...
+its very important because for user facing apps require more ui when compared to internal portals.
+we can do both landing page & portal same time or any complex ui
+
+easy to see components as html file, easy to understand
+
+on demand html,js load
+
+remote load allowed
+
+web components integration is easy. you can include any components with any language easily
+
+any complex logic we can do in vanila javascript because alpine doesn't involve with framework, you are free
+to use (ex: voice recording etc.,)
+
+easy to understand for people in other technologies (not from angular) because its just html,css,javascript
+htmx, alpinejs anyone can learn easily in short time
+
+
+bundling unopinionated...
+free to write any complex bundling funcitions easily
+
+
+only disadvantage is writing some extra codes to make it professional
+
+
