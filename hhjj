@@ -1,0 +1,51 @@
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import java.util.concurrent.CompletableFuture;
+
+@Service
+public class Service2 {
+
+    private final WebClient webClient;
+
+    public Service2(WebClient webClient) {
+        this.webClient = webClient;
+    }
+
+    public CompletableFuture<String> callService1() {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        webClient.get()
+                .uri("http://localhost:8081/api/service1") // Replace with the URL of Service 1
+                .retrieve()
+                .bodyToMono(String.class)
+                .subscribe(
+                        future::complete, // Completing the CompletableFuture with the response from Service 1
+                        future::completeExceptionally // Completing exceptionally in case of an error
+                );
+
+        return future;
+    }
+}
+
+
+
+
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.concurrent.CompletableFuture;
+
+@RestController
+public class MyController {
+
+    private final Service2 service2;
+
+    public MyController(Service2 service2) {
+        this.service2 = service2;
+    }
+
+    @GetMapping("/my-endpoint")
+    public CompletableFuture<String> callService1() {
+        return service2.callService1();
+    }
+}
