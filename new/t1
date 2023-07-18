@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New page</title>
+    <script src="js/sdk.global.min.js" defer></script>   
+    <script src="js/index.js" defer></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .droid {
+            font-family: 'Didact Gothic', serif;
+        }
+    </style>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/oiz7ewz.css">
+    <style>
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+            --tw-ring-offset-shadow: none !important;
+            --tw-ring-shadow: none !important;
+        }
+    </style>
+    <style>
+        input[type="checkbox"] {
+            outline: none;
+            border: none;
+        }
+
+        [type='checkbox']:focus {
+            --tw-ring-offset-shadow: none !important;
+            --tw-ring-shadow: none !important;
+        }
+    </style>
+</head>
+
+<body x-data="alldata" x-cloak class="bg-[#fbfbfb]"
+    @scroll.window="window.pageYOffset >= 300 ? scrolledFromTop = true : scrolledFromTop = false">
+    <template x-if="data">
+    <div class="min-h-full">
+        <div x-data="{pos:0.1, slide1: true, slide2: false, slide3: false, slide4: false, progress: [{status:'current'},{status:'next'},{status:'next'}] }"
+            class="flex justify-center" data-pgc-save-partial="lightbox1.html">
+            <!-- Trigger -->
+            <!-- Modal -->
+            <div x-show="lightbox1" style="display: none" x-on:keydown.escape.prevent.stop="lightbox1 = false"
+                role="dialog" aria-modal="true" x-id="['modal-title']" :aria-labelledby="$id('modal-title')"
+                class="fixed flex flex-col inset-0 mt-[50px] overflow-y-auto z-10">
+                <div class="mx-auto">
+                    <div x-show="lightbox1" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50"></div>
+                    <div x-show="lightbox1" class="flex flex-col justify-center mx-auto p-4 relative">
+                        <div x-on:click.stop x-trap.noscroll.inert="lightbox1"
+                            class="bg-[#f5f5f5] border-4 border-solid border-white max-w-4xl overflow-hidden relative rounded-xl shadow-lg w-[600px]"
+                            x-on:click="open = false">
+                            <!-- Title -->
+                            <!-- Content -->
+                            <!-- Buttons -->
+                            <div x-show="lightbox1" class="bg-white h-[80px] px-6 py-6 text-black sm:px-6">
+                                <div class="flex items-center justify-between md:mr-5">
+                                    <div class="flex-1">
+                                        <h2 class="leading-6 ml-6 text-[22px]" id="slide-over-title">Adding Something
+                                        </h2>
+                                    </div>
+                                    <div class="flex h-7 items-center ml-3">
+                                        <button type="button"
+                                            class="focus:outline-none focus:ring-2 focus:ring-white hover:text-white rounded-md text-white"
+                                            @click="slide3=false;lightbox1=false;slide1=true;progress: [{status:'current'},{status:'next'},{status:'next'}];pos=0.1;">
+                                            <span class="sr-only">Close panel</span>
+                                            <svg class="border border-solid border-white h-[50px] hover:text-[#2393A9] rounded-md stroke-2 text-gray-400 w-[25px]"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="bg-[#ffbf23] h-[5px] w-44" :style="'width:'+(pos*100/progress.length)+'%'">
+                           
+                            <div x-show="slide1" class="mt-[40px] px-[50px]" x-data="{issubmit:null,dd:null,mm:null,yyyy:null}" x-init="console.log(data.dob);dd=data.dob.split['-'][2];mm=data.dob.split['-'][1];yyyy=data.dob.split['-'][0]"
+                                x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0">
+                                <p class="mb-[10px] text-[16px]">What is your full legal name?</p>
+                                <div>
+                                    <div>
+                                        <div class="h-[50px] gap-3 grid grid-cols-6">
+                                            <!-- <template x-for="name in data.name">
+                                                <div class="col-span-2">
+                                                    <input x-model="name.value"
+                                                        @input="errors.name.value=false;issubmit=false;" type="text"
+                                                        :name="name.label" :id="name.label" :autocomplete="name.label"
+                                                        class="block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder:gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base w-full"
+                                                        :class="name.value ? 'border-[#2393A9]' : issubmit && errors.name.value ? 'border-[#FF0000] bg-[#FFd7D7] ' : 'border-gray-50'"
+                                                        :placeholder="name.text"> <span
+                                                        class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                                                </div>
+                                            </template> -->
+                                            <div class="col-span-2">
+                                                <input x-model="data.first_name"
+                                                    @input="issubmit=false;" type="text"
+                                                    name="first_name" id="first_name" autocomplete="first_name"
+                                                    class="block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder:gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base w-full"
+                                                    :class="data.first_name ? 'border-[#2393A9]' : issubmit && !data.first_name ? 'border-[#FF0000] bg-[#FFd7D7] ' : 'border-gray-50'"
+                                                    :placeholder="First Name"> <span
+                                                    class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <input x-model="data.middle_name"
+                                                    @input="issubmit=false;" type="text"
+                                                    name="middle_name" id="middle_name" autocomplete="middle_name"
+                                                    class="block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder:gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base w-full"
+                                                    :class="data.middle_name ? 'border-[#2393A9]' : 'border-gray-50'"
+                                                    :placeholder="Middle Name"> <span
+                                                    class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <input x-model="data.last_name"
+                                                    @input="issubmit=false;" type="text"
+                                                    name="last_name" id="last_name" autocomplete="last_name"
+                                                    class="block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder:gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base w-full"
+                                                    :class="data.last_name ? 'border-[#2393A9]' : issubmit && !data.last_name ? 'border-[#FF0000] bg-[#FFd7D7] ' : 'border-gray-50'"
+                                                    :placeholder="Last Name"> <span
+                                                    class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                                            </div>
+                                        </div>
+                                        <p x-show="issubmit && !data.first_name" class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter First Name</p>
+    
+                                        <p x-show="issubmit && !data.middle_name" class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Middle Name</p>
+
+                                        <p x-show="issubmit && !data.last_name" class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Last Name</p>
+                                        <div>
+                                            <p class="text-[16px] mb-[10px] mt-[30px]">What is your email address?</p>
+                                            <div class="col-span-6 sm:col-span-4">
+                                                <input type="text" name="email" x-model="data.email"
+                                                    @input="issubmit=false;" id="email"
+                                                    autocomplete="email"
+                                                    class="bg-white block border  focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-lg text-[#848484] text-base w-full"
+                                                    :class="data.email ? 'border-[#2393A9]' : issubmit && !data.email ? 'bg-[#FFd7D7] border-[#FF0000]' : 'border-gray-50'"
+                                                    placeholder="Please type here"> <span
+                                                    class="bg-[#FFd7D7] bg-red-600 border-[#2393A9] border-[#FF0000] hidden placeholder:text-white"></span>
+                                            </div>
+                                            <p x-show="issubmit && !data.email"
+                                                class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Your Email</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-[16px] mb-[10px] mt-[30px]">What is your date of birth?<span
+                                                class="text-gray-400 text-xs">(optional)</span></p>
+                                        <div class="flex gap-3">
+                                            <div>
+                                                <input x-model="dd"
+                                                    @input="if(dd.length==2) {$refs.mm.focus();} issubmit=false;"
+                                                    @click="issubmit=false;" type="text" name="dd" id="dd" maxlength="2"
+                                                    autocomplete="dd"
+                                                    class="bg-white block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-center text-base w-28"
+                                                    :class="dd ? 'border-[#2393A9]' : issubmit && !dd ? 'bg-[#FFd7D7] border-[#FF0000]' : 'border-gray-50'"
+                                                    placeholder="DD">
+                                            </div>
+                                            <div>
+                                                <input x-model="mm"
+                                                    @input="if(mm.length==2) {$refs.yyyy.focus();} issubmit=false;"
+                                                    @click="issubmit=false;" type="text" name="mm" id="mm" x-ref="mm"
+                                                    maxlength="2" autocomplete="mm"
+                                                    class="bg-white block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base text-center w-28"
+                                                    :class="mm ? 'border-[#2393A9]' : issubmit && !mm ? 'bg-[#FFd7D7] border-[#FF0000]' : 'border-gray-50'"
+                                                    placeholder="MM">
+                                            </div>
+                                            <div class="w-full">
+                                                <input x-model="yyyy"
+                                                    @input="issubmit=false;"
+                                                    @click="issubmit=false;" required type="text" name="yyyy" id="yyyy"
+                                                    x-ref="yyyy" maxlength="4" autocomplete="yyyy"
+                                                    class="bg-white block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px]  px-3 py-5 rounded-md text-[#848484] text-center text-base w-60"
+                                                    :class="yyyy ? 'border-[#2393A9]' : issubmit && !yyyy ? 'bg-[#FFd7D7] border-[#FF0000] ' : 'border-gray-50'"
+                                                    placeholder="YYYY">
+                                            </div>
+                                        </div>
+                                        <p x-show="issubmit && !dd" class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Date</p>
+                                        <p x-show="issubmit && !mm" class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Month</p>
+                                        <p x-show="issubmit && !yyyy" class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Year</p>
+                                    </div>
+                                    <div class="flex items-center mb-[40px] mt-[44px]">
+                                        <button
+                                            class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[500px]"
+                                            @click="issubmit=true;
+
+if(!data.first_name || !data.last_name || !data.email || !dd || !mm || !yyyy)
+{
+    return true;
+}
+slide1=false;slide2=true;progress[0].status='done';progress[1].status='current';pos=1" type="button">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                       
+                            <div x-show="slide2"
+                                x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                                class="mt-[40px] px-[50px]">
+                                <div>
+                                    <p class="mb-[10px] text-[16px]">What is your address?</p>
+                                    <div class="col-span-6 sm:col-span-4">
+                                        <input type="text" name="address" x-model="address" id="address"
+                                            autocomplete="address"
+                                            class="bg-white block border  focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder:text-[#848484] placeholder:text-[12px] mt-1 px-3 py-5 rounded-lg text-[#848484] text-base w-full"
+                                            :class="address ? 'border-[#2393A9]' : 'border-gray-50'"
+                                            placeholder="Please just start typing here"> <span
+                                            class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-[10px] items-center mb-[40px] mt-[44px]">
+                                    <button
+                                        @click="slide2=false;slide1=true;progress[0].status='current';progress[1].status='next';pos=0.1"
+                                        type="button"
+                                        class="group bg-[#EDEDED] focus:outline-none focus:ring-2 focus:ring-white h-[50px] hover:text-white rounded-md text-white w-[60px]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="h-[25px] group-hover:text-[#2393A9] mx-auto w-[25px]">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                        </svg>
+                                    </button>
+                                    <div class="flex-1">
+                                        <button
+                                            class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[430px]"
+                                            @click="slide2=false;slide3=true;progress[1].status='done';progress[2].status='current';pos=2">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div x-show="slide3" class="mt-[40px] px-[50px]"
+                                x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                                x-data="{boxes: [{text:'Single',value:false},{text:'Married',value:false},{text:'Civil Partnership',value:false},{text:'Co-habiting',value:false},{text:'Engaged',value:false},{text:'Widowed',value:false},{text:'Divorced',value:false},{text:'Widowed & Remarried',value:false},{text:'Married but seperated',value:false}]}">
+                                <div>
+                                    <p class="mb-[10px] text-[16px]">Which best describes your relationship status?</p>
+                                    <div class="gap-[10px] grid grid-cols-2 w-[500px]">
+                                        <template x-for="box in boxes">
+                                            <div @click="boxes.map((v) => {if(v.text == box.text) v.value = !v.value; else v.value=false; return v;});"
+                                                @mouseover="box.svgpath1=true;" @mouseover.away="box.svgpath1=false;"
+                                                class="bg-white border cursor-pointer flex group h-[50px] hover:border-[#2393A9] items-center pl-4 pr-4 py-3 rounded-lg"
+                                                :class="box.value ? 'border border-[#2393A9]' : ''">
+                                                <div class="flex-1 text-[16px] text-black" x-text="box.text">Single
+                                                </div>
+                                                <input type="checkbox" name="agree" id="agree" :checked="box.value"
+                                                    class="checked:outline-none focus:outline-none bg-[#EDEDED] border border-gray-50 h-[20px] group-hover:border-[#2393A9] mt-1 rounded text-[#2393A9] w-[20px]" />
+                                                <div
+                                                    class="hidden outline-none border border-[#7CB0AA] border-2 hover:border-[#7CB0AA] border-gray-200 border-gray-300 group-hover:border-[#7CB0AA] ">
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="flex gap-[10px] items-center mb-[40px] mt-[44px]">
+                                    <button
+                                        @click="slide3=false;slide2=true;progress[2].status='next';progress[1].status='current';pos=1;"
+                                        type="button"
+                                        class="group bg-[#EDEDED] focus:outline-none focus:ring-2 focus:ring-white h-[50px] hover:text-white rounded-md text-white w-[60px]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="h-[25px] group-hover:text-[#2393A9] mx-auto w-[25px]">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                        </svg>
+                                    </button>
+                                    <div class="flex-1">
+                                        <button
+                                            class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[430px]"
+                                            @click="slide3=false;slide4=true;progress: [{status:'current'},{status:'next'},{status:'next'}];pos=0.1;">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div x-show="slide4"
+                                x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                                class="mt-[40px] px-[50px]">
+                                <div
+                                    x-data="{briefdescriptionSubmit:false,briefdescriptionError:{value:true,text:'Please enter brief description'}}">
+                                    <div>
+                                        <p class="font-medium mb-[10px] text-[22px] text-center">Saved</p>
+                                    </div>
+                                    <div class="flex flex-col gap-[20px] items-center mb-[40px] mt-[44px]">
+                                        <div class="flex-1">
+                                            <button type="button"
+                                                class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[430px]">Add
+                                                More
+                                            </button>
+                                        </div>
+                                        <div class="flex-1">
+                                            <button type="button"
+                                                class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[430px]"
+                                                @click="slide4=false;lightbox1=false;slide1=true;">I'm finished for
+                                                now
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Overlay -->
+                <!-- Panel -->
+            </div>
+        </div>
+    </div>
+</template>
+    </body>
+    </html>
+</body>
+
+</html>

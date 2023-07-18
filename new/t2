@@ -1,0 +1,344 @@
+document.addEventListener('alpine:init', () => {
+    const apiUrl = 'https://api.scgscorp.com';
+    const url = 'https://wills.wonderfulglacier-cf6e4171.uksouth.azurecontainerapps.io';
+    Alpine.data('alldata', () => ({
+        directus: null,
+        data: null,
+        lightbox1: true,
+        lightbox2: false,       
+        lightbox4: false,
+        lightbox5: false,
+        lightbox6: false,
+        lightbox7: false,
+        lightbox8: false,
+        lightbox9: false,
+        edit5: false,
+        addperson: false,
+        imagetype: 'yourwill.png',
+        scrolledFromTop: false,
+        splitnext: false,
+        open: false,
+        email: null,
+        password: null,
+        login: true,
+        authenticated: false,
+        signup: false,
+        notifications: false,
+        modal: false,
+        home: null,
+        edit33: false,
+        checklist: null,
+        viewtype: 'home',
+        edit: false,
+        quickview: false,
+        quickview1: false,
+        quickview2: false,
+        profilebox: false,
+        edit: false,
+        edit2: false,
+        edit3: false,
+        edit4: false,
+        // edit5: false,
+        editt: false,
+        svgpath1: false,
+        butcontrl1: false,
+        svgpath2: false,
+        butcontrl2: false,
+        svgpath3: false,
+        butcontrl3: false,
+        svgpath4: false,
+        butcontrl4: false,
+        svgpath5: false,
+        butcontrl5: false,
+        svgpath6: false,
+        butcontrl6: false,
+        svgpath7: false,
+        butcontrl7: false,
+        svgpath8: false,
+        butcontrl8: false,
+        svgpath9: false,
+        butcontrl9: false,
+        svgpath10: false,
+        butcontrl10: false,
+        svgpath11: false,
+        butcontrl11: false,
+        address: null,
+        dashboard_type: 'home',
+        slide4submit: false,
+        showResendOTP: false,
+        otpSent: false,
+        isValidEmail: false,
+        sendOtpClicked: false,
+        loginClicked: false,
+        isLoginClicked: false,
+        email: '',
+        code: '',
+        otpWrong: false,
+        authenticated: false,
+        userinfo: null,
+        init() {
+
+            (async () => {
+
+                this.directus = new DirectusSdk.Directus(url, config);
+
+                let token = await this.directus.auth.token;
+
+                if (token) {
+                    this.authenticated = true;                    
+                }
+                else {
+                    let email="admin@wills.com";
+                    let password = "admin@124";
+                    await this.directus.auth
+                        .login({ email, password })
+                        .then(() => {
+                            this.authenticated = true;
+                        })
+                        .catch(() => {
+                            window.alert('Invalid credentials');
+                        });
+                }
+
+            //     this.userinfo = await this.directus.users.me.read();
+
+            //     console.log(this.userinfo.id);
+
+            //   let val = await this.directus.items('users').readByQuery({'user': this.userinfo.id});
+
+            //   this.data = val.data[0];
+
+            this.data = udata;
+            
+             // console.log(this.data);
+
+            })();
+
+
+        },
+        splitadd() {
+            return this.splits.reduce(function (accumulator, curValue) {
+                return accumulator + parseInt(curValue.percent)
+            }, 0)
+        },
+        splitcalc(n) {
+            this.splitnext = false;
+            let othercount = this.splits.reduce(function (accumulator, curValue) {
+                return accumulator + parseInt(curValue.percent)
+            }, 0);
+            console.log('yy', 100 - othercount);
+
+            this.splits = this.splits.map((val) => {
+                if (val.name == n) { return val; }
+                else { val.max = 100 - othercount; return val; }
+            })
+
+
+        },
+
+        validateEmail(email) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email);
+        },
+        async sendOTP() {
+            this.sendOtpClicked = true;
+            this.otpSent = true;
+            this.showResendOTP = false;
+            const res = await this.getOtp(this.email);
+            this.sendOtpClicked = false;
+            if (res?.status === 'suspended') {
+                alert('suspended')
+                // this.showLoginModal = false;
+                this.otpSent = false;
+                this.showResendOTP = false;
+                // Swal.fire(
+                //     'OOPS',
+                //     'Your account is Suspended. Please contact scgscorp@gmail.com to retrieve your account.',
+                //     'question'
+                // )
+            } else {
+                setTimeout(() => {
+                    if (!this.loginClicked) {
+                        this.showResendOTP = true;
+                    }
+                }, 30000);
+            }
+            // this.logEvent("send_otp", "Send OTP", 'send_otp', [{ userid: this.userinfo.loggedInUserId, email: this.email }]);
+        },
+        async doLogin() {
+            if (this.email.trim() == '' || this.code.trim() == '') {
+                return;
+            }
+            // NProgress.start();
+            const res = await this.sendOtp(this.email, this.code);
+            if (res.message == 'Invalid OTP or expired. Please try again.') {
+                this.otpWrong = true;
+                NProgress.done();
+                this.isLoginClicked = false;
+            } else {
+                // NProgress.start();
+                await this.login(
+                    res.email,
+                    res.uid,
+                );
+                this.otpWrong = false;
+                this.showResendOTP = false;
+                // this.showLoginModal = false;
+                this.loginClicked = false;
+                this.email = '';
+                this.otpSent = false;
+                this.showResendOTP = false;
+                this.code = null;
+                // this.sidebarMenuSelected = 3;
+                // this.viewType = 'categories';
+                this.authenticated = true;
+                await this.readUserData();
+                this.saveDeviceInfo(this.userinfo.loggedInUserId, this.isLocationDataRequired);
+                NProgress.done();
+                this.isLoginClicked = false;
+                this.logEvent("login", "login", 'login', [{ userid: this.userinfo.loggedInUserId, email: this.email }]);
+            }
+        },
+        homeData: [
+            {
+                "id": 1,
+                "title": "Your Will",
+                "image": "yourwill.png",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...",
+                "status": "Needs Signing"
+            },
+            {
+                "id": 2,
+                "title": "Funeral Wishes",
+                "image": "funeralwishes.png",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...",
+                "status": "Completed"
+            },
+            {
+                "id": 3,
+                "title": "Health LPA",
+                "image": "lpa.png",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...",
+                "status": "Not started"
+            },
+            {
+                "id": 4,
+                "title": "Financial LPA",
+                "image": "lpa.png",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...",
+                "status": "Not started"
+            },
+            {
+                "id": 5,
+                "title": "Life Insurance",
+                "image": "lifeinsurance.png",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...",
+                "status": "Not started"
+            },
+            {
+                "id": 6,
+                "title": "Funeral Insurance",
+                "image": "funeralfinance.png",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...",
+                "status": "Not started"
+            },
+            {
+                "id": 7,
+                "title": "Confirming Identity",
+                "image": "probate.png",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...",
+                "status": "Not started"
+            }
+        ],
+        addval: null,
+        mainbutton: {
+            bgcolor: 'bg-[#03442E] ',
+            border: 'border border-gray-400 border-solid ',
+            other: 'cursor-pointer px-4 py-3 rounded text-center text-sm text-white'
+        },
+        splits: [{
+            name: 'Richard Tom Roebuck',
+            percent: 0,
+            max: 100
+        }, {
+            name: 'Ben Richards Philips',
+            percent: 0,
+            max: 100
+        }, {
+            name: 'Sally Marrie Roebuck',
+            percent: 0,
+            max: 100
+        }, {
+            name: 'James Philips Bailey',
+            percent: 0,
+            max: 100
+        }, {
+            name: 'James Middleton',
+            percent: 0,
+            max: 100
+        }],
+        willtypes: [
+            {
+                name: 'Your Details', viewtype: 'about'
+            },
+            { name: 'Beneficiaries', viewtype: 'about' },
+            { name: 'Assets', viewtype: 'about' },
+            { name: 'Splitting Your Estate', viewtype: 'split' },
+            { name: 'Gifts', viewtype: 'about' },
+            { name: 'Guardians', viewtype: 'about' },
+            { name: 'Executors', viewtype: 'about' },
+            { name: 'Exclusions', viewtype: 'about' },
+
+        ],
+        info: {
+            firstname: null,
+            middlename: null,
+            lastname: null,
+            email: null,
+            dd: null,
+            mm: null,
+            yyyy: null
+        }
+    }))
+})
+
+const config = {
+    auth: {
+        mode: 'json',
+        autoRefresh: true,
+        msRefreshBeforeExpires: 30000,
+        staticToken: '',
+    },
+    storage: {
+        prefix: '',
+        mode: 'LocalStorage',
+    },
+    transport: {
+        params: {},
+        headers: {},
+        onUploadProgress: (ProgressEvent) => { },
+        maxBodyLength: null,
+        maxContentLength: null,
+    },
+};
+
+let udata = {
+    "id":10,
+    "user":"682f1e75-f14e-4baf-a2cb-ba7d462b872e",
+    "first_name":"ss",
+    "last_name":"ss",
+    "middle_name":"ss",
+    "email":"ss",
+    "dob":"2023-07-19",
+    "address":"ss",
+    "relationship_status":"Single",
+    "spouse_first_name":null,
+    "spouse_last_name":null,
+    "spouse_middle_name":null,
+    "spouse_email":null,
+    "spouse_dob":null,
+    "spouse_address":null,
+    "spouse_relationship_status":null,
+    "beneficiaries":[],
+    "assets":[]
+    };
