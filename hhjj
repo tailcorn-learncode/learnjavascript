@@ -1,51 +1,108 @@
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import java.util.concurrent.CompletableFuture;
+package com.knf.dev.demo.entity;
 
-@Service
-public class Service2 {
+// ... other imports
 
-    private final WebClient webClient;
+@Container(containerName = "User")
+public class User {
 
-    public Service2(WebClient webClient) {
-        this.webClient = webClient;
-    }
+	@Id
+	@GeneratedValue
+	private String id;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private int age; // New column
+	private String address; // New column
+	private String phoneNumber; // New column
 
-    public CompletableFuture<String> callService1() {
-        CompletableFuture<String> future = new CompletableFuture<>();
+	// ... existing constructors
 
-        webClient.get()
-                .uri("http://localhost:8081/api/service1") // Replace with the URL of Service 1
-                .retrieve()
-                .bodyToMono(String.class)
-                .subscribe(
-                        future::complete, // Completing the CompletableFuture with the response from Service 1
-                        future::completeExceptionally // Completing exceptionally in case of an error
-                );
+	public User(String firstName, String lastName, String email, int age, String address, String phoneNumber) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.age = age;
+		this.address = address;
+		this.phoneNumber = phoneNumber;
+	}
 
-        return future;
-    }
+	// ... existing getters and setters
+
+	// New getters and setters for the new columns
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 }
 
 
 
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
-public class MyController {
+@RequestMapping("/api/v1/users")
+public class UserController {
 
-    private final Service2 service2;
+	// ... existing methods
 
-    public MyController(Service2 service2) {
-        this.service2 = service2;
-    }
+	// New endpoint to retrieve users by specific columns
+	@PostMapping("/columns")
+	public ResponseEntity<List<Map<String, Object>>> getUsersByColumns(@RequestBody List<String> columns) {
+		try {
+			// Retrieve users with only the requested columns
+			List<Map<String, Object>> users = userService.getUsersByColumns(columns);
+			return new ResponseEntity<>(users, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new UnKnownException(e.getMessage());
+		}
+	}
+}
 
-    @GetMapping("/my-endpoint")
-    public CompletableFuture<String> callService1() {
-        return service2.callService1();
-    }
+
+
+
+
+
+
+
+// New endpoint to retrieve users by specific columns
+@PostMapping("/columns")
+public ResponseEntity<List<Map<String, Object>>> getUsersByColumns(@RequestBody List<String> columns) {
+	try {
+		List<Map<String, Object>> users = new ArrayList<>();
+		userRepository.findAll().forEach(user -> {
+			Map<String, Object> userMap = new HashMap<>();
+			if (columns.contains("id")) userMap.put("id", user.getId());
+			if (columns.contains("firstName")) userMap.put("firstName", user.getFirstName());
+			if (columns.contains("lastName")) userMap.put("lastName", user.getLastName());
+			if (columns.contains("email")) userMap.put("email", user.getEmail());
+			if (columns.contains("age")) userMap.put("age", user.getAge());
+			if (columns.contains("address")) userMap.put("address", user.getAddress());
+			if (columns.contains("phoneNumber")) userMap.put("phoneNumber", user.getPhoneNumber());
+			users.add(userMap);
+		});
+		return new ResponseEntity<>(users, HttpStatus.OK);
+	} catch (Exception e) {
+		throw new UnKnownException(e.getMessage());
+	}
 }
