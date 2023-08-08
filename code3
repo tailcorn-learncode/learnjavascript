@@ -176,3 +176,9 @@ public ResponseEntity<Map<String, Object>> getMemberPaymentsByColumnsAndMetrics(
     }
 }
 
+
+
+{
+"header":["memberId","confirmationNumber","paymentDate"],
+"metrics":["totalpaymentsamount","totalconvenienceamount"]
+}
