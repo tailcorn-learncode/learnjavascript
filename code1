@@ -32,3 +32,60 @@ public class UserService {
 		return users;
 	}
 }
+
+
+
+package com.knf.dev.demo.dto;
+
+import java.util.List;
+
+public class ColumnsRequest {
+    private List<String> headers;
+
+    public List<String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+}
+
+
+
+
+package com.knf.dev.demo.controller;
+
+import com.knf.dev.demo.dto.ColumnsRequest;
+import com.knf.dev.demo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/v1/users")
+public class UserController {
+
+	@Autowired
+	UserService userService;
+
+	// ... other methods
+
+	@PostMapping("/columns")
+	public ResponseEntity<List<Map<String, Object>>> getUsersByColumns(@RequestBody ColumnsRequest request) {
+		try {
+			// Retrieve users with only the requested columns
+			List<Map<String, Object>> users = userService.getUsersByColumns(request.getHeaders());
+			return new ResponseEntity<>(users, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new UnKnownException(e.getMessage());
+		}
+	}
+}
