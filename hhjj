@@ -106,3 +106,42 @@ public ResponseEntity<List<Map<String, Object>>> getUsersByColumns(@RequestBody 
 		throw new UnKnownException(e.getMessage());
 	}
 }
+
+
+
+
+package com.knf.dev.demo.service;
+
+import com.knf.dev.demo.entity.User;
+import com.knf.dev.demo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class UserService {
+
+	@Autowired
+	UserRepository userRepository;
+
+	public List<Map<String, Object>> getUsersByColumns(List<String> columns) {
+		List<Map<String, Object>> users = new ArrayList<>();
+		userRepository.findAll().forEach(user -> {
+			Map<String, Object> userMap = new HashMap<>();
+			if (columns.contains("id")) userMap.put("id", user.getId());
+			if (columns.contains("firstName")) userMap.put("firstName", user.getFirstName());
+			if (columns.contains("lastName")) userMap.put("lastName", user.getLastName());
+			if (columns.contains("email")) userMap.put("email", user.getEmail());
+			if (columns.contains("age")) userMap.put("age", user.getAge());
+			if (columns.contains("address")) userMap.put("address", user.getAddress());
+			if (columns.contains("phoneNumber")) userMap.put("phoneNumber", user.getPhoneNumber());
+			users.add(userMap);
+		});
+		return users;
+	}
+}
+
