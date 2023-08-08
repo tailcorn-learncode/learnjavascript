@@ -140,3 +140,13 @@ public class ColumnsAndMetricsRequest {
     }
 }
 
+
+
+public Map<String, Object> getMemberPaymentsByColumnsAndMetrics(ColumnsAndMetricsRequest request) {
+    Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+    List<MemberPayment> payments = new ArrayList<>();
+    paymentsIterable.forEach(payments::add);
+    
+    // Rest of the method...
+}
+
