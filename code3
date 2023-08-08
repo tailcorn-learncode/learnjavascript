@@ -150,3 +150,29 @@ public Map<String, Object> getMemberPaymentsByColumnsAndMetrics(ColumnsAndMetric
     // Rest of the method...
 }
 
+
+
+public class ColumnsAndMetricsRequest {
+    private List<String> header;
+    private List<String> metrics;
+
+    // Getters and Setters
+    public List<String> getHeader() { return header; }
+    public void setHeader(List<String> header) { this.header = header; }
+    public List<String> getMetrics() { return metrics; }
+    public void setMetrics(List<String> metrics) { this.metrics = metrics; }
+}
+
+
+
+@PostMapping("/columns")
+public ResponseEntity<Map<String, Object>> getMemberPaymentsByColumnsAndMetrics(@RequestBody ColumnsAndMetricsRequest request) {
+    try {
+        Map<String, Object> response = memberPaymentService.getMemberPaymentsByColumnsAndMetrics(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+        // Handle exceptions appropriately for your application
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
