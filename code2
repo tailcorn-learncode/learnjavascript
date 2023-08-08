@@ -346,3 +346,15 @@ public class MemberPaymentService {
     }
 }
 
+
+
+
+{
+"memberId":"87404571",
+"confirmationNumber":"23072894718037",
+"paymentDate":"07/28/2023",
+"paymentType":"Insurance",
+"paymentAmount":"506.82",
+"convenienceFeesAmount":"7.6",
+"totalPaymentAmount":"514.42"
+}
