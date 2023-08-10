@@ -1,4 +1,4 @@
-package com.knf.dev.demo.entity;
+package com.report.dev.demo.entity;
 
 import org.springframework.data.annotation.Id;
 import com.azure.spring.data.cosmos.core.mapping.Container;
@@ -94,10 +94,10 @@ public class MemberPayment {
 
 
 
-package com.knf.dev.demo.repository;
+package com.report.dev.demo.repository;
 
 import com.azure.spring.data.cosmos.repository.CosmosRepository;
-import com.knf.dev.demo.entity.MemberPayment;
+import com.report.dev.demo.entity.MemberPayment;
 
 public interface MemberPaymentRepository extends CosmosRepository<MemberPayment, String> {
 }
@@ -106,11 +106,11 @@ public interface MemberPaymentRepository extends CosmosRepository<MemberPayment,
 
 
 
-package com.knf.dev.demo.service;
+package com.report.dev.demo.service;
 
-import com.knf.dev.demo.entity.MemberPayment;
-import com.knf.dev.demo.exception.MemberNotFound;
-import com.knf.dev.demo.repository.MemberPaymentRepository;
+import com.report.dev.demo.entity.MemberPayment;
+import com.report.dev.demo.exception.MemberNotFound;
+import com.report.dev.demo.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -173,14 +173,14 @@ public class MemberPaymentService {
 
 
 
-package com.knf.dev.demo.controller;
+package com.report.dev.demo.controller;
 
-import com.knf.dev.demo.dto.ColumnsRequest;
-import com.knf.dev.demo.entity.MemberPayment;
-import com.knf.dev.demo.exception.UnKnownException;
-import com.knf.dev.demo.exception.MemberNotFound;
-import com.knf.dev.demo.service.MemberPaymentService;
-import com.knf.dev.demo.repository.MemberPaymentRepository;
+import com.report.dev.demo.dto.ColumnsRequest;
+import com.report.dev.demo.entity.MemberPayment;
+import com.report.dev.demo.exception.UnKnownException;
+import com.report.dev.demo.exception.MemberNotFound;
+import com.report.dev.demo.service.MemberPaymentService;
+import com.report.dev.demo.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -274,7 +274,7 @@ public class MemberPaymentController {
 
 
 
-package com.knf.dev.demo.dto;
+package com.report.dev.demo.dto;
 
 import java.util.List;
 
@@ -296,11 +296,11 @@ public class ColumnsRequest {
 
 
 
-package com.knf.dev.demo.service;
+package com.report.dev.demo.service;
 
-import com.knf.dev.demo.dto.ColumnsAndMetricsRequest;
-import com.knf.dev.demo.entity.MemberPayment;
-import com.knf.dev.demo.repository.MemberPaymentRepository;
+import com.report.dev.demo.dto.ColumnsAndMetricsRequest;
+import com.report.dev.demo.entity.MemberPayment;
+import com.report.dev.demo.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -358,3 +358,399 @@ public class MemberPaymentService {
 "convenienceFeesAmount":"7.6",
 "totalPaymentAmount":"514.42"
 }
+
+
+
+
+
+Below is springboot code
+
+
+controller
+
+package com.report.dev.demo.controller;
+
+import com.report.dev.demo.dto.ColumnsAndMetricsRequest;
+import com.report.dev.demo.entity.MemberPayment;
+import com.report.dev.demo.exception.UnKnownException;
+import com.report.dev.demo.exception.MemberNotFound;
+import com.report.dev.demo.service.MemberPaymentService;
+import com.report.dev.demo.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/v1/memberPayments")
+public class MemberPaymentController {
+
+    @Autowired
+    MemberPaymentService memberPaymentService;
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    // Create member payment
+    @PostMapping
+    public ResponseEntity<MemberPayment> createMemberPayment(@RequestBody MemberPayment memberPayment) {
+        try {
+            MemberPayment newMemberPayment = memberPaymentRepository.save(memberPayment);
+            return new ResponseEntity<>(newMemberPayment, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+    // Get all member payments
+    @GetMapping
+    public ResponseEntity<List<MemberPayment>> getAllMemberPayments() {
+        try {
+            Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+        List<MemberPayment> memberPayments = new ArrayList<>();
+        paymentsIterable.forEach(memberPayments::add);
+            return new ResponseEntity<>(memberPayments, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+    // Get member payment by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberPayment> getMemberPaymentByID(@PathVariable("id") String id) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findById(id);
+        if (memberPaymentData.isPresent()) {
+            return new ResponseEntity<>(memberPaymentData.get(), HttpStatus.OK);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    // Update member payment by ID
+    @PutMapping("/{id}")
+    public ResponseEntity<MemberPayment> updateMemberPayment(@PathVariable("id") String id, @RequestBody MemberPayment memberPayment) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findById(id);
+        if (memberPaymentData.isPresent()) {
+            MemberPayment _memberPayment = memberPaymentData.get();
+            // Update the properties as needed
+            // ...
+            return new ResponseEntity<>(memberPaymentRepository.save(_memberPayment), HttpStatus.OK);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    // Delete member payment by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MemberPayment> deleteMemberPayment(@PathVariable("id") String id) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findByMemberId(id);
+        if (memberPaymentData.isPresent()) {
+            memberPaymentRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    @PostMapping("/report1")
+    public ResponseEntity<List<Map<String, Object>>> getMemberPaymentsByColumns(@RequestBody ColumnsAndMetricsRequest request) {
+       
+        try {
+            List<Map<String, Object>> payments = memberPaymentService.getMemberPaymentsByColumnsAndMetrics(request);
+            return new ResponseEntity<>(payments, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+}
+
+
+
+entity
+
+package com.report.dev.demo.entity;
+
+import org.springframework.data.annotation.Id;
+import com.azure.spring.data.cosmos.core.mapping.Container;
+import com.azure.spring.data.cosmos.core.mapping.GeneratedValue;
+
+@Container(containerName = "reporting")
+public class MemberPayment {
+
+    @Id
+    @GeneratedValue
+    private String memberId;
+    private String confirmationNumber;
+    private String paymentDate;
+    private String paymentType;
+    private String paymentAmount;
+    private String convenienceFeesAmount;
+
+    // Constructors
+    public MemberPayment() {
+    }
+
+    public MemberPayment(String memberId, String confirmationNumber, String paymentDate,
+                         String paymentType, String paymentAmount, String convenienceFeesAmount,
+                         String totalPaymentAmount) {
+        this.memberId = memberId;
+        this.confirmationNumber = confirmationNumber;
+        this.paymentDate = paymentDate;
+        this.paymentType = paymentType;
+        this.paymentAmount = paymentAmount;
+        this.convenienceFeesAmount = convenienceFeesAmount;
+    }
+
+    // Getters and Setters
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getConfirmationNumber() {
+        return confirmationNumber;
+    }
+
+    public void setConfirmationNumber(String confirmationNumber) {
+        this.confirmationNumber = confirmationNumber;
+    }
+
+    public String getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(String paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public String getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(String paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
+    public String getConvenienceFeesAmount() {
+        return convenienceFeesAmount;
+    }
+
+    public void setConvenienceFeesAmount(String convenienceFeesAmount) {
+        this.convenienceFeesAmount = convenienceFeesAmount;
+    }
+    
+}
+
+
+service
+
+package com.report.dev.demo.service;
+
+import com.report.dev.demo.dto.ColumnsAndMetricsRequest;
+import com.report.dev.demo.entity.MemberPayment;
+import com.report.dev.demo.exception.MemberNotFound;
+import com.report.dev.demo.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Service
+public class MemberPaymentService {
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    public MemberPayment createMemberPayment(MemberPayment memberPayment) {
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public List<MemberPayment> getAllMemberPayments() {
+        Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+        List<MemberPayment> payments = new ArrayList<>();
+        paymentsIterable.forEach(payments::add);
+        return payments;
+    }
+
+    public MemberPayment getMemberPaymentById(String id) {
+        Optional<MemberPayment> memberPayment = memberPaymentRepository.findById(id);
+        return memberPayment.orElseThrow(() -> new MemberNotFound("Member Payment not found for this id :: " + id));
+    }
+
+    public MemberPayment updateMemberPayment(String id, MemberPayment memberPaymentDetails) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+
+        memberPayment.setConfirmationNumber(memberPaymentDetails.getConfirmationNumber());
+        memberPayment.setPaymentDate(memberPaymentDetails.getPaymentDate());
+        memberPayment.setPaymentType(memberPaymentDetails.getPaymentType());
+        memberPayment.setPaymentAmount(memberPaymentDetails.getPaymentAmount());
+        memberPayment.setConvenienceFeesAmount(memberPaymentDetails.getConvenienceFeesAmount());
+
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public void deleteMemberPayment(String id) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+        memberPaymentRepository.delete(memberPayment);
+    }
+
+    public List<Map<String, Object>> getMemberPaymentsByColumnsAndMetrics(ColumnsAndMetricsRequest request) {
+        Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+        List<MemberPayment> payments = new ArrayList<>();
+        paymentsIterable.forEach(payments::add);
+        List<Map<String, Object>> finalresponse = new ArrayList<>();
+    Map<String, Object> response = new HashMap<>();
+
+    // Calculate metrics
+    BigDecimal totalPaymentAmount = BigDecimal.ZERO;
+    BigDecimal totalConvenienceAmount = BigDecimal.ZERO;
+
+    for (MemberPayment payment : payments) {
+        totalPaymentAmount = totalPaymentAmount.add(new BigDecimal(payment.getPaymentAmount()));
+        totalConvenienceAmount = totalConvenienceAmount.add(new BigDecimal(payment.getConvenienceFeesAmount()));
+    }
+
+    // Add metrics to response if requested
+    if (request.getMetrics() != null) {
+        if (request.getMetrics().contains("totalpaymentsamount")) {
+            response.put("totalpaymentsamount", totalPaymentAmount);
+        }
+        if (request.getMetrics().contains("totalconvenienceamount")) {
+            response.put("totalconvenienceamount", totalConvenienceAmount);
+        }
+    }
+
+    // Include requested columns in response
+    List<Map<String, Object>> paymentList = new ArrayList<>();
+    for (MemberPayment payment : payments) {
+        Map<String, Object> paymentMap = new HashMap<>();
+        if (request.getHeaders().contains("memberId")) {
+            paymentMap.put("memberId", payment.getMemberId());
+        }
+        if (request.getHeaders().contains("confirmationNumber")) {
+            paymentMap.put("confirmationNumber", payment.getConfirmationNumber());
+        }
+        if (request.getHeaders().contains("paymentDate")) {
+            paymentMap.put("paymentDate", payment.getPaymentDate());
+        }
+        if (request.getHeaders().contains("paymentType")) {
+            paymentMap.put("paymentType", payment.getPaymentType());
+        }
+        if (request.getHeaders().contains("paymentAmount")) {
+            paymentMap.put("paymentAmount", payment.getPaymentAmount());
+        }
+        if (request.getHeaders().contains("convenienceFeesAmount")) {
+            paymentMap.put("convenienceFeesAmount", payment.getConvenienceFeesAmount());
+        }
+        paymentList.add(paymentMap);
+    }
+
+    response.put("payments", paymentList);
+
+    finalresponse.add(response);
+    return finalresponse;
+}
+
+}
+
+
+dto
+
+package com.report.dev.demo.dto;
+import java.util.List;
+
+public class ColumnsAndMetricsRequest {
+    private List<String> headers;
+    private List<String> metrics;
+
+    // Getters and setters
+
+    public List<String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+
+    public List<String> getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(List<String> metrics) {
+        this.metrics = metrics;
+    }
+}
+
+
+
+repository
+
+
+package com.report.dev.demo.repository;
+
+import java.util.Optional;
+
+import com.azure.spring.data.cosmos.repository.CosmosRepository;
+import com.report.dev.demo.entity.MemberPayment;
+
+public interface MemberPaymentRepository extends CosmosRepository<MemberPayment, String> {
+
+    Optional<MemberPayment> findByMemberId(String id);
+}
+
+
+
+Above code is for cosmosdb reporting container with schema like below
+
+{
+"memberId":"74005260",
+"confirmationNumber":"23072894636256",
+"paymentDate":"07/28/2023",
+"paymentType":"Insurance",
+"paymentAmount":"90.66",
+"convenienceFeesAmount":"1.36"
+}
+
+we need to add report name in reporting container schema like below which is relational to batch container schema
+
+{
+"memberId":"74005260",
+"confirmationNumber":"23072894636256",
+"paymentDate":"07/28/2023",
+"paymentType":"Insurance",
+"paymentAmount":"90.66",
+"convenienceFeesAmount":"1.36",
+"reportname":"memberpayment"
+}
+
+batch container schema
+
+{
+"batchId":"1",
+"batchName":"batchname1",
+"reportName":"memberpayment"
+}
+
