@@ -1,30 +1,29 @@
 Title: Reporting Screen Design
 
-Description: As a user, I want to be able to navigate a reporting screen where I can see a list of report names, select a report to customize its type and content, and then save and view my preferences so that I can have personalized reporting insights tailored to my needs.
+Description: The system should allow users to navigate through a reporting screen where they can view a list of report names, select and customize a report, and then save and retrieve their preferences for a tailored reporting experience.
 
 Acceptance Criteria:
 
 Report Name Listing:
 
-Upon accessing the reporting screen, I should see a data table listing available report names.
-I should be able to select any report name to navigate to its detail and customization page.
+The reporting screen should display a data table with available report names.
+Users should be able to select any report name to access its detail and customization page.
 Report Customization:
 
-On the report detail page, I should have the option to select the type of report view (e.g. table, chart, etc.).
-I should be able to choose the headers/columns I want to include in the report and have the option to delete any I do not need.
-I should have the ability to select specific metric types to display in the footer of the data table.
-The data display grid should support pagination to navigate through large data sets.
-I should be able to sort the data table by any column header in ascending or descending order.
+Within the report detail page, options should be provided for users to select the type of report view (e.g. table, chart, etc.).
+Users should be able to choose the headers/columns they want to display in the report and have the option to remove any they deem unnecessary.
+Users should have the capability to select specific metric types for display in the footer of the data table.
+The data display grid should offer pagination for navigating through extensive data sets.
+Users should be able to sort the data table by any column header in ascending or descending order.
 Preference Storage and Retrieval:
 
-Once I've customized a report, I should have an option to save my preferences.
-Upon revisiting a previously customized report, my saved preferences should be automatically applied, ensuring a personalized viewing experience.
-I should have the option to reset to the default report view/settings.
+After customizing a report, users should be given an option to save their preferences.
+When revisiting a previously customized report, the system should apply the saved preferences automatically.
+An option should be available for users to reset the report view/settings to the default.
 Report Download:
 
-I should have the ability to download the report in a chosen format (e.g. PDF, Excel, etc.) based on my saved preferences or current view.
+Users should be able to download their customized report in a chosen format (e.g. PDF, Excel, etc.).
 Responsive and User-friendly UI:
 
-The reporting screen and customization page should be intuitive and easy to navigate.
-Tooltips or help icons should be provided next to complex functionalities to guide the user.
-This user story should give a clear idea to developers and designers about what needs to be created and how it should function. Make sure to share it with your team and get their input for any possible improvements or refinements.
+Both the reporting screen and customization page should be intuitive with a user-friendly interface.
+Tooltips or help icons should be integrated next to functionalities that might be complex for users.
