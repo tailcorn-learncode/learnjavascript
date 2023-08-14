@@ -1,0 +1,30 @@
+Title: Reporting Screen Design
+
+Description: As a user, I want to be able to navigate a reporting screen where I can see a list of report names, select a report to customize its type and content, and then save and view my preferences so that I can have personalized reporting insights tailored to my needs.
+
+Acceptance Criteria:
+
+Report Name Listing:
+
+Upon accessing the reporting screen, I should see a data table listing available report names.
+I should be able to select any report name to navigate to its detail and customization page.
+Report Customization:
+
+On the report detail page, I should have the option to select the type of report view (e.g. table, chart, etc.).
+I should be able to choose the headers/columns I want to include in the report and have the option to delete any I do not need.
+I should have the ability to select specific metric types to display in the footer of the data table.
+The data display grid should support pagination to navigate through large data sets.
+I should be able to sort the data table by any column header in ascending or descending order.
+Preference Storage and Retrieval:
+
+Once I've customized a report, I should have an option to save my preferences.
+Upon revisiting a previously customized report, my saved preferences should be automatically applied, ensuring a personalized viewing experience.
+I should have the option to reset to the default report view/settings.
+Report Download:
+
+I should have the ability to download the report in a chosen format (e.g. PDF, Excel, etc.) based on my saved preferences or current view.
+Responsive and User-friendly UI:
+
+The reporting screen and customization page should be intuitive and easy to navigate.
+Tooltips or help icons should be provided next to complex functionalities to guide the user.
+This user story should give a clear idea to developers and designers about what needs to be created and how it should function. Make sure to share it with your team and get their input for any possible improvements or refinements.
