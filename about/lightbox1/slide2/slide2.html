@@ -1,0 +1,40 @@
+<div x-data="lightbox1slide2"
+                            x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                            x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                            class="mt-[40px] px-[50px]">
+                            <div>
+                                <p class="mb-[10px] text-[16px]">What is your address?</p>
+                                <div class="col-span-6 sm:col-span-4">
+                                    <input type="text" name="address" :value="data.address" @input="getAddressPredictions($event.currentTarget.value)" id="address"
+                                        @focus="isAddressFocused = true" @blur="setTimeout(() => {isAddressFocused = false}, 125)"
+                                        autocomplete="off"
+                                        class="bg-white block border  focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder:text-[#848484] placeholder:text-[12px] mt-1 px-3 py-5 rounded-lg text-[#848484] text-base w-full"
+                                        :class="address ? 'border-[#2393A9]' : 'border-gray-50'"
+                                        placeholder="Please just start typing here"> <span
+                                        class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                                </div>
+                                <div x-show="addressOptions.length > 0 && isAddressFocused" style="height: 300px;overflow:scroll;" class="mx-auto max-w-xl transform rounded-xl bg-white p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all opacity-100 scale-100">
+                                    <template x-for="addr in addressOptions">
+                                        <div class="p-5 cursor-pointer" x-text="addr.label" @mousedown="changeAddress(addr.label)"></div>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="flex gap-[10px] items-center mb-[40px] mt-[44px]">
+                                <button
+                                    @click="slide2=false;slide1=true;router.push('/about/lightbox1/slide1');progress[0].status='current';progress[1].status='next';pos=0.1"
+                                    type="button"
+                                    class="group bg-[#EDEDED] focus:outline-none focus:ring-2 focus:ring-white h-[50px] hover:text-white rounded-md text-white w-[60px]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="h-[25px] group-hover:text-[#2393A9] mx-auto w-[25px]">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                    </svg>
+                                </button>
+                                <div class="flex-1">
+                                    <button
+                                        class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[430px]"
+                                        @click="lightbox1slide2done()">Next</button>
+                                </div>
+                            </div>
+                        </div>

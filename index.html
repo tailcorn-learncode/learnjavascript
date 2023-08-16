@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./alpine.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        [x-cloak] {
+            display: none;
+        }
+    </style>
+    <title>Wills</title>
+</head>
+
+<body>
+    <div x-data="app">
+        <template x-include="/components/header/header.html"></template>
+
+        <div class="max-w-7xl mx-auto relative sm:px-6 lg:px-8">
+
+            <template x-route="/login" template="/components/login/login.html"></template>
+
+            <template x-if="data">
+                <div>
+                    <template x-route="/home" template="/components/home/home.html"></template>
+
+                    <template x-route="/wills" template="/components/wills/wills.html"></template>
+
+                    <template x-route="/about" template="/components/about/about.html"></template>
+
+                    <template x-route="/beneficiary" template="/components/beneficiary/beneficiary.html"></template>
+
+                    <template x-route="/assets" template="/components/assets/assets.html"></template>
+
+                    <template x-route="/gifts" template="/components/gifts/gifts.html"></template>
+
+                    <template x-route="/guardians" template="/components/guardians/guardians.html"></template>
+
+                    <template x-route="/executors" template="/components/executors/executors.html"></template>
+
+                    <template x-route="/splitting" template="/components/splitting/splitting.html"></template>
+
+                    <template x-route="/preview" template="/components/preview/preview.html"></template>
+
+                    <template x-include="/components/addbeneficiary/addbeneficiary.html"></template>
+                </div>
+            </template>
+        </div>
+
+
+        <template x-route="/onboarding_get_started"
+            template="/components/onboarding_get_started/onboarding_get_started.html"></template>
+        <template x-route="/onboarding_relattion_status"
+            template="/components/onboarding_relattion_status/onboarding_relattion_status.html"></template>
+        <template x-route="/onboarding_will_type"
+            template="/components/onboarding_will_type/onboarding_will_type.html"></template>
+        <template x-route="/onboarding_parental_status"
+            template="/components/onboarding_parental_status/onboarding_parental_status.html"></template>
+        <template x-route="/onboarding_parent_status"
+            template="/components/onboarding_parent_status/onboarding_parent_status.html"></template>
+        <template x-route="/onboarding_children_previous"
+            template="/components/onboarding_children_previous/onboarding_children_previous.html"></template>
+        <template x-route="/onboarding_guardians_required"
+            template="/components/onboarding_guardians_required/onboarding_guardians_required.html"></template>
+        <template x-route="/onboarding_guardian_pets_required"
+            template="/components/onboarding_guardian_pets_required/onboarding_guardian_pets_required.html"></template>
+        <template x-route="/onboarding_leave_to_one_person"
+            template="/components/onboarding_leave_to_one_person/onboarding_leave_to_one_person.html"></template>
+        <template x-route="/onboarding_property_owner"
+            template="/components/onboarding_property_owner/onboarding_property_owner.html"></template>
+
+    </div>
+    <script type="module" src="/js/index.js"></script>
+</body>
+
+</html>

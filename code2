@@ -1,4 +1,4 @@
-package com.report.dev.demo.entity;
+package gov.mipath.report.common.entity;
 
 import org.springframework.data.annotation.Id;
 import com.azure.spring.data.cosmos.core.mapping.Container;
@@ -94,10 +94,10 @@ public class MemberPayment {
 
 
 
-package com.report.dev.demo.repository;
+package gov.mipath.report.common.repository;
 
 import com.azure.spring.data.cosmos.repository.CosmosRepository;
-import com.report.dev.demo.entity.MemberPayment;
+import gov.mipath.report.common.entity.MemberPayment;
 
 public interface MemberPaymentRepository extends CosmosRepository<MemberPayment, String> {
 }
@@ -106,11 +106,11 @@ public interface MemberPaymentRepository extends CosmosRepository<MemberPayment,
 
 
 
-package com.report.dev.demo.service;
+package gov.mipath.report.common.service;
 
-import com.report.dev.demo.entity.MemberPayment;
-import com.report.dev.demo.exception.MemberNotFound;
-import com.report.dev.demo.repository.MemberPaymentRepository;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -173,14 +173,14 @@ public class MemberPaymentService {
 
 
 
-package com.report.dev.demo.controller;
+package gov.mipath.report.common.controller;
 
-import com.report.dev.demo.dto.ColumnsRequest;
-import com.report.dev.demo.entity.MemberPayment;
-import com.report.dev.demo.exception.UnKnownException;
-import com.report.dev.demo.exception.MemberNotFound;
-import com.report.dev.demo.service.MemberPaymentService;
-import com.report.dev.demo.repository.MemberPaymentRepository;
+import gov.mipath.report.common.dto.ColumnsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.UnKnownException;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.service.MemberPaymentService;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -274,7 +274,7 @@ public class MemberPaymentController {
 
 
 
-package com.report.dev.demo.dto;
+package gov.mipath.report.common.dto;
 
 import java.util.List;
 
@@ -296,11 +296,11 @@ public class ColumnsRequest {
 
 
 
-package com.report.dev.demo.service;
+package gov.mipath.report.common.service;
 
-import com.report.dev.demo.dto.ColumnsAndMetricsRequest;
-import com.report.dev.demo.entity.MemberPayment;
-import com.report.dev.demo.repository.MemberPaymentRepository;
+import gov.mipath.report.common.dto.ColumnsAndMetricsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -368,14 +368,14 @@ Below is springboot code
 
 controller
 
-package com.report.dev.demo.controller;
+package gov.mipath.report.common.controller;
 
-import com.report.dev.demo.dto.ColumnsAndMetricsRequest;
-import com.report.dev.demo.entity.MemberPayment;
-import com.report.dev.demo.exception.UnKnownException;
-import com.report.dev.demo.exception.MemberNotFound;
-import com.report.dev.demo.service.MemberPaymentService;
-import com.report.dev.demo.repository.MemberPaymentRepository;
+import gov.mipath.report.common.dto.ColumnsAndMetricsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.UnKnownException;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.service.MemberPaymentService;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -474,7 +474,7 @@ public class MemberPaymentController {
 
 entity
 
-package com.report.dev.demo.entity;
+package gov.mipath.report.common.entity;
 
 import org.springframework.data.annotation.Id;
 import com.azure.spring.data.cosmos.core.mapping.Container;
@@ -561,12 +561,12 @@ public class MemberPayment {
 
 service
 
-package com.report.dev.demo.service;
+package gov.mipath.report.common.service;
 
-import com.report.dev.demo.dto.ColumnsAndMetricsRequest;
-import com.report.dev.demo.entity.MemberPayment;
-import com.report.dev.demo.exception.MemberNotFound;
-import com.report.dev.demo.repository.MemberPaymentRepository;
+import gov.mipath.report.common.dto.ColumnsAndMetricsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -678,7 +678,7 @@ public class MemberPaymentService {
 
 dto
 
-package com.report.dev.demo.dto;
+package gov.mipath.report.common.dto;
 import java.util.List;
 
 public class ColumnsAndMetricsRequest {
@@ -709,12 +709,12 @@ public class ColumnsAndMetricsRequest {
 repository
 
 
-package com.report.dev.demo.repository;
+package gov.mipath.report.common.repository;
 
 import java.util.Optional;
 
 import com.azure.spring.data.cosmos.repository.CosmosRepository;
-import com.report.dev.demo.entity.MemberPayment;
+import gov.mipath.report.common.entity.MemberPayment;
 
 public interface MemberPaymentRepository extends CosmosRepository<MemberPayment, String> {
 

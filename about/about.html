@@ -1,0 +1,241 @@
+<div x-data="about" data-pg-collapsed>
+    <section class="max-w-4xl mx-auto">
+        <img src="images/previous.png">
+        <h1 class="font-bold pt-6 text-3xl text-center">About You</h1>
+        <div class="mt-20">
+            <div class="mx-auto md:flex md:justify-center">
+                <div
+                    class="border-b-4 border-solid border-yellow-400 h-[360px] pt-6 px-5 rounded-md shadow-lg text-center w-[320px]">
+                    <h1 class="font-bold mt-3 text-2xl" x-text="statustext(data.about_status)"> </h1>
+                    <p class="mt-4">Add your details and your spouse details.</p>
+                    <button @click="completed()" x-show="data.about_status != 'completed'"
+                        class="bg-green-400 h-[50px] hover:bg-[#0F6C89] justify-center mt-5 rounded-md text-[22px] text-white w-72">Click
+                        here when finished
+                    </button>
+                    <button @click="lightbox1=true;router.push('/about/lightbox1')" x-show="data.about_status != 'completed'"
+                        class="bg-white border-2 border-green-400 border-solid h-[50px] hover:bg-[#0F6C89] justify-center mt-5 rounded-md text-[22px] text-black w-72">About
+                        Your Details
+                    </button>
+                    <button @click="lightbox2=true;" x-show="data.about_status != 'completed'"
+                        class="bg-white border-2 border-green-400 border-solid h-[50px] hover:bg-[#0F6C89] justify-center mt-5 rounded-md text-[22px] text-black w-72">Spouse
+                        Details
+                    </button>
+                </div>
+                <div class="flex flex-col justify-center items-center border-b-4 border-solid border-yellow-400 h-[360px] rounded-md shadow-lg text-center w-[320px] ml-[20px]">
+                    <template x-if="pageVideoUrl === null">
+                        <div>Loading...</div>
+                    </template>
+                    <template x-if="pageVideoUrl !== null && pageVideoUrl === ''">
+                        <div>Video not found</div>
+                    </template>
+                    <template x-if="pageVideoUrl !== null && pageVideoUrl !== ''">
+                        <video controls class="w-full object-contain" :src="pageVideoUrl">
+                            Your browser can not play this video. You can <a :href="pageVideoUrl">download it</a> instead.
+                        </video>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div>
+        <div class="cursor-pointer mb-10" x-data="{ active: 0 }">
+            <div x-show="data.first_name">
+                <div x-data="{
+                id: 1,
+                get expanded() {
+                    return this.active === this.id
+                },
+                set expanded(value) {
+                    this.active = value ? this.id : null
+                },
+            }">
+                    <div class="border border-[#2393A9] flex h-[80px] items-center justify-between mt-4 px-5 rounded-md w-full"
+                        x-on:click="expanded = !expanded" :aria-expanded="expanded">
+                        <div class="flex items-center">
+                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" :class="expanded ? 'rotate-90' : ''"
+                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 492.004 492.004"
+                                style="enable-background:new 0 0 492.004 492.004;" xml:space="preserve"
+                                class="fill-gray-400 h-6 mr-5 w-6">
+                                <g>
+                                    <g>
+                                        <path d="M382.678,226.804L163.73,7.86C158.666,2.792,151.906,0,144.698,0s-13.968,2.792-19.032,7.86l-16.124,16.12
+c-10.492,10.504-10.492,27.576,0,38.064L293.398,245.9l-184.06,184.06c-5.064,5.068-7.86,11.824-7.86,19.028
+c0,7.212,2.796,13.968,7.86,19.04l16.124,16.116c5.068,5.068,11.824,7.86,19.032,7.86s13.968-2.792,19.032-7.86L382.678,265
+c5.076-5.084,7.864-11.872,7.848-19.088C390.542,238.668,387.754,231.884,382.678,226.804z"></path>
+                                    </g>
+                                </g>
+                            </svg>
+                            <h1 class="font-medium text-[22px]">About You:</h1>
+                        </div>
+                        <button @click="lightbox1=true;router.push('/about/lightbox1')" type="button"
+                            class="focus:outline-none focus:ring-2 focus:ring-white hover:text-white rounded-md text-white">
+                            <span class="sr-only">Close panel</span>
+                            <svg height="492pt" viewBox="0 0 492.49284 492" width="492pt"
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="cursor-pointer fill-gray-400 group-hover:fill-[#2393A9] h-[20px] w-[20px]">
+                                <path
+                                    d="m304.140625 82.472656-270.976563 270.996094c-1.363281 1.367188-2.347656 3.09375-2.816406 4.949219l-30.035156 120.554687c-.898438 3.628906.167969 7.488282 2.816406 10.136719 2.003906 2.003906 4.734375 3.113281 7.527344 3.113281.855469 0 1.730469-.105468 2.582031-.320312l120.554688-30.039063c1.878906-.46875 3.585937-1.449219 4.949219-2.8125l271-270.976562zm0 0">
+                                </path>
+                                <path
+                                    d="m476.875 45.523438-30.164062-30.164063c-20.160157-20.160156-55.296876-20.140625-75.433594 0l-36.949219 36.949219 105.597656 105.597656 36.949219-36.949219c10.070312-10.066406 15.617188-23.464843 15.617188-37.714843s-5.546876-27.648438-15.617188-37.71875zm0 0">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div x-show="expanded" x-collapse>
+                        <div class="gap-6 grid grid-cols-1">
+                            <div class="w-full mt-6 overflow-hidden relative rounded-xl shadow-lg">
+                                <hr class="-ml-16 bg-gray-200 w-screen">
+                                <div class="flex h-20 items-center px-5">
+                                    <p class="font-medium text-[#808080] text-[16px] w-44">Name:</p>
+                                    <p class="font-medium text-[16px]"
+                                        x-text="data.first_name+' '+data.middle_name+' '+data.last_name">George Ramsay
+                                        Roebuck</p>
+                                </div>
+                                <hr class="-ml-16 bg-gray-200 w-screen">
+                                <div class="flex h-20 items-center px-5">
+                                    <p class="font-medium text-[#808080] text-[16px] w-44">Email:</p>
+                                    <p class="font-medium text-[16px]" x-text="data.email">199 Cheston Road,
+                                        London,
+                                        Village, RH0
+                                        0ED</p>
+                                </div>
+                                <hr class="-ml-16 bg-gray-200 w-screen">
+                                <div class="flex h-20 items-center px-5">
+                                    <p class="font-medium text-[#808080] text-[16px] w-44">Address:</p>
+                                    <p class="font-medium text-[16px]" x-text="data.address">199 Cheston Road,
+                                        London,
+                                        Village, RH0
+                                        0ED</p>
+                                </div>
+                                <hr class="-ml-16 bg-gray-200 w-screen">
+                                <div class="flex h-20 items-center px-5">
+                                    <p class="font-medium text-[#808080] text-[16px] w-44">DOB:</p>
+                                    <template x-if="data.dob">
+                                        <p class="font-medium text-[16px]"
+                                            x-text="data.dob.split('-')[2]+'/'+data.dob.split('-')[1]+'/'+data.dob.split('-')[0]">
+                                            13/03/1984</p>
+                                    </template>
+                                </div>
+                                <hr class="-ml-16 bg-gray-200 w-screen">
+                                <div class="flex h-20 items-center px-5">
+                                    <p class="font-medium text-[#808080] text-[16px] w-44">Relationship Status:</p>
+                                    <p class="font-medium text-[16px]" x-text="data.relationship_status">Married</p>
+                                </div>
+                                <hr class="-ml-16 bg-gray-200 w-screen">
+                                <div class="flex items-center mb-[40px] mt-[44px] justify-center">
+                                    <button @click="lightbox1=true;router.push('/about/lightbox1')"
+                                        class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[500px]">Edit
+                                        these details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div x-show="data.spouse_first_name">
+                <div x-data="{
+                    id: 2,
+                    get expanded() {
+                        return this.active === this.id
+                    },
+                    set expanded(value) {
+                        this.active = value ? this.id : null
+                    },
+                }">
+                        <div class="border border-[#2393A9] flex h-[80px] items-center justify-between mt-4 px-5 rounded-md w-full"
+                            x-on:click="expanded = !expanded" :aria-expanded="expanded">
+                            <div class="flex items-center">
+                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" :class="expanded ? 'rotate-90' : ''"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 492.004 492.004"
+                                    style="enable-background:new 0 0 492.004 492.004;" xml:space="preserve"
+                                    class="fill-gray-400 h-6 mr-5 w-6" :class="expanded ? 'rotate-90' : ''">
+                                    <g>
+                                        <g>
+                                            <path d="M382.678,226.804L163.73,7.86C158.666,2.792,151.906,0,144.698,0s-13.968,2.792-19.032,7.86l-16.124,16.12
+    c-10.492,10.504-10.492,27.576,0,38.064L293.398,245.9l-184.06,184.06c-5.064,5.068-7.86,11.824-7.86,19.028
+    c0,7.212,2.796,13.968,7.86,19.04l16.124,16.116c5.068,5.068,11.824,7.86,19.032,7.86s13.968-2.792,19.032-7.86L382.678,265
+    c5.076-5.084,7.864-11.872,7.848-19.088C390.542,238.668,387.754,231.884,382.678,226.804z"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                                <h1 class="font-medium text-[22px]">Spouse Details:</h1>
+                            </div>
+                            <button @click="lightbox2=true;" type="button"
+                                    class="focus:outline-none focus:ring-2 focus:ring-white hover:text-white rounded-md text-white">
+                                    <span class="sr-only">Close panel</span>
+                                    <svg height="492pt" viewBox="0 0 492.49284 492" width="492pt"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="cursor-pointer fill-gray-400 group-hover:fill-[#2393A9] h-[20px] w-[20px]">
+                                        <path
+                                            d="m304.140625 82.472656-270.976563 270.996094c-1.363281 1.367188-2.347656 3.09375-2.816406 4.949219l-30.035156 120.554687c-.898438 3.628906.167969 7.488282 2.816406 10.136719 2.003906 2.003906 4.734375 3.113281 7.527344 3.113281.855469 0 1.730469-.105468 2.582031-.320312l120.554688-30.039063c1.878906-.46875 3.585937-1.449219 4.949219-2.8125l271-270.976562zm0 0">
+                                        </path>
+                                        <path
+                                            d="m476.875 45.523438-30.164062-30.164063c-20.160157-20.160156-55.296876-20.140625-75.433594 0l-36.949219 36.949219 105.597656 105.597656 36.949219-36.949219c10.070312-10.066406 15.617188-23.464843 15.617188-37.714843s-5.546876-27.648438-15.617188-37.71875zm0 0">
+                                        </path>
+                                    </svg>
+                                </button>
+                        </div>
+                        <div x-show="expanded" x-collapse>
+                            <div class="gap-6 grid grid-cols-1">
+                                <div class="w-full mt-6 overflow-hidden relative rounded-xl shadow-lg">
+                                    <hr class="-ml-16 bg-gray-200 w-screen">
+                                    <div class="flex h-20 items-center px-5">
+                                        <p class="font-medium text-[#808080] text-[16px] w-44">Name:</p>
+                                        <p class="font-medium text-[16px]"
+                                            x-text="data.spouse_first_name+' '+data.spouse_middle_name+' '+data.spouse_last_name">
+                                            George
+                                            Ramsay Roebuck</p>
+                                    </div>
+                                    <hr class="-ml-16 bg-gray-200 w-screen">
+                                    <div class="flex h-20 items-center px-5">
+                                        <p class="font-medium text-[#808080] text-[16px] w-44">Email:</p>
+                                        <p class="font-medium text-[16px]" x-text="data.spouse_email">199 Cheston Road, London,
+                                            Village, RH0
+                                            0ED</p>
+                                    </div>
+                                    <hr class="-ml-16 bg-gray-200 w-screen">
+                                    <div class="flex h-20 items-center px-5">
+                                        <p class="font-medium text-[#808080] text-[16px] w-44">Address:</p>
+                                        <p class="font-medium text-[16px]" x-text="data.spouse_address">199 Cheston Road,
+                                            London,
+                                            Village, RH0
+                                            0ED</p>
+                                    </div>
+                                    <hr class="-ml-16 bg-gray-200 w-screen">
+                                    <div class="flex h-20 items-center px-5">
+                                        <p class="font-medium text-[#808080] text-[16px] w-44">DOB:</p>
+                                        <template x-if="data.spouse_dob">
+                                            <p class="font-medium text-[16px]"
+                                                x-text="data.spouse_dob.split('-')[2]+'/'+data.spouse_dob.split('-')[1]+'/'+data.spouse_dob.split('-')[0]">
+                                                13/03/1984</p>
+                                        </template>
+                                    </div>
+                                    <hr class="-ml-16 bg-gray-200 w-screen">
+                                    <div class="flex h-20 items-center px-5">
+                                        <p class="font-medium text-[#808080] text-[16px] w-44">Relationship Status:</p>
+                                        <p class="font-medium text-[16px]" x-text="data.spouse_relationship_status">Married</p>
+                                    </div>
+                                    <hr class="-ml-16 bg-gray-200 w-screen">
+                                    <div class="flex items-center mb-[40px] mt-[44px] justify-center">
+                                        <button @click="lightbox2=true;"
+                                            class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[500px]">Edit
+                                            these details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <!-- Title -->
+        <!-- Content -->
+        <!-- Buttons -->
+
+
+    </div>
+   <template x-route="/about/lightbox1" template="/components/about/lightbox1/lightbox1.html"></template>
+   <template x-route="/about/lightbox2" template="/components/about/lightbox2/lightbox2.html"></template>
+</div>

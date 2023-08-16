@@ -1,5 +1,5 @@
 
-package com.report.dev.demo.entity;
+package gov.mipath.report.common.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
@@ -54,10 +54,10 @@ public class BatchEntity {
 
 
 
-package com.report.dev.demo.repository;
+package gov.mipath.report.common.repository;
 
 import com.azure.spring.data.cosmos.repository.CosmosRepository;
-import com.report.dev.demo.entity.BatchEntity;
+import gov.mipath.report.common.entity.BatchEntity;
 
 public interface BatchRepository extends CosmosRepository<BatchEntity, String> {
 
