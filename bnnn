@@ -1,6 +1,29 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
+})
+export class HeaderComponent {
+  headers = ['header1', 'header2', 'header3'];
+  checkedStatus = {};
+
+  constructor() {
+    // Initialize all headers as unchecked
+    this.headers.forEach(header => this.checkedStatus[header] = false);
+  }
+
+  getCheckedHeaders() {
+    return this.headers.filter(header => this.checkedStatus[header]);
+  }
+}
+
+
+
 <div class="d-flex">
   <div *ngFor="let header of headers" class="mr-3">
     <button mat-raised-button class="mr-1">{{ header }}</button>
-    <mat-checkbox></mat-checkbox>
+    <mat-checkbox [(ngModel)]="checkedStatus[header]"></mat-checkbox>
   </div>
 </div>
