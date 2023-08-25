@@ -81,6 +81,25 @@ public class DemoApplication {
 
 
 
+package com.demo;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    private final HelloService helloService;
+
+    public HelloController(HelloService helloService) {
+        this.helloService = helloService;
+    }
+
+    @GetMapping("/hello")
+    public String sayHello() {
+        return helloService.sayHello();
+    }
+}
 
 
 
@@ -96,6 +115,21 @@ public class HelloService {
     }
 }
 
+package com.demo;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class HelloServiceTest {
+
+    private HelloService helloService = new HelloService();
+
+    @Test
+    public void testSayHello() {
+        assertEquals("Hello from Service!", helloService.sayHello());
+    }
+}
 
 
 mvn clean test
