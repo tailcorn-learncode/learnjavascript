@@ -1,3 +1,13 @@
 https://chat.openai.com/share/07483ca1-22e7-4305-b6c9-84bafab64e85
 
 https://chat.openai.com/share/1cffb5a3-5f4b-4b96-a46d-de5a5cca4abe
+
+User Story: Executing Proof of Concept (PoC) for API Testing using Postman
+Description: In the context of a newly established development environment, I intend to perform a Proof of Concept (PoC) by conducting API testing using Postman. This PoC will entail covering the fundamental steps of Postman testing, showcasing sample code execution, and ensuring successful testing within the recently set up environment.
+
+Acceptance Criteria:
+
+Integrate Postman effectively into the project's toolset.
+Develop test scripts that encompass basic API testing scenarios using Postman.
+Demonstrate the validation of API responses, status codes, and data manipulation within the Postman tests.
+Verify that the Postman-based API tests can be executed without issues and yield expected results within the newly configured development environment.
