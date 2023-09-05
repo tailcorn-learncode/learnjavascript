@@ -1,0 +1,111 @@
+<div class="mt-[40px] px-[50px]"
+x-data="lightbox1slide1"
+x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0">
+<div>
+    <p class="mb-[10px] text-[16px]">What is your full legal name?</p>
+    <div>
+        <div>
+            <div class="h-[50px] gap-3 grid grid-cols-6">
+                <div class="col-span-2">
+                    <input x-model="data.first_name" @input="issubmit=false;"
+                        type="text" name="first_name" id="first_name"
+                        autocomplete="first_name"
+                        class="block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder:gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base w-full"
+                        :class="data.first_name ? 'border-[#2393A9]' : issubmit && !data.first_name ? 'border-[#FF0000] bg-[#FFd7D7] ' : 'border-gray-50'"
+                        placeholder="First Name"> <span
+                        class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                </div>
+                <div class="col-span-2">
+                    <input x-model="data.middle_name" @input="issubmit=false;"
+                        type="text" name="middle_name" id="middle_name"
+                        autocomplete="middle_name"
+                        class="block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder:gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base w-full"
+                        :class="data.middle_name ? 'border-[#2393A9]' : 'border-gray-50'"
+                        placeholder="Middle Name"> <span
+                        class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                </div>
+                <div class="col-span-2">
+                    <input x-model="data.last_name" @input="issubmit=false;" type="text"
+                        name="last_name" id="last_name" autocomplete="last_name"
+                        class="block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder:gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base w-full"
+                        :class="data.last_name ? 'border-[#2393A9]' : issubmit && !data.last_name ? 'border-[#FF0000] bg-[#FFd7D7] ' : 'border-gray-50'"
+                        placeholder="Last Name"> <span
+                        class="hidden border-[#2393A9] bg-[#FFd7D7] border-[#FF0000] placeholder:text-white"></span>
+                </div>
+            </div>
+            <p x-show="issubmit && !data.first_name"
+                class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter First
+                Name</p>
+            <p x-show="issubmit && !data.middle_name"
+                class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Middle
+                Name</p>
+            <p x-show="issubmit && !data.last_name"
+                class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Last
+                Name</p>
+            <div>
+                <p class="text-[16px] mb-[10px] mt-[30px]">What is your email address?
+                </p>
+                <div class="col-span-6 sm:col-span-4">
+                    <input type="text" name="email" x-model="data.email"
+                        @input="issubmit=false;" id="email" autocomplete="email"
+                        class="bg-white block border  focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] mt-1 placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-lg text-[#848484] text-base w-full"
+                        :class="data.email ? 'border-[#2393A9]' : issubmit && !data.email ? 'bg-[#FFd7D7] border-[#FF0000]' : 'border-gray-50'"
+                        placeholder="Please type here"> <span
+                        class="bg-[#FFd7D7] bg-red-600 border-[#2393A9] border-[#FF0000] hidden placeholder:text-white"></span>
+                </div>
+                <p x-show="issubmit && !data.email"
+                    class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter
+                    Your Email</p>
+            </div>
+        </div>
+        <div>
+            <p class="text-[16px] mb-[10px] mt-[30px]">What is your date of birth?<span
+                    class="text-gray-400 text-xs">(optional)</span></p>
+            <div class="flex gap-3">
+                <div>
+                    <input x-model="dd"
+                        @input="if(dd.length==2) {$refs.mm.focus();} issubmit=false;"
+                        @click="issubmit=false;" type="text" name="dd" id="dd"
+                        maxlength="2" autocomplete="dd"
+                        class="bg-white block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-center text-base w-28"
+                        :class="dd ? 'border-[#2393A9]' : issubmit && !dd ? 'bg-[#FFd7D7] border-[#FF0000]' : 'border-gray-50'"
+                        placeholder="DD">
+                </div>
+                <div>
+                    <input x-model="mm"
+                        @input="if(mm.length==2) {$refs.yyyy.focus();} issubmit=false;"
+                        @click="issubmit=false;" type="text" name="mm" id="mm"
+                        x-ref="mm" maxlength="2" autocomplete="mm"
+                        class="bg-white block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px] px-3 py-5 rounded-md text-[#848484] text-base text-center w-28"
+                        :class="mm ? 'border-[#2393A9]' : issubmit && !mm ? 'bg-[#FFd7D7] border-[#FF0000]' : 'border-gray-50'"
+                        placeholder="MM">
+                </div>
+                <div class="w-full">
+                    <input x-model="yyyy" @input="issubmit=false;"
+                        @click="issubmit=false;" required type="text" name="yyyy"
+                        id="yyyy" x-ref="yyyy" maxlength="4" autocomplete="yyyy"
+                        class="bg-white block border focus:ring-1 focus:ring-[#2393A9] h-[50px] hover:border hover:border-[#2393A9] placeholder-gray-400 placeholder:text-[#848484] placeholder:text-[12px]  px-3 py-5 rounded-md text-[#848484] text-center text-base w-60"
+                        :class="yyyy ? 'border-[#2393A9]' : issubmit && !yyyy ? 'bg-[#FFd7D7] border-[#FF0000] ' : 'border-gray-50'"
+                        placeholder="YYYY">
+                </div>
+            </div>
+            <p x-show="issubmit && !dd"
+                class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Date
+            </p>
+            <p x-show="issubmit && !mm"
+                class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Month
+            </p>
+            <p x-show="issubmit && !yyyy"
+                class="font-medium mb-2 mb-5 mt-2 text-[14px] text-red-600">Enter Year
+            </p>
+        </div>
+        <div class="flex items-center mb-[40px] mt-[44px]">
+            <button
+                class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[500px]"
+                @click="lightbox1slide1done()"
+                type="button">Next</button>
+        </div>
+    </div>
+</div>
+</div>

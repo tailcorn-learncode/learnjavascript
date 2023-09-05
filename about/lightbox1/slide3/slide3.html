@@ -1,0 +1,45 @@
+<div x-data="lightbox1slide3"
+class="mt-[40px] px-[50px]"
+x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0">
+<template x-if="boxes">
+    <div>
+        <p class="mb-[10px] text-[16px]">Which best describes your relationship status?
+        </p>
+        <div class="gap-[10px] grid grid-cols-2 w-[500px]">
+            <template x-for="box in boxes">
+                <div @click="boxes.map((v) => {if(v.text == box.text) v.value = !v.value; else v.value=false; return v;});"
+                    @mouseover="box.svgpath1=true;"
+                    @mouseover.away="box.svgpath1=false;"
+                    class="bg-white border cursor-pointer flex group h-[50px] hover:border-[#2393A9] items-center pl-4 pr-4 py-3 rounded-lg"
+                    :class="box.value ? 'border border-[#2393A9]' : ''">
+                    <div class="flex-1 text-[16px] text-black" x-text="box.text">Single
+                    </div>
+                    <input type="checkbox" name="agree" id="agree" :checked="box.value"
+                        class="checked:outline-none focus:outline-none bg-[#EDEDED] border border-gray-50 h-[20px] group-hover:border-[#2393A9] mt-1 rounded text-[#2393A9] w-[20px]" />
+                    <div
+                        class="hidden outline-none border border-[#7CB0AA] border-2 hover:border-[#7CB0AA] border-gray-200 border-gray-300 group-hover:border-[#7CB0AA] ">
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>
+<div class="flex gap-[10px] items-center mb-[40px] mt-[44px]">
+    <button @click="slide3=false;slide2=true;router.push('/about/lightbox1/slide2');progress[1].status='current';pos=1;"
+        type="button"
+        class="group bg-[#EDEDED] focus:outline-none focus:ring-2 focus:ring-white h-[50px] hover:text-white rounded-md text-white w-[60px]">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor"
+            class="h-[25px] group-hover:text-[#2393A9] mx-auto w-[25px]">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+    </button>
+    <div class="flex-1">
+        <button
+            class="bg-[#2393A9] h-[50px] hover:bg-[#0F6C89] justify-center rounded-md text-[22px] text-white w-[430px]"
+            @click="lightbox1slide3done();">Save</button>
+    </div>
+</div>
+</div>

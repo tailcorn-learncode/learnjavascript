@@ -1,0 +1,756 @@
+package gov.mipath.report.common.entity;
+
+import org.springframework.data.annotation.Id;
+import com.azure.spring.data.cosmos.core.mapping.Container;
+import com.azure.spring.data.cosmos.core.mapping.GeneratedValue;
+
+@Container(containerName = "MemberPayment")
+public class MemberPayment {
+
+    @Id
+    @GeneratedValue
+    private String memberId;
+    private String confirmationNumber;
+    private String paymentDate;
+    private String paymentType;
+    private String paymentAmount;
+    private String convenienceFeesAmount;
+    private String totalPaymentAmount;
+
+    // Constructors
+    public MemberPayment() {
+    }
+
+    public MemberPayment(String memberId, String confirmationNumber, String paymentDate,
+                         String paymentType, String paymentAmount, String convenienceFeesAmount,
+                         String totalPaymentAmount) {
+        this.memberId = memberId;
+        this.confirmationNumber = confirmationNumber;
+        this.paymentDate = paymentDate;
+        this.paymentType = paymentType;
+        this.paymentAmount = paymentAmount;
+        this.convenienceFeesAmount = convenienceFeesAmount;
+        this.totalPaymentAmount = totalPaymentAmount;
+    }
+
+    // Getters and Setters
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getConfirmationNumber() {
+        return confirmationNumber;
+    }
+
+    public void setConfirmationNumber(String confirmationNumber) {
+        this.confirmationNumber = confirmationNumber;
+    }
+
+    public String getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(String paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public String getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(String paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
+    public String getConvenienceFeesAmount() {
+        return convenienceFeesAmount;
+    }
+
+    public void setConvenienceFeesAmount(String convenienceFeesAmount) {
+        this.convenienceFeesAmount = convenienceFeesAmount;
+    }
+
+    public String getTotalPaymentAmount() {
+        return totalPaymentAmount;
+    }
+
+    public void setTotalPaymentAmount(String totalPaymentAmount) {
+        this.totalPaymentAmount = totalPaymentAmount;
+    }
+}
+
+
+
+
+package gov.mipath.report.common.repository;
+
+import com.azure.spring.data.cosmos.repository.CosmosRepository;
+import gov.mipath.report.common.entity.MemberPayment;
+
+public interface MemberPaymentRepository extends CosmosRepository<MemberPayment, String> {
+}
+
+
+
+
+
+package gov.mipath.report.common.service;
+
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class MemberPaymentService {
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    public MemberPayment createMemberPayment(MemberPayment memberPayment) {
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public List<MemberPayment> getAllMemberPayments() {
+        return memberPaymentRepository.findAll();
+    }
+
+    public MemberPayment getMemberPaymentById(String id) {
+        Optional<MemberPayment> memberPayment = memberPaymentRepository.findById(id);
+        return memberPayment.orElseThrow(() -> new MemberNotFound("Member Payment not found for this id :: " + id));
+    }
+
+    public MemberPayment updateMemberPayment(String id, MemberPayment memberPaymentDetails) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+
+        // Set properties to update here
+        // Example:
+        memberPayment.setPaymentDate(memberPaymentDetails.getPaymentDate());
+        memberPayment.setPaymentType(memberPaymentDetails.getPaymentType());
+        memberPayment.setPaymentAmount(memberPaymentDetails.getPaymentAmount());
+        // ... more properties as needed
+
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public void deleteMemberPayment(String id) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+        memberPaymentRepository.delete(memberPayment);
+    }
+
+    public List<Map<String, Object>> getMemberPaymentsByColumns(List<String> columns) {
+        List<Map<String, Object>> payments = new ArrayList<>();
+        memberPaymentRepository.findAll().forEach(payment -> {
+            Map<String, Object> paymentMap = new HashMap<>();
+            if (columns.contains("memberId")) paymentMap.put("memberId", payment.getMemberId());
+            if (columns.contains("confirmationNumber")) paymentMap.put("confirmationNumber", payment.getConfirmationNumber());
+            if (columns.contains("paymentDate")) paymentMap.put("paymentDate", payment.getPaymentDate());
+            if (columns.contains("paymentType")) paymentMap.put("paymentType", payment.getPaymentType());
+            if (columns.contains("paymentAmount")) paymentMap.put("paymentAmount", payment.getPaymentAmount());
+            if (columns.contains("convenienceFeesAmount")) paymentMap.put("convenienceFeesAmount", payment.getConvenienceFeesAmount());
+            if (columns.contains("totalPaymentAmount")) paymentMap.put("totalPaymentAmount", payment.getTotalPaymentAmount());
+            payments.add(paymentMap);
+        });
+        return payments;
+    }
+}
+
+
+
+package gov.mipath.report.common.controller;
+
+import gov.mipath.report.common.dto.ColumnsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.UnKnownException;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.service.MemberPaymentService;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/v1/memberPayments")
+public class MemberPaymentController {
+
+    @Autowired
+    MemberPaymentService memberPaymentService;
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    // Create member payment
+    @PostMapping
+    public ResponseEntity<MemberPayment> createMemberPayment(@RequestBody MemberPayment memberPayment) {
+        try {
+            MemberPayment newMemberPayment = memberPaymentRepository.save(memberPayment);
+            return new ResponseEntity<>(newMemberPayment, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+    // Get all member payments
+    @GetMapping
+    public ResponseEntity<List<MemberPayment>> getAllMemberPayments() {
+        try {
+            List<MemberPayment> memberPayments = memberPaymentRepository.findAll();
+            return new ResponseEntity<>(memberPayments, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+    // Get member payment by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberPayment> getMemberPaymentByID(@PathVariable("id") String id) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findById(id);
+        if (memberPaymentData.isPresent()) {
+            return new ResponseEntity<>(memberPaymentData.get(), HttpStatus.OK);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    // Update member payment by ID
+    @PutMapping("/{id}")
+    public ResponseEntity<MemberPayment> updateMemberPayment(@PathVariable("id") String id, @RequestBody MemberPayment memberPayment) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findById(id);
+        if (memberPaymentData.isPresent()) {
+            MemberPayment _memberPayment = memberPaymentData.get();
+            // Update the properties as needed
+            // ...
+            return new ResponseEntity<>(memberPaymentRepository.save(_memberPayment), HttpStatus.OK);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    // Delete member payment by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MemberPayment> deleteMemberPayment(@PathVariable("id") String id) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findById(id);
+        if (memberPaymentData.isPresent()) {
+            memberPaymentRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    @PostMapping("/columns")
+    public ResponseEntity<List<Map<String, Object>>> getMemberPaymentsByColumns(@RequestBody ColumnsRequest request) {
+        try {
+            List<Map<String, Object>> payments = memberPaymentService.getMemberPaymentsByColumns(request.getHeaders());
+            return new ResponseEntity<>(payments, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+}
+
+
+
+
+
+package gov.mipath.report.common.dto;
+
+import java.util.List;
+
+public class ColumnsRequest {
+    private List<String> headers;
+
+    public List<String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+}
+
+
+
+
+
+
+
+package gov.mipath.report.common.service;
+
+import gov.mipath.report.common.dto.ColumnsAndMetricsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class MemberPaymentService {
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    // ... Other methods ...
+
+    public Map<String, Object> getMemberPaymentsByColumnsAndMetrics(ColumnsAndMetricsRequest request) {
+        List<MemberPayment> payments = memberPaymentRepository.findAll();
+        Map<String, Object> response = new HashMap<>();
+
+        // Calculate metrics
+        BigDecimal totalPaymentAmount = BigDecimal.ZERO;
+        BigDecimal totalConvenienceAmount = BigDecimal.ZERO;
+
+        for (MemberPayment payment : payments) {
+            totalPaymentAmount = totalPaymentAmount.add(payment.getPaymentAmount());
+            totalConvenienceAmount = totalConvenienceAmount.add(payment.getConvenienceFeesAmount());
+        }
+
+        // Add metrics to response if requested
+        if (request.getMetrics() != null) {
+            if (request.getMetrics().contains("totalpaymentsamount")) {
+                response.put("totalpaymentsamount", totalPaymentAmount);
+            }
+            if (request.getMetrics().contains("totalconvenienceamount")) {
+                response.put("totalconvenienceamount", totalConvenienceAmount);
+            }
+        }
+
+        // Add additional logic to include requested columns in response if needed
+
+        return response;
+    }
+}
+
+
+
+
+{
+"memberId":"87404571",
+"confirmationNumber":"23072894718037",
+"paymentDate":"07/28/2023",
+"paymentType":"Insurance",
+"paymentAmount":"506.82",
+"convenienceFeesAmount":"7.6",
+"totalPaymentAmount":"514.42"
+}
+
+
+
+
+
+Below is springboot code
+
+
+controller
+
+package gov.mipath.report.common.controller;
+
+import gov.mipath.report.common.dto.ColumnsAndMetricsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.UnKnownException;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.service.MemberPaymentService;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/v1/memberPayments")
+public class MemberPaymentController {
+
+    @Autowired
+    MemberPaymentService memberPaymentService;
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    // Create member payment
+    @PostMapping
+    public ResponseEntity<MemberPayment> createMemberPayment(@RequestBody MemberPayment memberPayment) {
+        try {
+            MemberPayment newMemberPayment = memberPaymentRepository.save(memberPayment);
+            return new ResponseEntity<>(newMemberPayment, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+    // Get all member payments
+    @GetMapping
+    public ResponseEntity<List<MemberPayment>> getAllMemberPayments() {
+        try {
+            Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+        List<MemberPayment> memberPayments = new ArrayList<>();
+        paymentsIterable.forEach(memberPayments::add);
+            return new ResponseEntity<>(memberPayments, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+    // Get member payment by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberPayment> getMemberPaymentByID(@PathVariable("id") String id) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findById(id);
+        if (memberPaymentData.isPresent()) {
+            return new ResponseEntity<>(memberPaymentData.get(), HttpStatus.OK);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    // Update member payment by ID
+    @PutMapping("/{id}")
+    public ResponseEntity<MemberPayment> updateMemberPayment(@PathVariable("id") String id, @RequestBody MemberPayment memberPayment) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findById(id);
+        if (memberPaymentData.isPresent()) {
+            MemberPayment _memberPayment = memberPaymentData.get();
+            // Update the properties as needed
+            // ...
+            return new ResponseEntity<>(memberPaymentRepository.save(_memberPayment), HttpStatus.OK);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    // Delete member payment by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MemberPayment> deleteMemberPayment(@PathVariable("id") String id) {
+        Optional<MemberPayment> memberPaymentData = memberPaymentRepository.findByMemberId(id);
+        if (memberPaymentData.isPresent()) {
+            memberPaymentRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new MemberNotFound("Invalid Member Payment Id");
+        }
+    }
+
+    @PostMapping("/report1")
+    public ResponseEntity<List<Map<String, Object>>> getMemberPaymentsByColumns(@RequestBody ColumnsAndMetricsRequest request) {
+       
+        try {
+            List<Map<String, Object>> payments = memberPaymentService.getMemberPaymentsByColumnsAndMetrics(request);
+            return new ResponseEntity<>(payments, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new UnKnownException(e.getMessage());
+        }
+    }
+
+}
+
+
+
+entity
+
+package gov.mipath.report.common.entity;
+
+import org.springframework.data.annotation.Id;
+import com.azure.spring.data.cosmos.core.mapping.Container;
+import com.azure.spring.data.cosmos.core.mapping.GeneratedValue;
+
+@Container(containerName = "reporting")
+public class MemberPayment {
+
+    @Id
+    @GeneratedValue
+    private String memberId;
+    private String confirmationNumber;
+    private String paymentDate;
+    private String paymentType;
+    private String paymentAmount;
+    private String convenienceFeesAmount;
+
+    // Constructors
+    public MemberPayment() {
+    }
+
+    public MemberPayment(String memberId, String confirmationNumber, String paymentDate,
+                         String paymentType, String paymentAmount, String convenienceFeesAmount,
+                         String totalPaymentAmount) {
+        this.memberId = memberId;
+        this.confirmationNumber = confirmationNumber;
+        this.paymentDate = paymentDate;
+        this.paymentType = paymentType;
+        this.paymentAmount = paymentAmount;
+        this.convenienceFeesAmount = convenienceFeesAmount;
+    }
+
+    // Getters and Setters
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getConfirmationNumber() {
+        return confirmationNumber;
+    }
+
+    public void setConfirmationNumber(String confirmationNumber) {
+        this.confirmationNumber = confirmationNumber;
+    }
+
+    public String getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(String paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public String getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(String paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
+    public String getConvenienceFeesAmount() {
+        return convenienceFeesAmount;
+    }
+
+    public void setConvenienceFeesAmount(String convenienceFeesAmount) {
+        this.convenienceFeesAmount = convenienceFeesAmount;
+    }
+    
+}
+
+
+service
+
+package gov.mipath.report.common.service;
+
+import gov.mipath.report.common.dto.ColumnsAndMetricsRequest;
+import gov.mipath.report.common.entity.MemberPayment;
+import gov.mipath.report.common.exception.MemberNotFound;
+import gov.mipath.report.common.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Service
+public class MemberPaymentService {
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    public MemberPayment createMemberPayment(MemberPayment memberPayment) {
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public List<MemberPayment> getAllMemberPayments() {
+        Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+        List<MemberPayment> payments = new ArrayList<>();
+        paymentsIterable.forEach(payments::add);
+        return payments;
+    }
+
+    public MemberPayment getMemberPaymentById(String id) {
+        Optional<MemberPayment> memberPayment = memberPaymentRepository.findById(id);
+        return memberPayment.orElseThrow(() -> new MemberNotFound("Member Payment not found for this id :: " + id));
+    }
+
+    public MemberPayment updateMemberPayment(String id, MemberPayment memberPaymentDetails) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+
+        memberPayment.setConfirmationNumber(memberPaymentDetails.getConfirmationNumber());
+        memberPayment.setPaymentDate(memberPaymentDetails.getPaymentDate());
+        memberPayment.setPaymentType(memberPaymentDetails.getPaymentType());
+        memberPayment.setPaymentAmount(memberPaymentDetails.getPaymentAmount());
+        memberPayment.setConvenienceFeesAmount(memberPaymentDetails.getConvenienceFeesAmount());
+
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public void deleteMemberPayment(String id) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+        memberPaymentRepository.delete(memberPayment);
+    }
+
+    public List<Map<String, Object>> getMemberPaymentsByColumnsAndMetrics(ColumnsAndMetricsRequest request) {
+        Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+        List<MemberPayment> payments = new ArrayList<>();
+        paymentsIterable.forEach(payments::add);
+        List<Map<String, Object>> finalresponse = new ArrayList<>();
+    Map<String, Object> response = new HashMap<>();
+
+    // Calculate metrics
+    BigDecimal totalPaymentAmount = BigDecimal.ZERO;
+    BigDecimal totalConvenienceAmount = BigDecimal.ZERO;
+
+    for (MemberPayment payment : payments) {
+        totalPaymentAmount = totalPaymentAmount.add(new BigDecimal(payment.getPaymentAmount()));
+        totalConvenienceAmount = totalConvenienceAmount.add(new BigDecimal(payment.getConvenienceFeesAmount()));
+    }
+
+    // Add metrics to response if requested
+    if (request.getMetrics() != null) {
+        if (request.getMetrics().contains("totalpaymentsamount")) {
+            response.put("totalpaymentsamount", totalPaymentAmount);
+        }
+        if (request.getMetrics().contains("totalconvenienceamount")) {
+            response.put("totalconvenienceamount", totalConvenienceAmount);
+        }
+    }
+
+    // Include requested columns in response
+    List<Map<String, Object>> paymentList = new ArrayList<>();
+    for (MemberPayment payment : payments) {
+        Map<String, Object> paymentMap = new HashMap<>();
+        if (request.getHeaders().contains("memberId")) {
+            paymentMap.put("memberId", payment.getMemberId());
+        }
+        if (request.getHeaders().contains("confirmationNumber")) {
+            paymentMap.put("confirmationNumber", payment.getConfirmationNumber());
+        }
+        if (request.getHeaders().contains("paymentDate")) {
+            paymentMap.put("paymentDate", payment.getPaymentDate());
+        }
+        if (request.getHeaders().contains("paymentType")) {
+            paymentMap.put("paymentType", payment.getPaymentType());
+        }
+        if (request.getHeaders().contains("paymentAmount")) {
+            paymentMap.put("paymentAmount", payment.getPaymentAmount());
+        }
+        if (request.getHeaders().contains("convenienceFeesAmount")) {
+            paymentMap.put("convenienceFeesAmount", payment.getConvenienceFeesAmount());
+        }
+        paymentList.add(paymentMap);
+    }
+
+    response.put("payments", paymentList);
+
+    finalresponse.add(response);
+    return finalresponse;
+}
+
+}
+
+
+dto
+
+package gov.mipath.report.common.dto;
+import java.util.List;
+
+public class ColumnsAndMetricsRequest {
+    private List<String> headers;
+    private List<String> metrics;
+
+    // Getters and setters
+
+    public List<String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+
+    public List<String> getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(List<String> metrics) {
+        this.metrics = metrics;
+    }
+}
+
+
+
+repository
+
+
+package gov.mipath.report.common.repository;
+
+import java.util.Optional;
+
+import com.azure.spring.data.cosmos.repository.CosmosRepository;
+import gov.mipath.report.common.entity.MemberPayment;
+
+public interface MemberPaymentRepository extends CosmosRepository<MemberPayment, String> {
+
+    Optional<MemberPayment> findByMemberId(String id);
+}
+
+
+
+Above code is for cosmosdb reporting container with schema like below
+
+{
+"memberId":"74005260",
+"confirmationNumber":"23072894636256",
+"paymentDate":"07/28/2023",
+"paymentType":"Insurance",
+"paymentAmount":"90.66",
+"convenienceFeesAmount":"1.36"
+}
+
+we need to add report name in reporting container schema like below which is relational to batch container schema
+
+{
+"memberId":"74005260",
+"confirmationNumber":"23072894636256",
+"paymentDate":"07/28/2023",
+"paymentType":"Insurance",
+"paymentAmount":"90.66",
+"convenienceFeesAmount":"1.36",
+"reportname":"memberpayment"
+}
+
+batch container schema
+
+{
+"batchId":"1",
+"batchName":"batchname1",
+"reportName":"memberpayment"
+}
+

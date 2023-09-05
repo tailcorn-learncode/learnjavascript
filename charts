@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- ECharts source file -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@latest/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- HTML containers for charts -->
+    <div id="barChart" style="width:600px;height:400px;"></div>
+    <div id="pieChart" style="width:600px;height:400px;"></div>
+    <div id="lineChart" style="width:600px;height:400px;"></div>
+
+    <script type="text/javascript">
+        var jsonData = {
+            "data": [
+                /* ... Your JSON data ... */
+            ]
+        };
+
+        var members = jsonData.data.map(item => item.memberId);
+        var paymentAmounts = jsonData.data.map(item => parseFloat(item.paymentAmount));
+        var convenienceFeesAmounts = jsonData.data.map(item => parseFloat(item.convenienceFeesAmount));
+
+        // Create paymentType data for pie chart
+        var paymentTypeCounter = {};
+        jsonData.data.forEach(item => {
+            if (!paymentTypeCounter[item.paymentType]) {
+                paymentTypeCounter[item.paymentType] = 0;
+            }
+            paymentTypeCounter[item.paymentType]++;
+        });
+        var paymentTypeData = [];
+        for (var key in paymentTypeCounter) {
+            paymentTypeData.push({name: key, value: paymentTypeCounter[key]});
+        }
+
+        // Bar Chart
+        var barChart = echarts.init(document.getElementById('barChart'));
+        barChart.setOption({
+            title: {
+                text: 'Payment Amount by Member ID'
+            },
+            xAxis: {
+                data: members
+            },
+            yAxis: {},
+            series: [{
+                name: 'Payment Amount',
+                type: 'bar',
+                data: paymentAmounts
+            }]
+        });
+
+        // Pie Chart
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        pieChart.setOption({
+            title: {
+                text: 'Payment Type Distribution'
+            },
+            series: [{
+                name: 'Payment Type',
+                type: 'pie',
+                data: paymentTypeData
+            }]
+        });
+
+        // Line Chart
+        var lineChart = echarts.init(document.getElementById('lineChart'));
+        lineChart.setOption({
+            title: {
+                text: 'Convenience Fees Amount by Member ID'
+            },
+            xAxis: {
+                data: members
+            },
+            yAxis: {},
+            series: [{
+                name: 'Convenience Fees Amount',
+                type: 'line',
+                data: convenienceFeesAmounts
+            }]
+        });
+    </script>
+</body>
+</html>

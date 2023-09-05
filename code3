@@ -1,0 +1,184 @@
+package com.knf.dev.demo.service;
+
+import com.knf.dev.demo.dto.ColumnsAndMetricsRequest;
+import com.knf.dev.demo.entity.MemberPayment;
+import com.knf.dev.demo.exception.MemberNotFound;
+import com.knf.dev.demo.repository.MemberPaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Service
+public class MemberPaymentService {
+
+    @Autowired
+    MemberPaymentRepository memberPaymentRepository;
+
+    public MemberPayment createMemberPayment(MemberPayment memberPayment) {
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public List<MemberPayment> getAllMemberPayments() {
+        return memberPaymentRepository.findAll();
+    }
+
+    public MemberPayment getMemberPaymentById(String id) {
+        Optional<MemberPayment> memberPayment = memberPaymentRepository.findById(id);
+        return memberPayment.orElseThrow(() -> new MemberNotFound("Member Payment not found for this id :: " + id));
+    }
+
+    public MemberPayment updateMemberPayment(String id, MemberPayment memberPaymentDetails) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+
+        memberPayment.setConfirmationNumber(memberPaymentDetails.getConfirmationNumber());
+        memberPayment.setPaymentDate(memberPaymentDetails.getPaymentDate());
+        memberPayment.setPaymentType(memberPaymentDetails.getPaymentType());
+        memberPayment.setPaymentAmount(memberPaymentDetails.getPaymentAmount());
+        memberPayment.setConvenienceFeesAmount(memberPaymentDetails.getConvenienceFeesAmount());
+        memberPayment.setTotalPaymentAmount(memberPaymentDetails.getTotalPaymentAmount());
+
+        return memberPaymentRepository.save(memberPayment);
+    }
+
+    public void deleteMemberPayment(String id) {
+        MemberPayment memberPayment = getMemberPaymentById(id);
+        memberPaymentRepository.delete(memberPayment);
+    }
+
+    public Map<String, Object> getMemberPaymentsByColumnsAndMetrics(ColumnsAndMetricsRequest request) {
+    List<MemberPayment> payments = memberPaymentRepository.findAll();
+    Map<String, Object> response = new HashMap<>();
+
+    // Calculate metrics
+    BigDecimal totalPaymentAmount = BigDecimal.ZERO;
+    BigDecimal totalConvenienceAmount = BigDecimal.ZERO;
+
+    for (MemberPayment payment : payments) {
+        totalPaymentAmount = totalPaymentAmount.add(payment.getPaymentAmount());
+        totalConvenienceAmount = totalConvenienceAmount.add(payment.getConvenienceFeesAmount());
+    }
+
+    // Add metrics to response if requested
+    if (request.getMetrics() != null) {
+        if (request.getMetrics().contains("totalpaymentsamount")) {
+            response.put("totalpaymentsamount", totalPaymentAmount);
+        }
+        if (request.getMetrics().contains("totalconvenienceamount")) {
+            response.put("totalconvenienceamount", totalConvenienceAmount);
+        }
+    }
+
+    // Include requested columns in response
+    List<Map<String, Object>> paymentList = new ArrayList<>();
+    for (MemberPayment payment : payments) {
+        Map<String, Object> paymentMap = new HashMap<>();
+        if (request.getHeaders().contains("memberId")) {
+            paymentMap.put("memberId", payment.getMemberId());
+        }
+        if (request.getHeaders().contains("confirmationNumber")) {
+            paymentMap.put("confirmationNumber", payment.getConfirmationNumber());
+        }
+        if (request.getHeaders().contains("paymentDate")) {
+            paymentMap.put("paymentDate", payment.getPaymentDate());
+        }
+        if (request.getHeaders().contains("paymentType")) {
+            paymentMap.put("paymentType", payment.getPaymentType());
+        }
+        if (request.getHeaders().contains("paymentAmount")) {
+            paymentMap.put("paymentAmount", payment.getPaymentAmount());
+        }
+        if (request.getHeaders().contains("convenienceFeesAmount")) {
+            paymentMap.put("convenienceFeesAmount", payment.getConvenienceFeesAmount());
+        }
+        if (request.getHeaders().contains("totalPaymentAmount")) {
+            paymentMap.put("totalPaymentAmount", payment.getTotalPaymentAmount());
+        }
+        paymentList.add(paymentMap);
+    }
+
+    response.put("payments", paymentList);
+
+    return response;
+}
+
+}
+
+
+
+
+
+
+package com.knf.dev.demo.dto;
+
+import java.util.List;
+
+public class ColumnsAndMetricsRequest {
+    private List<String> headers;
+    private List<String> metrics;
+
+    // Getters and setters
+
+    public List<String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+
+    public List<String> getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(List<String> metrics) {
+        this.metrics = metrics;
+    }
+}
+
+
+
+public Map<String, Object> getMemberPaymentsByColumnsAndMetrics(ColumnsAndMetricsRequest request) {
+    Iterable<MemberPayment> paymentsIterable = memberPaymentRepository.findAll();
+    List<MemberPayment> payments = new ArrayList<>();
+    paymentsIterable.forEach(payments::add);
+    
+    // Rest of the method...
+}
+
+
+
+public class ColumnsAndMetricsRequest {
+    private List<String> header;
+    private List<String> metrics;
+
+    // Getters and Setters
+    public List<String> getHeader() { return header; }
+    public void setHeader(List<String> header) { this.header = header; }
+    public List<String> getMetrics() { return metrics; }
+    public void setMetrics(List<String> metrics) { this.metrics = metrics; }
+}
+
+
+
+@PostMapping("/columns")
+public ResponseEntity<Map<String, Object>> getMemberPaymentsByColumnsAndMetrics(@RequestBody ColumnsAndMetricsRequest request) {
+    try {
+        Map<String, Object> response = memberPaymentService.getMemberPaymentsByColumnsAndMetrics(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+        // Handle exceptions appropriately for your application
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
+{
+"header":["memberId","confirmationNumber","paymentDate"],
+"metrics":["totalpaymentsamount","totalconvenienceamount"]
+}

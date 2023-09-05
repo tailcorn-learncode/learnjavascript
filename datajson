@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "memberId": "74005260",
+      "confirmationNumber": "23072894636256",
+      "paymentDate": "07/28/2023",
+      "paymentType": "Insurance",
+      "paymentAmount": "90.66",
+      "convenienceFeesAmount": "1.36",
+      "reportname": "memberpayment"
+    },
+    {
+      "memberId": "12345678",
+      "confirmationNumber": "23958349538493",
+      "paymentDate": "07/25/2023",
+      "paymentType": "Credit Card",
+      "paymentAmount": "85.00",
+      "convenienceFeesAmount": "1.25",
+      "reportname": "memberpayment"
+    },
+    {
+      "memberId": "87654321",
+      "confirmationNumber": "54839385837492",
+      "paymentDate": "07/26/2023",
+      "paymentType": "Bank Transfer",
+      "paymentAmount": "100.50",
+      "convenienceFeesAmount": "1.50",
+      "reportname": "memberpayment"
+    },
+    {
+      "memberId": "23456789",
+      "confirmationNumber": "28374895720375",
+      "paymentDate": "07/27/2023",
+      "paymentType": "Debit Card",
+      "paymentAmount": "75.30",
+      "convenienceFeesAmount": "1.15",
+      "reportname": "memberpayment"
+    },
+    {
+      "memberId": "98765432",
+      "confirmationNumber": "58574394858392",
+      "paymentDate": "07/29/2023",
+      "paymentType": "Cash",
+      "paymentAmount": "60.00",
+      "convenienceFeesAmount": "1.00",
+      "reportname": "memberpayment"
+    }
+  ]
+}
