@@ -453,6 +453,75 @@ export class FileUploadComponent {
 
 
 
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FileUploadService {
+  private apiUrl = 'http://localhost:8080/api/upload'; // Your backend API URL
+
+  constructor(private http: HttpClient) { }
+
+  uploadFile(file: File, uploadDir: string): Observable<HttpEvent<any>> {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+
+    const request = new HttpRequest('POST', `${this.apiUrl}?uploadDir=${uploadDir}`, formData, {
+      reportProgress: true,
+      responseType: 'text' // Specify the response type as text
+    });
+
+    return this.http.request(request);
+  }
+}
+
+
+
+
+import { Component } from '@angular/core';
+import { HttpClient, HttpEventType } from '@angular/common/http';
+import { FileUploadService } from './file-upload.service';
+
+@Component({
+  selector: 'app-file-upload',
+  templateUrl: './file-upload.component.html',
+  styleUrls: ['./file-upload.component.css']
+})
+export class FileUploadComponent {
+  selectedFile: File | null = null;
+  uploadProgress: number = 0;
+  uploadDir: string = 'dynamic_upload_directory'; // Specify your dynamic upload directory here
+
+  constructor(private fileUploadService: FileUploadService) { }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  uploadFile() {
+    if (this.selectedFile) {
+      this.fileUploadService.uploadFile(this.selectedFile, this.uploadDir).subscribe(
+        (event: any) => {
+          if (event.type === HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round((event.loaded / event.total) * 100);
+          } else if (event.type === HttpEventType.Response) {
+            // Handle the response here, e.g., display a success message
+            console.log('File uploaded successfully:', event.body);
+          }
+        },
+        error => {
+          console.error('File upload failed:', error);
+          // Handle error here
+        }
+      );
+    }
+  }
+}
+
+
 
 
 <form (submit)="uploadFiles()" enctype="multipart/form-data">
