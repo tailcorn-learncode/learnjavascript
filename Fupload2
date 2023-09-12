@@ -1,3 +1,7 @@
+https://chat.openai.com/share/be889ac6-fe02-42aa-a598-a1a098f9e1b5
+
+
+
 import { Component } from '@angular/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { FileUploadService } from './file-upload.service';
