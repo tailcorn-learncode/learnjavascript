@@ -499,3 +499,27 @@ export class FileUploadComponent {
     }
   }
 }
+
+
+
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpRequest, HttpEventType } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FileUploadService {
+  private apiUrl = 'http://localhost:8080/api/upload'; // Your backend API URL
+
+  constructor(private http: HttpClient) { }
+
+  uploadFile(formData: FormData): Observable<HttpEvent<any>> {
+    const request = new HttpRequest('POST', this.apiUrl, formData, {
+      reportProgress: true,
+      responseType: 'text' // Specify the response type as text
+    });
+
+    return this.http.request(request);
+  }
+}
