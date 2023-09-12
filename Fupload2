@@ -451,3 +451,51 @@ public class FileUploadController {
 }
 
 
+import { Component } from '@angular/core';
+import { HttpClient, HttpEventType } from '@angular/common/http';
+import { FileUploadService } from './file-upload.service';
+
+@Component({
+  selector: 'app-file-upload',
+  templateUrl: './file-upload.component.html',
+  styleUrls: ['./file-upload.component.css']
+})
+export class FileUploadComponent {
+  selectedFiles: File[] = [];
+  uploadProgress: number[] = [];
+  uploadDir: string = 'dynamic_upload_directory'; // Specify your dynamic upload directory here
+
+  constructor(private fileUploadService: FileUploadService) { }
+
+  onFilesSelected(event: any) {
+    this.selectedFiles = event.target.files;
+    this.uploadProgress = new Array(this.selectedFiles.length).fill(0);
+  }
+
+  uploadFiles() {
+    if (this.selectedFiles.length > 0) {
+      for (let i = 0; i < this.selectedFiles.length; i++) {
+        const file = this.selectedFiles[i];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_dir', this.uploadDir);
+
+        this.fileUploadService.uploadFile(formData).subscribe(
+          (event: any) => {
+            if (event.type === HttpEventType.UploadProgress) {
+              // Update progress for the current file
+              this.uploadProgress[i] = Math.round((event.loaded / event.total) * 100);
+            } else if (event.type === HttpEventType.Response) {
+              // Handle the response here, e.g., display a success message
+              console.log('File uploaded successfully:', event.body);
+            }
+          },
+          error => {
+            console.error('File upload failed:', error);
+            // Handle error here
+          }
+        );
+      }
+    }
+  }
+}
