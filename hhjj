@@ -1,3 +1,35 @@
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+@RestController
+@RequestMapping("/api")
+public class YourController {
+
+    @DeleteMapping("/deleteFile")
+    public ResponseEntity<String> deleteFile(@RequestParam("filePath") String filePath) {
+        try {
+            // Convert the file path string to a Path object
+            Path path = Paths.get(filePath);
+
+            // Check if the file exists
+            if (Files.exists(path)) {
+                // Attempt to delete the file
+                Files.delete(path);
+                return ResponseEntity.status(HttpStatus.OK).body("File deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found.");
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete the file: " + e.getMessage());
+        }
+    }
+}
 
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
