@@ -1,0 +1,107 @@
+// src/app/azure-storage.service.ts
+
+import { Injectable } from '@angular/core';
+import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AzureStorageService {
+  private blobServiceClient: BlobServiceClient;
+  private containerClient: ContainerClient;
+
+  constructor() {
+    const connectionString = 'YOUR_AZURE_STORAGE_CONNECTION_STRING';
+    this.blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+    this.containerClient = this.blobServiceClient.getContainerClient('your-container-name');
+  }
+
+  downloadFile(fileName: string): Observable<ArrayBuffer> {
+    const blobClient = this.containerClient.getBlobClient(fileName);
+    return blobClient.downloadToBuffer();
+  }
+}
+
+// src/app/file-download/file-download.component.ts
+
+import { Component } from '@angular/core';
+import { AzureStorageService } from '../azure-storage.service';
+
+@Component({
+  selector: 'app-file-download',
+  templateUrl: './file-download.component.html',
+})
+export class FileDownloadComponent {
+  constructor(private azureStorageService: AzureStorageService) {}
+
+  downloadFile(fileName: string): void {
+    this.azureStorageService.downloadFile(fileName).subscribe((data) => {
+      const blob = new Blob([data]);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+}
+
+<!-- src/app/file-download/file-download.component.html -->
+
+<button (click)="downloadFile('your-file-name')">Download File</button>
+
+// src/main/java/com/yourpackage/controller/FileController.java
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+@RestController
+@RequestMapping("/api/files")
+public class FileController {
+
+    @Value("${azure.storage.container-name}")
+    private String containerName;
+
+    @GetMapping("/{fileName}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
+        // Use your Azure Storage connection and access logic here to get the file content
+        // For example, you can use Azure SDK or REST API to retrieve the file
+
+        // Replace this with actual Azure Storage logic
+        String fileUrl = "https://your-azure-storage-url/" + containerName + "/" + fileName;
+
+        try {
+            Path path = Paths.get(fileUrl);
+            Resource resource = new UrlResource(path.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename())
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("File not found: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+
