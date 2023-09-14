@@ -1,3 +1,21 @@
+import com.azure.storage.blob.BlobServiceClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AzureStorageService {
+
+    private final BlobServiceClient blobServiceClient;
+
+    public AzureStorageService(
+            @Value("${azure.storage.connection-string}") String connectionString) {
+        blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
+    }
+
+    public BlobServiceClient getBlobServiceClient() {
+        return blobServiceClient;
+    }
+}
 
 
 
