@@ -1,3 +1,43 @@
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobClient;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+@Service
+public class AzureStorageService {
+
+    // Azure Storage connection string
+    private final String connectionString = "your_connection_string_here";
+
+    public void downloadFileFromBlobStorage(String containerName, String blobName) {
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.getBlobClient(blobName);
+
+        try (InputStream blobInputStream = blobClient.openQueryInputStream()) {
+            // Replace with your desired local file path
+            Path localFilePath = Paths.get("local_file_path_here");
+            StreamUtils.copy(blobInputStream, Files.newOutputStream(localFilePath));
+        } catch (IOException e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
