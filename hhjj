@@ -1,3 +1,28 @@
+Given below is angular code
+
+component..
+delete() {
+		console.log(this.currentFileUpload.id);
+		this.service.deleteById(this.currentFileUpload.id).subscribe({
+			next: (res) => {
+				this.refreshTable();
+			},
+			error: (e) => console.error(e)
+			
+		});
+	}
+
+
+service..
+deleteById(id: any) {
+		return this.http.delete(`${this.apiUrl}/eFile/deleteFile/${id}`);
+	}
+
+I'm getting error
+
+"Unexpected non-whitespace character after JSON at position 2"
+
+
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.BlobContainerClient;
