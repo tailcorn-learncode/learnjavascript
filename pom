@@ -934,3 +934,25 @@ services:
 
 
 
+
+ <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>docker-compose-up</id>
+                        <phase>package</phase> <!-- Bind to the package phase -->
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker-compose</executable>
+                            <arguments>
+                                <argument>up</argument>
+                                <argument>-d</argument> <!-- run in detached mode, remove if you want it to be in the foreground -->
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
