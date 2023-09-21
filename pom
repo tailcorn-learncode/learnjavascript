@@ -906,5 +906,31 @@ services:
 
 
 
+version: '3'
+
+services:
+  discovery:
+    image: atlas-services/discovery-service
+    ports:
+      - 8761:8761  # Exposing default Eureka port (modify if different in your setup)
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+
+  gateway:
+    image: atlas-services/gateway-service
+    ports:
+      - 8080:8080  # Exposing default Spring Boot port for the gateway (modify if different)
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery:8761/eureka
+
+  member:
+    image: atlas-services/member-service
+    ports:
+      - 8081:8081  # Assuming member service runs on 8081 (modify if different)
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery:8761/eureka
+
 
 
