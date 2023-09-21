@@ -694,6 +694,216 @@
 </project>
 
 
+version: "3.7"
+services:
+  # web-app: 
+  #   build: .
+  # oauth2-proxy:
+  #   image: bitnami/oauth2-proxy:7.3.0
+  #   command:
+  #     - --http-address
+  #     - 0.0.0.0:4180 
+  #   environment:
+  #     OAUTH2_PROXY_UPSTREAMS: http://localhost:8900/  
+  #     OAUTH2_PROXY_PROVIDER: oidc
+  #     OAUTH2_PROXY_EMAIL_DOMAINS: '*' 
+  #     OAUTH2_PROXY_SKIP_JWT_BEARER_TOKENS: true
+  #     OAUTH2_PROXY_OIDC_EMAIL_CLAIM: sub
+  #     OAUTH2_PROXY_OIDC_ISSUER_URL: https://dev-51172119.okta.com/oauth2/default
+  #     OAUTH2_PROXY_CLIENT_ID: 0oabcreotbxWXpAat5d7
+  #     OAUTH2_PROXY_SET_XAUTHREQUEST: true
+  #     OAUTH2_PROXY_CLIENT_SECRET: ZbazI--b7dFVq9LKRsy6jLdbVqEIfgAtShpbCU2zY1j80SIw1dyy1W4HTQ8dU38r      
+  #     OAUTH2_PROXY_COOKIE_SECRET: NOT_USED_BUT_REQUIRED_VALUE_32b_
+
+  #   ports:
+  #     - 4180:4180 
+# ---
+# version: '3.7'
+# services:
+#   ## MySQL Docker Compose Config
+#   postgres-order:
+#     container_name: postgres-order
+#     image: postgres
+#     environment:
+#       POSTGRES_DB: order-service
+#       POSTGRES_USER: ptechie
+#       POSTGRES_PASSWORD: password
+#       PGDATA: /data/postgres
+#     volumes:
+#       - ./postgres-order:/data/postgres
+#     expose:
+#       - "5431"
+#     ports:
+#       - "5431:5431"
+#     command: -p 5431
+#     restart: always
+
+#   postgres-inventory:
+#     container_name: postgres-inventory
+#     image: postgres
+#     environment:
+#       POSTGRES_DB: inventory-service
+#       POSTGRES_USER: ptechie
+#       POSTGRES_PASSWORD: password
+#       PGDATA: /data/postgres
+#     volumes:
+#       - ./postgres-inventory:/data/postgres
+#     ports:
+#       - "5432:5432"
+#     restart: always
+
+#   ## Mongo Docker Compose Config
+#   mongo:
+#     container_name: mongo
+#     image: mongo:4.4.14-rc0-focal
+#     restart: always
+#     ports:
+#       - "27017:27017"
+#     expose:
+#       - "27017"
+#     volumes:
+#       - ./mongo-data:/data/db
+
+#   ## Keycloak Config with Mysql database
+#   keycloak-mysql:
+#     container_name: keycloak-mysql
+#     image: mysql:5.7
+#     volumes:
+#       - ./mysql_keycloak_data:/var/lib/mysql
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: keycloak
+#       MYSQL_USER: keycloak
+#       MYSQL_PASSWORD: password
+
+#   keycloak:
+#     container_name: keycloak
+#     image: quay.io/keycloak/keycloak:18.0.0
+#     command: [ "start-dev", "--import-realm" ]
+#     environment:
+#       DB_VENDOR: MYSQL
+#       DB_ADDR: mysql
+#       DB_DATABASE: keycloak
+#       DB_USER: keycloak
+#       DB_PASSWORD: password
+#       KEYCLOAK_ADMIN: admin
+#       KEYCLOAK_ADMIN_PASSWORD: admin
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - ./realms/:/opt/keycloak/data/import/
+#     depends_on:
+#       - keycloak-mysql
+
+#   zookeeper:
+#     image: confluentinc/cp-zookeeper:7.0.1
+#     container_name: zookeeper
+#     ports:
+#       - "2181:2181"
+#     environment:
+#       ZOOKEEPER_CLIENT_PORT: 2181
+#       ZOOKEEPER_TICK_TIME: 2000
+
+#   broker:
+#     image: confluentinc/cp-kafka:7.0.1
+#     container_name: broker
+#     ports:
+#       - "9092:9092"
+#     depends_on:
+#       - zookeeper
+#     environment:
+#       KAFKA_BROKER_ID: 1
+#       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+#       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  ## Zipkin
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+
+  ## Eureka Server
+  discovery-service:
+    build:
+      context: ./discovery
+      dockerfile: ./Dockerfile
+    image: atlas-services/discovery-service:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    expose:
+      - "8761"  
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+
+  gateway-service:
+    build:
+      context: ./gateway
+      dockerfile: ./Dockerfile  
+    image: atlas-services/gateway-service:latest
+    container_name: gateway-service
+    ports:
+      - "8181:8181"
+    expose:
+      - "8181"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+    depends_on:
+      - zipkin
+      - discovery-service
+
+  ## Member-Service Docker Compose Config
+  member-service:
+    build:
+      context: ./member
+      dockerfile: ./Dockerfile    
+    image: atlas-services/member-service:latest
+    container_name: member-service
+    ports:
+      - "8900:8900"
+    expose:
+      - "8900"  
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://orsomp.public.f3ff59b0e371.database.windows.net:3342;databaseName=applicationConfig
+    depends_on:  
+      - discovery-service
+      - gateway-service
+
+  ## Prometheus
+  # prometheus:
+  #   image: prom/prometheus:v2.37.1
+  #   container_name: prometheus
+  #   restart: always
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   depends_on:
+  #     - member-service
+
+  # grafana:
+  #   image: grafana/grafana-oss:8.5.2
+  #   container_name: grafana
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   links:
+  #     - prometheus:prometheus
+  #   volumes:
+  #     - ./grafana:/var/lib/grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=password
+
 
 
 
