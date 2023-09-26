@@ -1,0 +1,13 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          okta:
+            clientId: your-client-id
+            clientSecret: your-client-secret
+        provider:
+          okta:
+            issuerUri: https://your-okta-issuer-url
+  thymeleaf:
+    enabled: true
