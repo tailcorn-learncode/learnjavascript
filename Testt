@@ -1,0 +1,85 @@
+// src/main/java/com/example/demo/HelloController.java
+
+https://chat.openai.com/share/1553f005-8a32-4428-aebf-0a2da2d8ed44
+
+
+package com.example.demo;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    @GetMapping("/hello")
+    public String sayHello() {
+        return "Hello, Docker!";
+    }
+}
+
+
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>testcontainers</artifactId>
+    <version>1.16.0</version>
+    <scope>test</scope>
+</dependency>
+
+
+
+
+// src/test/java/com/example/demo/HelloControllerIntegrationTest.java
+
+package com.example.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.web.client.RestTemplate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
+public class HelloControllerIntegrationTest {
+
+    @LocalServerPort
+    private int port;
+
+    @Container
+    public static GenericContainer<?> app = new GenericContainer<>("your-image-name:latest")
+            .withExposedPorts(8080);
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("server.port", app::getFirstMappedPort);
+    }
+
+    @Test
+    public void testHelloEndpoint() {
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.getForObject("http://localhost:" + port + "/hello", String.class);
+        assertEquals("Hello, Docker!", response);
+    }
+}
+
+
+
+FROM openjdk:11-jre-slim
+
+COPY target/demo-0.0.1-SNAPSHOT.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
+
+
+
+
