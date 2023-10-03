@@ -1,0 +1,35 @@
+# Use a base image with JDK and Maven for building and testing
+FROM maven:3.8.3-openjdk-11-slim AS build
+
+# Set the working directory
+WORKDIR /app
+
+# Copy only the POM file to resolve dependencies
+COPY pom.xml .
+
+# Download the project dependencies
+RUN mvn dependency:go-offline
+
+# Copy the source code (excluding tests)
+COPY src/ src/
+
+# Build the application
+RUN mvn package -DskipTests
+
+# Use a minimal JDK image for running the tests
+FROM openjdk:11-jre-slim
+
+# Copy the built JAR file from the previous stage
+COPY --from=build /app/target/your-app.jar /app/your-app.jar
+
+# Expose the port that the application will run on (if needed)
+EXPOSE 8080
+
+# Command to run the tests
+CMD ["java", "-jar", "/app/your-app.jar", "--tests"]
+
+docker build -t your-app-test -f Dockerfile.testing .
+
+docker run your-app-test
+
+
