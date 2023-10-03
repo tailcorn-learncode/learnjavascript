@@ -33,3 +33,10 @@ docker build -t your-app-test -f Dockerfile.testing .
 docker run your-app-test
 
 
+
+
+FROM eclipse-temurin:17.0.8.1_1-jre
+ARG JAR_FILE=target/member-1.0-SNAPSHOT.jar
+COPY ${JAR_FILE} member.jar
+EXPOSE 8900
+ENTRYPOINT ["java", "-jar", "/member.jar"]
