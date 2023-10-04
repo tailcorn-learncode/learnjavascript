@@ -1,7 +1,7 @@
+I have 3 springboot microservices - Discovery service, Gateway service, member service. For each one we have application-docker.yml and application.yml.
 
-I have 3 springboot microservices - Discovery service, Gateway service, member service. For each one we have application-docker.yml and application.yml. I want to control security enabling in property file of gateway service. So, update application property of gateway acccording to that. I want to maintain seperate application.yml's for dev, test and prod. SO, write new application property files according to that. 
 
-1. Discovery service
+Discovery service
 
 application-docker.yml..
 
@@ -57,7 +57,7 @@ same as application-docker.yml
 
 
 
-2. Gateway service
+Gateway service
 
 application-docker.yml..
 
@@ -154,7 +154,7 @@ same as application-docker.yml
 
 
 
-3. Member service
+Member service
 
 application-docker.yml..
 
@@ -208,3 +208,107 @@ springdoc:
 application.yml..
 
 same as application-docker.yml
+
+
+And I have docker-compose.yml given below.
+
+docker-compose.yml..
+
+version: "3.7"
+services:
+
+  oauth2-proxy:
+    image: bitnami/oauth2-proxy:7.3.0
+    command:
+      - --http-address
+      - 0.0.0.0:4180
+    environment:
+      OAUTH2_PROXY_EMAIL_DOMAINS: '*'
+      OAUTH2_PROXY_PROVIDER: oidc
+      OAUTH2_PROXY_PROVIDER_DISPLAY_NAME: Okta
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      OAUTH2_PROXY_REDIRECT_URL: http://localhost:81/oauth2/callback
+
+      OAUTH2_PROXY_OIDC_ISSUER_URL: ${ISSUER}
+      OAUTH2_PROXY_CLIENT_ID: ${CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${CLIENT_SECRET}
+
+      OAUTH2_PROXY_SKIP_JWT_BEARER_TOKENS: "true"
+      OAUTH2_PROXY_OIDC_EXTRA_AUDIENCES: api://default
+      OAUTH2_PROXY_OIDC_EMAIL_CLAIM: sub
+
+      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+      OAUTH2_PROXY_PASS_ACCESS_TOKEN: "true"
+      
+      OAUTH2_PROXY_COOKIE_REFRESH: 30m
+      OAUTH2_PROXY_COOKIE_NAME: SESSION
+      OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET}
+
+  nginx:
+      image: nginx:1.21.6-alpine
+      depends_on:
+        - oauth2-proxy
+        - gateway-service
+      volumes:
+        - ./nginx-default.conf.template:/etc/nginx/templates/default.conf.template
+        - ./static-html:/usr/share/nginx/html 
+      ports:
+        - 81:81 
+
+  ## Zipkin
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+
+  ## Eureka Server
+  discovery-service:
+    build:
+      context: ./discovery
+      dockerfile: ./Dockerfile
+    image: atlas-services/discovery-service:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    expose:
+      - "8761"  
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+
+  gateway-service:
+    build:
+      context: ./gateway
+      dockerfile: ./Dockerfile  
+    image: atlas-services/gateway-service:latest
+    container_name: gateway-service
+    ports:
+      - "8181:8181"
+    expose:
+      - "8181"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+    depends_on:
+      - zipkin
+      - discovery-service
+
+  ## Member-Service Docker Compose Config
+  member-service:
+    build:
+      context: ./member
+      dockerfile: ./Dockerfile    
+    image: atlas-services/member-service:latest
+    container_name: member-service
+    ports:
+      - "8900:8900"
+    expose:
+      - "8900"  
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://orsomp.public.f3ff59b0e371.database.windows.net:3342;databaseName=applicationConfig
+    depends_on:  
+      - discovery-service
+      - gateway-service
