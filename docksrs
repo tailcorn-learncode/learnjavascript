@@ -1,0 +1,210 @@
+
+I have 3 springboot microservices - Discovery service, Gateway service, member service. For each one we have application-docker.yml and application.yml. I want to control security enabling in property file of gateway service. So, update application property of gateway acccording to that. I want to maintain seperate application.yml's for dev, test and prod. SO, write new application property files according to that. 
+
+1. Discovery service
+
+application-docker.yml..
+
+server:
+    port: 8761
+
+## Eureka Server
+spring:
+    application:
+        name: discovery-service
+    security: 
+        user: 
+            name: eureka
+            password: password
+    cloud:
+        compatibility-verifier: 
+            enabled: false
+
+eureka:
+    instance:
+        hostname: localhost
+    client:
+        register-with-eureka: true
+        fetch-registry: true            
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka/
+
+
+# Actuator Prometheus Endpoint
+management:
+    zipkin:
+        tracing:
+            endpoint: http://localhost:9411/api/v2/spans
+    tracing:        
+        sampling:
+            probability: 1.0
+    endpoints:
+        web:
+            exposure:
+                include: prometheus
+
+logging:
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+    level: 
+        org: 
+            springframework: 
+                security: DEBUG
+
+application.yml..
+
+same as application-docker.yml
+
+
+
+2. Gateway service
+
+application-docker.yml..
+
+server:
+    port: 8181
+
+## Gateway
+spring:
+    application:
+        name: gateway-service
+    cloud:
+        loadbalancer:
+            ribbon:
+                enabled: false
+        gateway:
+            globalcors:
+                add-to-simple-url-handler-mapping: true
+                cors-configurations:
+                    '[/**]':
+                        allow-credentials: true
+                        # allowed-origins: '*'
+                        # allowed-headers: '*'
+                        allowed-methods: 
+                            - OPTIONS
+                            - GET
+                            - POST
+                            - PUT
+            ## Discover Server Route
+            routes[0]:
+                id: discovery-server
+                uri: http://discovery-server:8761
+                predicates[0]: Path=/eureka/web
+                filters[0]: SetPath=/
+            ## Discover Server Static Resources Route
+            routes[1]:
+                id: discovery-server-static
+                uri: http://discovery-server:8761
+                predicates[0]: Path=/eureka/**
+            ## Member Service Route
+            routes[2]:
+                id: member-service
+                # uri: lb://member-service
+                uri: http://member-service:8900/
+                predicates[0]:
+                    name: Path
+                    args:
+                        pattern: /member/**
+            ## Member Service Route
+            routes[3]:
+                id: ess-service
+                # uri: lb://ess-service
+                uri: http://ess-server:8901/
+                predicates[0]:
+                    name: Path
+                    args:
+                        pattern: /ess/**
+            ## Member Service Route
+            routes[4]:
+                id: admin-service
+                # uri: lb://admin-service
+                uri: http://admin-server:8902/
+                predicates[0]:
+                    name: Path
+                    args:
+                        pattern: /admin/**
+        compatibility-verifier: 
+            enabled: false
+    # security: 
+    #     oauth2: 
+    #         resourceserver: 
+    #             jwt: 
+    #                 issuer-uri: http://localhost:8080/realms/atlas
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://discovery-service:8761/eureka
+logging:
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+# Can be set to false to disable security during local development
+rest: 
+    security:
+        enabled: false
+        api-matcher: /**
+        issuer-uri: http://localhost:8080/auth/realms/atlas
+        resource-id: atlasclient
+
+
+application.yml..
+
+same as application-docker.yml
+
+
+
+3. Member service
+
+application-docker.yml..
+
+server:
+    port: 8900
+
+spring:
+    main:
+        allow-bean-definition-overriding: true
+    application:
+        name: member-service
+    datasource:
+        url: jdbc:sqlserver://orsomp.public.f3ff59b0e371.database.windows.net:3342;databaseName=applicationConfig
+        driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+        username: appuser
+        password: Love!4zure
+    jpa:
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+                dialect: org.hibernate.dialect.SQLServer2016Dialect
+
+    cloud:
+        compatibility-verifier: 
+            enabled: false
+        config:
+            enabled: false
+
+logging:
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://discovery-service:8761/eureka
+
+springdoc:
+    api-docs:
+        path: /api-docs
+    swagger-ui:
+        enabled: true
+        path: /swagger-ui.html
+        #use-root-path: true
+    version: '@springdoc.version@'
+    show-actuator: false
+
+
+application.yml..
+
+same as application-docker.yml
