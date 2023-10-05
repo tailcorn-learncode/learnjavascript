@@ -1,0 +1,95 @@
+server:
+    port: 8181
+
+## Gateway
+spring:
+    application:
+        name: gateway-service
+    cloud:
+        loadbalancer:
+            ribbon:
+                enabled: false
+        gateway:
+            globalcors:
+                add-to-simple-url-handler-mapping: true
+                cors-configurations:
+                    '[/**]':
+                        allow-credentials: true
+                        allowed-methods: 
+                            - OPTIONS
+                            - GET
+                            - POST
+                            - PUT
+            routes:
+                - id: discovery-server
+                  uri: http://localhost:8761
+                  predicates:
+                    - Path=/eureka/web
+                  filters:
+                    - SetPath=/
+                - id: discovery-server-static
+                  uri: http://localhost:8761
+                  predicates:
+                    - Path=/eureka/**
+                - id: member-service
+                  uri: http://localhost:8900/
+                  predicates:
+                    - Path=/member/**
+                - id: ess-service
+                  uri: http://localhost:8901/
+                  predicates:
+                    - Path=/ess/**
+                - id: admin-service
+                  uri: http://localhost:8902/
+                  predicates:
+                    - Path=/admin/**
+        compatibility-verifier: 
+            enabled: false
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka
+
+logging:
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+# Configuration to toggle Okta security
+security:
+    okta:
+        enabled: true # toggle this to enable/disable Okta
+
+# Okta Configuration
+okta: 
+    oauth2: 
+        issuer: https://dev-04798219.okta.com/oauth2/default
+        client-id: 0oabjwzqyhAd1VsxX5d7
+        client-secret: ulsmzHE7Y3qUORZf5pzHldaWC-E9rrnlD8eHS2oMM7hsy3RUPEmIOaocoRTWxSDl
+
+
+
+
+
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${security.okta.enabled}")
+    private boolean isOktaSecurityEnabled;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        if (isOktaSecurityEnabled) {
+            http
+                .oauth2Login() // Configurations related to Okta
+                .and()
+                .oauth2ResourceServer().jwt();
+                // Other Okta configurations...
+        } else {
+            http
+                .authorizeRequests()
+                .antMatchers("/**").permitAll() // This permits all without any authentication
+                .and()
+                .csrf().disable();  // Disabling CSRF. Do this with caution, especially in production!
+        }
+    }
+}
