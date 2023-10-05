@@ -1,3 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          okta:
+            client-id: YOUR_OKTA_CLIENT_ID
+            client-secret: YOUR_OKTA_CLIENT_SECRET
+        provider:
+          okta:
+            issuer-uri: https://YOUR_OKTA_DOMAIN/oauth2/default
+
+okta:
+  oauth2:
+    enabled: true # or false to enable/disable
+    issuer: https://YOUR_OKTA_DOMAIN/oauth2/default
+    client-id: YOUR_OKTA_CLIENT_ID
+    client-secret: YOUR_OKTA_CLIENT_SECRET
+
+
+
 package com.yourpackage.config;
 
 import org.springframework.beans.factory.annotation.Value;
