@@ -257,3 +257,42 @@ public class SecurityConfig {
     }
 }
 
+
+
+
+package gov.mipath.atlas.discovery;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${custom.security.enabled}")
+    private boolean isSecurityEnabled;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        if (isSecurityEnabled) {
+            http
+                .authorizeRequests()
+                    .antMatchers("/eureka/**").permitAll() // ensure the existing behavior is kept
+                    .anyRequest().authenticated()
+                .and()
+                .oauth2Login(); // Enable OAuth 2.0 Login with Okta.
+        } else {
+            http
+                .authorizeRequests()
+                    .anyRequest().permitAll()
+                .and()
+                .csrf().disable(); // Completely disable CSRF protection when security is disabled.
+        }
+        
+        http.csrf().ignoringAntMatchers("/eureka/**");
+    }
+}
+
