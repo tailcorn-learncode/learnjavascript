@@ -1,3 +1,40 @@
+package com.yourpackage.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${security.okta.enabled}")
+    private boolean isOktaSecurityEnabled;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        if (isOktaSecurityEnabled) {
+            http
+                .oauth2Login()  // This would handle redirecting to Okta for login
+                .and()
+                .oauth2ResourceServer().jwt()  // Assuming you're using JWTs with Okta
+                .and()
+                .authorizeRequests()
+                .anyRequest().authenticated();
+        } else {
+            http
+                .authorizeRequests()
+                .antMatchers("/**").permitAll() // This permits all requests without any authentication
+                .and()
+                .csrf().disable();  // Disabling CSRF. Remember to handle CSRF appropriately in a production setting!
+        }
+    }
+}
+
+
+
 package com.knf.dev.demo.service;
 
 import com.knf.dev.demo.entity.User;
