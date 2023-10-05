@@ -118,37 +118,46 @@ okta:
 package com.yourpackage.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     @Value("${security.okta.enabled}")
     private boolean isOktaSecurityEnabled;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         if (isOktaSecurityEnabled) {
             http
-                .oauth2Login()  // This would handle redirecting to Okta for login
+                .oauth2Login()
                 .and()
-                .oauth2ResourceServer().jwt()  // Assuming you're using JWTs with Okta
+                .oauth2ResourceServer().jwt()
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated();
         } else {
             http
                 .authorizeRequests()
-                .antMatchers("/**").permitAll() // This permits all requests without any authentication
+                .antMatchers("/**").permitAll()
                 .and()
-                .csrf().disable();  // Disabling CSRF. Remember to handle CSRF appropriately in a production setting!
+                .csrf().disable();
         }
+
+        return http.build();
     }
 }
+
 
         
 
