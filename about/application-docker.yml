@@ -1,0 +1,64 @@
+server:
+    port: 8900
+
+spring:
+    main:
+        allow-bean-definition-overriding: true
+    application:
+        name: member-service
+    datasource:
+        url: jdbc:sqlserver://orsomp.public.f3ff59b0e371.database.windows.net:3342;databaseName=applicationConfig
+        driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+        username: appuser
+        password: Love!4zure
+    jpa:
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+                dialect: org.hibernate.dialect.SQLServer2016Dialect
+
+    cloud:
+        compatibility-verifier: 
+            enabled: false
+        config:
+            enabled: false
+# Actuator Prometheus Endpoint
+# management:
+#     zipkin:
+#         tracing:
+#             endpoint: http://localhost:9411/api/v2/spans
+#     tracing:        
+#         sampling:
+#             probability: 1.0
+#     endpoints:
+#         web:
+#             exposure:
+#                 include: prometheus
+logging:
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://discovery-service:8761/eureka
+
+springdoc:
+    api-docs:
+        path: /api-docs
+    swagger-ui:
+        enabled: true
+        path: /swagger-ui.html
+        #use-root-path: true
+    version: '@springdoc.version@'
+    show-actuator: false
+    # use-management-port: true
+# This property enables the openapi and swagger-ui endpoints to be exposed beneath the actuator base path.
+# management:
+#     endpoints:
+#         web:
+#             exposure:
+#                 include: openapi, swagger-ui
+        

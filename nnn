@@ -1,3 +1,97 @@
+package gov.mipath.atlas.gateway.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableMethodSecurity(securedEnabled = true)
+public class SecurityConfig {
+
+    @Value("${securityconf.okta.enabled}")
+    private boolean isOktaSecurityEnabled;
+
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        if (isOktaSecurityEnabled) {
+            http.authorizeHttpRequests((requests) -> requests
+            // allow anonymous access to the root page
+            .requestMatchers("/").permitAll()
+            // all other requests
+            .anyRequest().authenticated());
+            // enable OAuth2/OIDC
+            http.oauth2Login();
+            http.oauth2ResourceServer().jwt();
+        }        
+
+        return http.build();
+    }
+}
+
+
+// import org.springframework.beans.factory.annotation.Autowired;
+// // import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+// import org.springframework.security.config.web.server.ServerHttpSecurity;
+// import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+// import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.security.web.server.SecurityWebFilterChain;
+
+// @Configuration
+// @EnableWebFluxSecurity
+// // @ConditionalOnProperty(prefix = "rest.security", value = "enabled", havingValue = "true")
+// public class SecurityConfig {
+
+//     final JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+//     @Autowired
+//     private SecurityProperties securityProperties;
+
+//     // @Bean
+//     // public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
+//     //     jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new JwtAccessTokenCustomizer(securityProperties.getResourceId()));
+//     //     serverHttpSecurity
+//     //             .csrf((csrf)->csrf.disable())
+//     //             .authorizeExchange(exchange ->
+//     //                     exchange.pathMatchers(securityProperties.getApiMatcher())
+//     //                             .permitAll()
+//     //                             .anyExchange()
+//     //                             .authenticated())
+//     //                             //.oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);
+//     //                             .oauth2ResourceServer(oauth2->oauth2.jwt(jwt -> {
+//     //                                 jwt.jwtAuthenticationConverter(jwtAuthenticationConverter);
+//     //                             }));
+//     //                             // serverHttpSecurity.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated()).oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);                        
+//     //     return serverHttpSecurity.build();
+//     // }
+ 
+//     @Bean
+//     public SecurityFilterChain springSecurityFilterChain(HttpSecurity  httpSecurity) throws Exception {
+//         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new JwtAccessTokenCustomizer(securityProperties.getResourceId()));
+//             httpSecurity
+//                 .csrf((csrf)->csrf.disable())
+//                 .authorizeHttpRequests(exchange ->
+//                     exchange.requestMatchers(securityProperties.getApiMatcher())
+//                         .permitAll()
+//                         .anyRequest()
+//                         .authenticated())
+//                         .oauth2ResourceServer(oauth2->oauth2.jwt(jwt -> {
+//                             jwt.jwtAuthenticationConverter(jwtAuthenticationConverter);
+//                         }));
+//         return httpSecurity.build();         
+//     }
+
+// }
+
+
+
+
+
 server:
     port: 8181
 
