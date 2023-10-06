@@ -3,6 +3,44 @@ package gov.mipath.atlas.gateway.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@Configuration
+@EnableReactiveMethodSecurity
+public class SecurityConfig {
+
+    @Value("${securityconf.okta.enabled}")
+    private boolean isOktaSecurityEnabled;
+
+    @Bean
+    public SecurityWebFilterChain configure(ServerHttpSecurity http) {
+        if (isOktaSecurityEnabled) {
+            http.authorizeExchange(exchanges -> exchanges
+                // allow anonymous access to the root page
+                .pathMatchers("/").permitAll()
+                // all other requests
+                .anyExchange().authenticated())
+                .oauth2Login()
+                .and()
+                .oauth2ResourceServer()
+                .jwt();
+        }
+
+        return http.build();
+    }
+}
+
+
+
+
+
+package gov.mipath.atlas.gateway.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
