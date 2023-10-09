@@ -149,8 +149,20 @@ azure:
       allowed-groups: YOUR_ALLOWED_GROUPS
 
 ---
+azure:
+  activedirectory:
+    tenant-id: YOUR_AZURE_AD_TENANT_ID
+    client-id: YOUR_AZURE_AD_CLIENT_ID
+    client-secret: YOUR_AZURE_AD_CLIENT_SECRET
+    user-group:
+      allowed-groups: YOUR_ALLOWED_GROUPS  # This is optional
+
 spring:
-  profiles: okta
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://sts.windows.net/YOUR_AZURE_AD_TENANT_ID/
 
 okta:
   oauth2:
