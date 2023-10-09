@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>azure-ad-resource-server</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <properties>
+        <java.version>11</java.version>
+        <spring-cloud.version>2020.0.4</spring-cloud.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+
+
+
+azure:
+  activedirectory:
+    tenant-id: YOUR_AZURE_AD_TENANT_ID
+    client-id: YOUR_AZURE_AD_CLIENT_ID
+    client-secret: YOUR_AZURE_AD_CLIENT_SECRET
+    user-group:
+      allowed-groups: YOUR_ALLOWED_GROUPS  # This is optional
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://sts.windows.net/YOUR_AZURE_AD_TENANT_ID/
+
+
+
+
+package com.example.azureadresourceserver;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${azure.activedirectory.user-group.allowed-groups}")
+    private List<String> allowedGroups;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+                .antMatchers("/public").permitAll()
+                .anyRequest().hasAnyAuthority(allowedGroups.toArray(new String[0]))
+                .and()
+            .oauth2ResourceServer()
+                .jwt();
+    }
+}
+
+
+
+
+package com.example.azureadresourceserver;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class TestController {
+
+    @GetMapping("/public")
+    public String publicEndpoint() {
+        return "Public endpoint";
+    }
+
+    @GetMapping("/secure")
+    public String secureEndpoint() {
+        return "Secure endpoint";
+    }
+}
+
+
+
+
+
+<!-- ... other dependencies ... -->
+<dependency>
+    <groupId>com.okta.spring</groupId>
+    <artifactId>okta-spring-boot-starter</artifactId>
+    <version>2.0.1</version>
+</dependency>
+
+
+
+spring:
+  profiles: azure
+
+azure:
+  activedirectory:
+    tenant-id: YOUR_AZURE_AD_TENANT_ID
+    client-id: YOUR_AZURE_AD_CLIENT_ID
+    client-secret: YOUR_AZURE_AD_CLIENT_SECRET
+    user-group:
+      allowed-groups: YOUR_ALLOWED_GROUPS
+
+---
+spring:
+  profiles: okta
+
+okta:
+  oauth2:
+    issuer: https://{yourOktaDomain}/oauth2/default
+    client-id: YOUR_OKTA_CLIENT_ID
+    client-secret: YOUR_OKTA_CLIENT_SECRET
+
+
+
+
+package com.example.azureadresourceserver;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+public class SecurityConfig {
+
+    @Configuration
+    @Profile("azure")
+    public static class AzureSecurityConfig extends WebSecurityConfigurerAdapter {
+        
+        @Value("${azure.activedirectory.user-group.allowed-groups}")
+        private List<String> allowedGroups;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                .authorizeRequests()
+                    .antMatchers("/public").permitAll()
+                    .anyRequest().hasAnyAuthority(allowedGroups.toArray(new String[0]))
+                    .and()
+                .oauth2ResourceServer()
+                    .jwt();
+        }
+    }
+
+    @Configuration
+    @Profile("okta")
+    public static class OktaSecurityConfig extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                .authorizeRequests()
+                    .antMatchers("/public").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                .oauth2ResourceServer()
+                    .jwt();
+        }
+    }
+}
+
+
+
+$ mvn spring-boot:run -Dspring-boot.run.profiles=azure
+
+$ mvn spring-boot:run -Dspring-boot.run.profiles=okta
+
+
+<!-- ... other dependencies ... -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt</artifactId>
+    <version>0.9.1</version>
+</dependency>
+
+
+
+---
+spring:
+  profiles: jwt
+
+jwt:
+  secret: YOUR_JWT_SECRET
+  expiration: 3600  # Token validity in seconds. 3600 seconds = 1 hour.
+
+
+
+package com.example.azureadresourceserver;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+
+@Component
+public class JwtUtil {
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private Long expirationTime;
+
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime * 1000))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+    }
+
+    public Boolean validateToken(String token) {
+        return (getUsernameFromToken(token) != null && !isTokenExpired(token));
+    }
+
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public Date getExpirationDateFromToken(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    private <T> T getClaimFromToken(String token, java.util.function.Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
+}
+
+
+
+
+// ... other configurations ...
+
+@Configuration
+@Profile("jwt")
+public static class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
+            .authorizeRequests()
+                .antMatchers("/authenticate").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+    }
+}
+
+
+
+package com.example.azureadresourceserver;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Component
+public class JwtFilter extends OncePerRequestFilter {
+
+    private final JwtUtil jwtUtil;
+
+    @Autowired
+    public JwtFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+
+        final String header = request.getHeader("Authorization");
+        String username = null;
+        String jwt = null;
+
+        if (header != null && header.startsWith("Bearer ")) {
+            jwt = header.substring(7);
+            username = jwtUtil.getUsernameFromToken(jwt);
+        }
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Token is valid
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    new User(username, "", new ArrayList<>()), null, new ArrayList<>()
+            );
+            token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(token);
+        }
+
+        chain.doFilter(request, response);
+    }
+}
+
+
+
+@RestController
+public class JwtAuthenticationController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) {
+        // Dummy check. In a real application, you would validate the user against a database or another service.
+        if ("dummyUser".equals(authenticationRequest.getUsername()) && "dummyPass".equals(authenticationRequest.getPassword())) {
+            final String token = jwtUtil.generateToken(authenticationRequest.getUsername());
+            return ResponseEntity.ok(new JwtResponse(token));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+}
+
+class JwtRequest {
+    private String username;
+    private String password;
+
+    // Getters, setters...
+}
+
+class JwtResponse {
+    private String token;
+
+    // Constructor, getters, setters...
+}
+
+
+
+1. Azure AD:
+Obtain an Access Token:
+
+Method: POST
+URL: https://login.microsoftonline.com/{tenant-id}/oauth2/token
+Headers:
+Content-Type: application/x-www-form-urlencoded
+Body (x-www-form-urlencoded):
+grant_type: client_credentials
+client_id: {your-client-id}
+client_secret: {your-client-secret}
+resource: {your-app-id-uri}
+Use the Token to Access a Secured Endpoint:
+
+Method: GET
+URL: http://localhost:8080/secure
+Headers:
+Authorization: Bearer {your-access-token}
+2. Okta:
+Obtain an Access Token:
+
+Method: POST
+URL: https://{yourOktaDomain}/oauth2/default/v1/token
+Headers:
+Accept: application/json
+Authorization: Basic {Base64(client_id:client_secret)}
+Content-Type: application/x-www-form-urlencoded
+Body (x-www-form-urlencoded):
+grant_type: client_credentials
+scope: YOUR_SCOPES
+Use the Token to Access a Secured Endpoint:
+
+Method: GET
+URL: http://localhost:8080/secure
+Headers:
+Authorization: Bearer {your-access-token}
+3. JWT Token:
+Obtain a JWT Token:
+
+Method: POST
+URL: http://localhost:8080/authenticate
+Headers:
+Content-Type: application/json
+Body (raw, JSON (application/json)):
+
+
+{
+    "username": "dummyUser",
+    "password": "dummyPass"
+}
