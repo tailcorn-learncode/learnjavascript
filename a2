@@ -318,3 +318,11 @@ public class AuthenticationController {
         return Mono.just(jwtUtil.generateToken(username));
     }
 }
+
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.x.x.RELEASE</version>
+</dependency>
+
