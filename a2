@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>jwt-webflux-demo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.1</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+<!-- Okta Spring Boot Starter -->
+<dependency>
+    <groupId>com.okta.spring</groupId>
+    <artifactId>okta-spring-boot-starter</artifactId>
+    <version>2.1.0</version>  <!-- Check the latest version when implementing -->
+</dependency>
+
+<!-- Azure AD Spring Boot Starter -->
+<dependency>
+    <groupId>com.microsoft.azure</groupId>
+    <artifactId>azure-active-directory-spring-boot-starter</artifactId>
+    <version>3.10.0</version>  <!-- Check the latest version when implementing -->
+</dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>11</java.version>
+    </properties>
+
+</project>
+
+
+spring:
+  profiles:
+    active: jwt  # set your active profile here
+
+---
+
+spring:
+  profiles: jwt
+jwt:
+  secret-key: your-secret-key  # Do not hard-code this in production
+
+---
+
+spring:
+  profiles: okta
+okta:
+  oauth2:
+    issuer: https://{yourOktaDomain}/oauth2/default
+    client-id: {yourClientId}
+    client-secret: {yourClientSecret}
+
+---
+
+spring:
+  profiles: azure
+azure:
+  activedirectory:
+    tenant-id: {yourTenantId}
+    client-id: {yourClientId}
+    client-secret: {yourClientSecret}
+    user-group:
+      allowed-groups: 'group1, group2'  # Adjust as per your needs
+
+
+
+package com.example.jwtwebfluxdemo.util;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+@Component
+public class JwtUtil {
+
+    private String SECRET_KEY = "secret"; // Use a stronger secret key in production!
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    }
+
+    private Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    public String generateToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username);
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // 10 hours
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+    }
+
+    public Boolean validateToken(String token, String username) {
+        final String extractedUsername = extractUsername(token);
+        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    }
+}
+
+
+
+package com.example.jwtwebfluxdemo.model;
+
+public class AuthenticationRequest {
+    private String username;
+    private String password;
+
+    // getters and setters
+}
+
+public class AuthenticationResponse {
+    private String jwt;
+
+    public AuthenticationResponse(String jwt) {
+        this.jwt = jwt;
+    }
+
+    // getters and setters
+}
+
+
+
+package com.example.jwtwebfluxdemo.controller;
+
+import com.example.jwtwebfluxdemo.model.AuthenticationRequest;
+import com.example.jwtwebfluxdemo.model.AuthenticationResponse;
+import com.example.jwtwebfluxdemo.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+
+@RestController
+public class AuthenticationController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/authenticate")
+    public Mono<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
+        // For simplicity, assuming any user can get a token.
+        // In a real-world scenario, you'd authenticate against a database or other back-end.
+        String token = jwtUtil.generateToken(authenticationRequest.getUsername());
+        return Mono.just(new AuthenticationResponse(token));
+    }
+}
+
+
+
+
+package com.example.jwtwebfluxdemo.filter;
+
+import com.example.jwtwebfluxdemo.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+@Component
+public class JwtAuthenticationFilter implements WebFilter {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        String authorizationHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwt = authorizationHeader.substring(7);
+            String username = jwtUtil.extractUsername(jwt);
+
+            if (username != null && jwtUtil.validateToken(jwt, username)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, null);
+                return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+            }
+        }
+        return chain.filter(exchange);
+    }
+}
+
+
+package com.example.jwtwebfluxdemo.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.configuration.builders.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+
+import java.util.Arrays;
+
+@Configuration
+@EnableWebFluxSecurity
+public class SecurityConfig implements WebFluxConfigurer {
+
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        if (Arrays.asList(env.getActiveProfiles()).contains("jwt")) {
+            jwtConfig(http);
+        } else if (Arrays.asList(env.getActiveProfiles()).contains("okta")) {
+            oktaConfig(http);
+        } else if (Arrays.asList(env.getActiveProfiles()).contains("azure")) {
+            azureConfig(http);
+        }
+        return http.build();
+    }
+
+    private void jwtConfig(ServerHttpSecurity http) {
+        http
+            .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            .authorizeExchange()
+                .pathMatchers("/authenticate").permitAll()
+                .anyExchange().authenticated()
+            .and()
+                .httpBasic().disable()
+                .formLogin().disable()
+                .csrf().disable()
+                .logout().disable();
+    }
+
+    private void oktaConfig(ServerHttpSecurity http) {
+        http
+            .authorizeExchange()
+                .anyExchange().authenticated()
+            .and()
+                .oauth2Login()
+            .and()
+                .oauth2ResourceServer().jwt();
+    }
+
+    private void azureConfig(ServerHttpSecurity http) {
+        http
+            .authorizeExchange()
+                .anyExchange().authenticated()
+            .and()
+                .oauth2Login()
+            .and()
+                .oauth2ResourceServer().jwt();
+    }
+}
+
+
+
