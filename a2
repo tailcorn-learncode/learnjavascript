@@ -5,6 +5,46 @@ public class AuthenticationController {
     private JwtUtil jwtUtil;
 
     @Autowired
+    private UserService userService;
+
+    @PostMapping("/authenticate")
+    public Mono<ResponseEntity<String>> authenticate(@RequestBody Mono<AuthenticationRequest> authenticationRequestMono) {
+        return authenticationRequestMono
+            .flatMap(authenticationRequest -> {
+                if (userService.validateUser(authenticationRequest.getUsername(), authenticationRequest.getPassword())) {
+                    String jwtToken = jwtUtil.generateToken(authenticationRequest.getUsername());
+                    return Mono.just(ResponseEntity.ok(jwtToken));
+                } else {
+                    return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials!"));
+                }
+            });
+    }
+}
+
+
+
+
+@Service
+public class UserService {
+
+    public boolean validateUser(String username, String password) {
+        // Logic to validate user credentials. This can involve checking a database, etc.
+        // For simplicity, let's assume any username with password "password" is valid.
+        return "password".equals(password);
+    }
+}
+
+
+
+
+
+@RestController
+public class AuthenticationController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
     private ReactiveAuthenticationManager authenticationManager;
 
     @PostMapping("/authenticate")
