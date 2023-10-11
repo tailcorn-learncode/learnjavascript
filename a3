@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: microservice-1-admin-route
+          uri: lb://microservice-1
+          predicates:
+            - Header=apicode, 1
+            - Header=roletype, admin
+          filters:
+            - RewritePath=/1(/.*)?$, /$\{path}
+
+        - id: microservice-1-member-route
+          uri: lb://microservice-1
+          predicates:
+            - Header=apicode, 1
+            - Header=roletype, member
+          filters:
+            - RewritePath=/1(/.*)?$, /$\{path}
+
+        - id: microservice-2-admin-route
+          uri: lb://microservice-2
+          predicates:
+            - Header=apicode, 2
+            - Header=roletype, admin
+          filters:
+            - RewritePath=/2(/.*)?$, /$\{path}
+
+        - id: microservice-2-member-route
+          uri: lb://microservice-2
+          predicates:
+            - Header=apicode, 2
+            - Header=roletype, member
+          filters:
+            - RewritePath=/2(/.*)?$, /$\{path}
