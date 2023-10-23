@@ -118,3 +118,30 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 })
 export class AppModule { }
 
+
+
+mat-sidenav-container, mat-sidenav-content {
+  height: 100%;
+}
+
+mat-sidenav {
+  width: 250px;
+}
+
+
+
+<app-header></app-header>
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened fixedInViewport="true">
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div fxLayout="column" fxLayoutGap="20px">
+      <app-tracker-milestone></app-tracker-milestone>
+      <app-early-career></app-early-career>
+      <app-completed-milestones></app-completed-milestones>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
