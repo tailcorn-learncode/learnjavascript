@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright Testing Page</title>
+</head>
+<body>
+
+<!-- Text input -->
+<input type="text" role="textbox" placeholder="Enter your name">
+
+<!-- Checkboxes and radio buttons -->
+<label>
+    <input type="checkbox"> I agree to the terms above
+</label>
+<br>
+<label>
+    <input type="checkbox"> Subscribe to newsletter
+</label>
+<br>
+<label>
+    <input type="radio" name="size"> XS
+</label>
+<label>
+    <input type="radio" name="size"> XL
+</label>
+
+<!-- Select options -->
+<label>Choose a color:
+    <select>
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+    </select>
+</label>
+<br>
+<label>Choose multiple colors:
+    <select multiple>
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+    </select>
+</label>
+
+<!-- Mouse click -->
+<button role="button">Click me</button>
+<p>Item</p>
+
+<!-- Type characters -->
+<textarea id="area" rows="4" cols="50"></textarea>
+
+<!-- Keys and shortcuts -->
+<button>Submit</button>
+
+<!-- Upload files -->
+<label>Upload file:
+    <input type="file">
+</label>
+<br>
+<label>Upload files:
+    <input type="file" multiple>
+</label>
+
+<!-- Focus element -->
+<input type="password" label="password">
+
+<!-- Drag and Drop -->
+<div id="item-to-be-dragged">Drag me</div>
+<div id="item-to-drop-at">Drop here</div>
+
+<!-- alert(), confirm(), prompt() dialogs -->
+<button role="button" onclick="alert('This is an alert!')">Show Alert</button>
+
+<!-- Frames -->
+<iframe class="frame-class" src="about:blank"></iframe>
+<!-- Note: This is a placeholder iframe. For actual testing, you'd need an embedded webpage with content. -->
+
+<!-- Handling new pages -->
+<a href="https://www.example.com" target="_blank">open new tab</a>
+
+</body>
+</html>
