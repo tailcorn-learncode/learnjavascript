@@ -1,3 +1,49 @@
+<div class="file-list" *ngIf="files.length">
+  <div *ngFor="let file of files" class="file-item">
+    <mat-icon>description</mat-icon> <!-- File Icon -->
+    <span>{{ file.name }}</span>
+    <mat-progress-bar mode="determinate" [value]="file.progress"></mat-progress-bar>
+    <mat-icon (click)="removeFile(file)">delete</mat-icon> <!-- Delete Icon -->
+  </div>
+</div>
+
+
+removeFile(fileToRemove: any) {
+  const index = this.files.indexOf(fileToRemove);
+  if (index > -1) {
+    this.files.splice(index, 1);
+  }
+}
+
+
+.file-list {
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    mat-icon {
+      margin-right: 10px;
+    }
+
+    span {
+      flex-grow: 1;
+    }
+
+    mat-progress-bar {
+      width: 100%;
+      margin: 5px 0;
+    }
+  }
+}
+
+
+
+
+
+
+
 file upload
 
 <mat-dialog-content>
