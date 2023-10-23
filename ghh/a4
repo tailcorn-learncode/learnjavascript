@@ -1,4 +1,38 @@
 
+files: { data: File, progress?: number }[] = [];
+
+onFileSelected(event: any) {
+  const selectedFiles = <FileList>event.target.files;
+  for (let i = 0; i < selectedFiles.length; i++) {
+    const file = selectedFiles[i];
+    this.files.push({ data: file, progress: 0 });
+    // Handle uploading the file and updating its progress if required.
+  }
+}
+
+
+<div class="file-list" *ngIf="files.length">
+  <div *ngFor="let fileItem of files" class="file-item">
+    <mat-icon>description</mat-icon> <!-- File Icon -->
+    <span>{{ fileItem.data.name }}</span>
+    <mat-progress-bar mode="determinate" [value]="fileItem.progress"></mat-progress-bar>
+    <mat-icon (click)="removeFile(fileItem)">delete</mat-icon> <!-- Delete Icon -->
+  </div>
+</div>
+
+
+
+removeFile(fileToRemove: { data: File, progress?: number }) {
+  const index = this.files.findIndex(file => file.data === fileToRemove.data);
+  if (index > -1) {
+    this.files.splice(index, 1);
+  }
+}
+
+
+
+
+
 <input type="file" #fileInput (change)="onFileSelected($event)" hidden multiple>
 
 onFileSelected(event: any) {
