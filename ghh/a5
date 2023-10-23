@@ -4,6 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playwright Testing Page</title>
+    <style>
+        #item-to-be-dragged, #item-to-drop-at {
+            width: 150px;
+            height: 50px;
+            border: 1px solid black;
+            margin-top: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #item-to-drop-at {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ... other elements ... -->
+
+<!-- Drag and Drop -->
+<div id="item-to-be-dragged" draggable="true">Drag me</div>
+<div id="item-to-drop-at">Drop here</div>
+
+<script>
+    const dragItem = document.getElementById('item-to-be-dragged');
+    const dropZone = document.getElementById('item-to-drop-at');
+
+    dragItem.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text', e.target.id);
+    });
+
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const data = e.dataTransfer.getData('text');
+        if (data === 'item-to-be-dragged') {
+            dropZone.appendChild(dragItem);
+        }
+    });
+</script>
+
+<!-- ... other elements ... -->
+
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright Testing Page</title>
 </head>
 <body>
 
