@@ -1,3 +1,50 @@
+<!-- Heading outside the card -->
+<h2 class="tracker-milestone-heading">Tracker & Milestone</h2>
+
+<mat-card class="tracker-milestone-card">
+    <!-- Text on top of the road image -->
+    <h3 class="tracking-text">Tracking Towards Retirement</h3>
+
+    <!-- Road image and other card content -->
+    <img src="path-to-road-image.jpg" alt="Road Image" class="road-image">
+    <!-- ... other card content ... -->
+</mat-card>
+
+
+
+.tracker-milestone-heading {
+    font-size: 18px; /* adjust based on image */
+    margin-bottom: 10px; /* space between the text and the card */
+    text-align: center; /* center the text */
+}
+
+.tracker-milestone-card {
+    position: relative; /* relative positioning for child elements */
+    border-radius: 10px; /* rounded corners */
+    /* ... other styles ... */
+}
+
+.tracking-text {
+    position: absolute; /* absolute positioning within the card */
+    top: 10px; /* adjust to position the text properly on top of the road image */
+    left: 50%;
+    transform: translateX(-50%); /* center the text */
+    z-index: 2; /* ensure the text is above the image */
+    color: white; /* adjust color if needed */
+    font-size: 24px; /* adjust based on image */
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* slight shadow for readability */
+}
+
+.road-image {
+    width: 100%; /* make the image responsive */
+    z-index: 1; /* set below the tracking-text */
+    position: relative;
+}
+
+
+
+
 /*... other styles ...*/
 
 mat-list-item {
