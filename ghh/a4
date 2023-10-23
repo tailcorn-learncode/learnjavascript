@@ -1,3 +1,17 @@
+<!-- ... Other parts of the template remain unchanged ... -->
+
+<!-- If actions are to be shown, add Edit and Delete icons -->
+<ng-container *ngIf="showActions" matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <mat-icon (click)="onEdit(element)" style="cursor: pointer;">edit</mat-icon>
+      <mat-icon (click)="onDelete(element)" style="cursor: pointer; color: red;">delete</mat-icon>
+    </mat-cell>
+</ng-container>
+
+<!-- ... Rest of the template ... -->
+
+
 /* Basic table styling */
 mat-table {
   width: 100%;
