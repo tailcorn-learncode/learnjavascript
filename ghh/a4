@@ -1,3 +1,54 @@
+/* Basic table styling */
+mat-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
+  text-align: left;
+}
+
+/* Header cell styling */
+mat-header-cell {
+  background-color: #f2f2f2;
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: bold;
+}
+
+/* Data cell styling */
+mat-cell {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Icon styling inside cells */
+mat-icon {
+  margin-right: 10px;
+}
+
+/* Action buttons styling */
+button {
+  margin: 0 5px;
+  background-color: #4CAF50;  /* Green background */
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  transition-duration: 0.4s;  /* Transition effect */
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Add a hover effect for buttons */
+button:hover {
+  background-color: #45a049;  /* Darker green */
+  color: white;
+}
+
+
+
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
