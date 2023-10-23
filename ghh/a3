@@ -1,3 +1,392 @@
+<mat-toolbar color="primary">
+  <span class="logo">State of Michigan<br>Office of Retirement Services</span>
+  <span class="spacer"></span>
+  <mat-breadcrumbs class="breadcrumbs">
+    Home > Tracker & Milestone
+  </mat-breadcrumbs>
+  <span class="spacer"></span>
+  <div class="profile">
+    <mat-icon>account_circle</mat-icon>
+    <span class="username">Warren Lansing</span>
+  </div>
+</mat-toolbar>
+
+
+
+.mat-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.breadcrumbs {
+  margin: 0 20px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  margin-left: 10px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+
+
+
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+
+@NgModule({
+  imports: [
+    MatToolbarModule,
+    MatIconModule,
+    // ... other modules
+  ],
+  // ... rest of your AppModule
+})
+export class AppModule { }
+
+
+
+
+<mat-nav-list>
+  <div class="logo-section">
+    <mat-icon>account_balance</mat-icon> <!-- Placeholder for the logo -->
+    <span>State of Michigan<br>Office of Retirement Services</span>
+  </div>
+  
+  <mat-list-item>
+    <mat-icon matListIcon>home</mat-icon>
+    <span matLine>Home</span>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon matListIcon>person</mat-icon>
+    <span matLine>Profile</span>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon matListIcon>mail</mat-icon>
+    <span matLine>Mail</span>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon matListIcon>settings</mat-icon>
+    <span matLine>Settings</span>
+  </mat-list-item>
+
+  <div class="section-header">Section Header</div>
+  
+  <mat-list-item>
+    <span matLine>Label</span>
+  </mat-list-item>
+
+  <mat-list-item>
+    <span matLine>Label</span>
+  </mat-list-item>
+
+  <!-- Add more labels or items as needed -->
+
+</mat-nav-list>
+
+
+
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  padding: 15px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.logo-section mat-icon {
+  margin-right: 10px;
+  font-size: 32px;
+}
+
+.section-header {
+  padding: 10px 15px;
+  background-color: #E0E0E0;
+  font-weight: bold;
+}
+
+
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+
+@NgModule({
+  imports: [
+    MatListModule,
+    MatIconModule,
+    // ... other modules
+  ],
+  // ... rest of your AppModule
+})
+export class AppModule { }
+
+
+
+<div class="banner">
+  <h1>Tracking Towards Retirement</h1>
+</div>
+
+<mat-tab-group animationDuration="0ms">
+  <mat-tab label="Early Career">
+    <div class="content-section">
+      <p>blah blah</p>
+      <button mat-raised-button color="primary">See More Details on Early Career</button>
+    </div>
+  </mat-tab>
+  
+  <mat-tab label="Mid Career">
+    <!-- Content for Mid Career tab -->
+  </mat-tab>
+
+  <mat-tab label="Late Career">
+    <!-- Content for Late Career tab -->
+  </mat-tab>
+</mat-tab-group>
+
+
+
+
+.banner {
+  background: url('/path-to-your-image.jpg') no-repeat center center;
+  background-size: cover;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.content-section {
+  padding: 20px;
+}
+
+button {
+  margin-top: 10px;
+}
+
+
+
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+
+@NgModule({
+  imports: [
+    MatTabsModule,
+    MatButtonModule,
+    // ... other modules
+  ],
+  // ... rest of your AppModule
+})
+export class AppModule { }
+
+
+
+
+<div class="milestone" *ngFor="let milestone of milestones">
+  <div class="milestone-date">{{ milestone.date }}</div>
+  <div class="milestone-icon">
+    <mat-icon>{{ milestone.icon }}</mat-icon>
+  </div>
+  <div class="milestone-info">
+    <h3>{{ milestone.title }}</h3>
+    <p>{{ milestone.description }}</p>
+    <div class="milestone-labels">
+      <div class="label-item" *ngFor="let label of milestone.labels">
+        <div class="label-icon">
+          <mat-icon>{{ label.icon }}</mat-icon>
+        </div>
+        <div class="label-text">
+          <h4>{{ label.title }}</h4>
+          <p>{{ label.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-completed-milestones',
+  templateUrl: './completed-milestones.component.html',
+  styleUrls: ['./completed-milestones.component.css']
+})
+export class CompletedMilestonesComponent {
+  milestones = [
+    {
+      date: 'September 5th, 2023',
+      icon: 'event_note',  // replace with the icon you want
+      title: '1 Year Work Anniversary',
+      description: 'blah blah',
+      labels: [
+        {
+          icon: 'note_add', // replace with the icon you want
+          title: 'Have a Voya Consultation',
+          description: 'Supporting line text lorem ipsum...'
+        },
+        // ... add more labels as needed
+      ]
+    },
+    // ... add more milestones as needed
+  ];
+}
+
+
+
+
+.milestone {
+  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.milestone-date {
+  flex: 0 0 150px;
+  font-weight: bold;
+}
+
+.milestone-icon {
+  flex: 0 0 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.milestone-info {
+  flex: 1;
+}
+
+.milestone-labels {
+  display: flex;
+  margin-top: 10px;
+}
+
+.label-item {
+  display: flex;
+  margin-right: 20px;
+}
+
+.label-icon {
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label-text {
+  flex: 1;
+}
+
+
+
+import { MatIconModule } from '@angular/material/icon';
+
+@NgModule({
+  imports: [
+    MatIconModule,
+    // ... other modules
+  ],
+  // ... rest of your AppModule
+})
+export class AppModule { }
+
+
+<div class="tracker-container">
+  <div class="header">
+    <mat-icon>timeline</mat-icon>  <!-- Adjust the icon name if needed -->
+    <h2>Tracker & Milestone</h2>
+  </div>
+  
+  <div class="road-banner">
+    <!-- Image or background of the road here -->
+  </div>
+  
+  <div class="milestone-indicator">
+    <div class="milestone early">
+      <mat-icon>directions_car</mat-icon> <!-- Adjust the icon name if needed -->
+      Early Career
+    </div>
+    <div class="milestone mid">Mid Career</div>
+    <div class="milestone late">Late Career</div>
+  </div>
+</div>
+
+
+
+.tracker-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px; /* Rounded corners */
+  background-color: white;
+  padding: 15px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.header mat-icon {
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.road-banner {
+  background: url('/path-to-road-image.jpg') no-repeat center center;
+  background-size: cover;
+  height: 120px; /* Adjust based on your image */
+  position: relative;
+}
+
+.milestone-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -30px; /* This will position the car icon over the road banner */
+}
+
+.milestone {
+  width: 33%;
+  text-align: center;
+  font-weight: bold;
+}
+
+.milestone mat-icon {
+  font-size: 30px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <app-header></app-header>
 <mat-sidenav-container fullscreen>
   <mat-sidenav mode="side" opened>
