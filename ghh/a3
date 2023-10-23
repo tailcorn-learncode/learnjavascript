@@ -1,0 +1,120 @@
+<app-header></app-header>
+<mat-sidenav-container fullscreen>
+  <mat-sidenav mode="side" opened>
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div fxLayout="column" fxLayoutGap="20px">
+      <app-tracker-milestone></app-tracker-milestone>
+      <app-early-career></app-early-career>
+      <app-completed-milestones></app-completed-milestones>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+mat-toolbar {
+  background-color: #004c9c;
+}
+
+mat-sidenav {
+  width: 250px;
+  background-color: #f1f1f1;
+}
+
+.banner img {
+  width: 100%;
+  height: auto;
+}
+
+.mat-tab-group {
+  margin: 20px 0;
+}
+
+mat-card {
+  margin: 20px 0;
+  padding: 15px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  mat-sidenav {
+    width: 200px;
+  }
+}
+
+sidebar.component.css:
+
+
+mat-nav-list {
+  width: 100%;
+}
+
+mat-list-item {
+  margin: 10px 0;
+}
+
+h4 {
+  margin-left: 10px;
+}
+
+
+header.component.css:
+
+
+mat-toolbar {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+button {
+  margin-right: 10px;
+}
+
+
+
+tracker-milestone.component.css:
+
+
+.banner {
+  margin: 20px 0;
+}
+
+
+
+early-career.component.css:
+
+
+h2 {
+  margin-top: 20px;
+}
+
+
+completed-milestones.component.css:
+
+h2 {
+  margin-top: 20px;
+}
+
+
+npm install @angular/flex-layout
+
+
+import { FlexLayoutModule } from '@angular/flex-layout';
+
+// ...
+
+@NgModule({
+  imports: [
+    FlexLayoutModule,
+    // other imports
+  ],
+  // ...
+})
+export class AppModule { }
+
