@@ -1,53 +1,102 @@
-datepicker
+file upload
 
-import { Component } from '@angular/core';
-import { MatCalendar } from '@angular/material/datepicker';
+<mat-dialog-content>
+  <h2>Upload file</h2>
+  <p>Max file size is 500kb. Supported file types are .jpg, .png, and .pdf.</p>
+
+  <div class="upload-zone">
+    <div>
+      Drag and drop your file
+    </div>
+    <span>or</span>
+    <button mat-raised-button color="primary">
+      <input type="file" #fileInput (change)="onFileSelected($event)" hidden>
+      Browse for file
+    </button>
+  </div>
+
+  <div class="file-list" *ngIf="files.length">
+    <div *ngFor="let file of files" class="file-item">
+      <mat-icon>description</mat-icon>
+      <span>{{ file.name }}</span>
+       <mat-progress-bar mode="determinate" [value]="file.progress"></mat-progress-bar>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onUpload()">Upload</button>
+</mat-dialog-actions>
+
+
+import { Component, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
-  selector: 'app-datepicker-header',
-  template: `
-    <div class="header">
-      <span>{{calendar.currentView === 'month' ? 'Depart - Return dates' : calendar.activeDate | date: 'MMMM yyyy'}}</span>
-    </div>
-  `,
-  styles: [`
-    .header {
-      font-size: 1.2em;
-      padding: 8px;
-      text-align: center;
-    }
-  `]
+  selector: 'app-my-upload',
+  templateUrl: './my-upload.component.html',
+  styleUrls: ['./my-upload.component.scss']
 })
-export class DatepickerHeaderComponent {
-  constructor(public calendar: MatCalendar<Date>) {}
+export class MyUploadComponent {
+  files: File[] = [];
+
+  @ViewChild('fileInput') fileInput: ElementRef;
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.files.push(...Array.from(input.files));
+    }
+  }
+
+  onCancel() {
+    // Handle cancel logic here
+  }
+
+ onUpload() {
+    // Mock uploading progress for each file
+    this.files.forEach((file: any) => {
+      file.progress = 0;
+      const interval = setInterval(() => {
+        if (file.progress < 100) {
+          file.progress += 10;
+        } else {
+          clearInterval(interval);
+        }
+      }, 500);
+    });
+  }
 }
 
 
-<mat-form-field appearance="fill">
-  <input matInput [matDatepicker]="picker" placeholder="Select date">
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker [calendarHeaderComponent]="headerComp"></mat-datepicker>
-</mat-form-field>
 
+.upload-zone {
+  border: dashed 2px gray;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 
-import { NgModule } from '@angular/core';
-import { MatDatepickerModule, MatFormFieldModule, MatInputModule } from '@angular/material';
-import { MyDatepickerComponent } from './my-datepicker.component';
-import { DatepickerHeaderComponent } from './datepicker-header.component';
+  input[type="file"] {
+    display: none;
+  }
+}
 
-@NgModule({
-  declarations: [
-    MyDatepickerComponent,
-    DatepickerHeaderComponent
-  ],
-  imports: [
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule
-  ],
-  exports: [MyDatepickerComponent],
-  entryComponents: [DatepickerHeaderComponent]
-})
-export class MyDatepickerModule { }
+.file-list {
+  .file-item {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-bottom: 10px;
 
+    mat-icon {
+      margin-bottom: 5px;
+    }
+
+    mat-progress-bar {
+      width: 100%;
+      margin-top: 5px;
+    }
+  }
+}
 
