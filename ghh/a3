@@ -1,3 +1,81 @@
+<!-- Heading outside of the card -->
+<h2>Completed Milestones</h2>
+
+<div fxLayout="row" fxLayoutGap="20px" class="completed-milestones-card">
+
+    <!-- Left Section: Image -->
+    <div fxFlex="30%">
+        <img src="path-to-your-milestone-image.jpg" alt="Milestone Icon" class="milestone-image">
+    </div>
+    
+    <!-- Right Section: Content -->
+    <div fxFlex="70%">
+        <!-- Milestone Item. You can repeat this for each milestone or use *ngFor if data-driven -->
+        <div class="milestone-item">
+            <div class="milestone-date">Milestone Reached on September 5th, 2023</div>
+            <!-- Other details for the milestone can be added here -->
+        </div>
+        <!-- Repeat for other milestones -->
+    </div>
+    
+</div>
+
+
+.completed-milestones-card {
+    background-color: #EAEAEA; /* A gray background color, adjust as necessary */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.milestone-image {
+    max-width: 100%;
+    height: auto;
+}
+
+.milestone-item {
+    margin-top: 10px; /* Add some space between items */
+}
+
+.milestone-date {
+    font-weight: bold; /* If you want the date to stand out */
+}
+
+
+
+
+
+
+<div fxLayout="row" fxLayoutGap="20px" class="early-career-container">
+    
+    <!-- Left Section: Description -->
+    <div fxFlex="60%">
+        <h2>Early Career</h2>
+        <p>blah blah</p>
+        <button mat-button>See More Details on Early Career</button>
+    </div>
+    
+    <!-- Right Section: Image -->
+    <div fxFlex="40%">
+        <img src="path-to-your-image.jpg" alt="Early Career Image" class="early-career-image">
+    </div>
+    
+</div>
+
+
+
+.early-career-container {
+    background-color: #F5F5F5; /* Adjust to the background color you need */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners as per the image */
+}
+
+.early-career-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px; /* If the image also has rounded corners */
+}
+
+
 
 <!-- Heading outside the card -->
 <h2 class="tracker-milestone-heading">Tracker & Milestone</h2>
