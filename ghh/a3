@@ -1,3 +1,23 @@
+/*... other styles ...*/
+
+mat-list-item {
+    display: flex;
+    align-items: center; /* Align items vertically centered */
+    justify-content: flex-start; /* Align items to the start */
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px; /* Add some space between items */
+    padding: 8px 16px; /* Add padding to list items for a better look. Adjust as needed. */
+}
+
+mat-icon {
+    margin-right: 16px; /* Space between the icon and the text. Adjust if necessary. */
+}
+
+/*... other styles ...*/
+
+
+
 mat-nav-list {
     background-color: #E0E0E0;  /* Gray background */
     height: 100%;
