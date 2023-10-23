@@ -1,0 +1,101 @@
+ng generate component sidebar
+ng generate component header
+ng generate component tracker-milestone
+ng generate component early-career
+ng generate component completed-milestones
+
+
+
+header.component.html
+
+<mat-toolbar color="primary">
+  <span>State of Michigan - Office of Retirement Services</span>
+  <span class="spacer"></span>
+  <button mat-icon-button>
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <span>Warren Lansing</span>
+</mat-toolbar>
+
+
+sidebar.component.html
+
+<mat-nav-list>
+  <mat-list-item>
+    <mat-icon mat-list-icon>home</mat-icon>
+    <h4 mat-line>Home</h4>
+  </mat-list-item>
+  <!-- Add other list items similarly -->
+</mat-nav-list>
+
+tracker-milestone.component.html
+
+<div class="banner">
+  <img src="path_to_your_image" alt="Tracking Towards Retirement">
+</div>
+<mat-tab-group>
+  <mat-tab label="Early Career"> <!-- Content for Early Career --> </mat-tab>
+  <mat-tab label="Mid Career"> <!-- Content for Mid Career --> </mat-tab>
+  <mat-tab label="Late Career"> <!-- Content for Late Career --> </mat-tab>
+</mat-tab-group>
+
+
+early-career.component.html
+
+<h2>Early Career</h2>
+<p>blah blah</p>
+<a href="#">See More Details on Early Career</a>
+
+
+completed-milestones.component.html
+
+<h2>Completed Milestones</h2>
+<mat-card>
+  <h3>Milestone Reached on September 5th, 2023</h3>
+  <p>1 YEAR WORK ANNIVERSARY</p>
+  <p>blah blah</p>
+</mat-card>
+<!-- Add more <mat-card> elements for each milestone -->
+
+
+Sample CSS for styling
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.banner img {
+  width: 100%;
+  height: auto;
+}
+
+mat-toolbar {
+  background-color: #004c9c; /* Dark blue color for header */
+}
+
+mat-sidenav {
+  width: 250px;
+  background-color: #f1f1f1; /* Light grey color for sidebar */
+}
+
+mat-card {
+  margin: 20px 0;
+}
+
+app.component.html
+
+<app-header></app-header>
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened>
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <app-tracker-milestone></app-tracker-milestone>
+    <app-early-career></app-early-career>
+    <app-completed-milestones></app-completed-milestones>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+
+
