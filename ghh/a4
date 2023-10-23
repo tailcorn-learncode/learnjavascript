@@ -9,10 +9,11 @@ file upload
       Drag and drop your file
     </div>
     <span>or</span>
-    <button mat-raised-button color="primary">
-      <input type="file" #fileInput (change)="onFileSelected($event)" hidden>
-      Browse for file
-    </button>
+   <button mat-raised-button color="primary" (click)="triggerFileInput()">
+  Browse for file
+</button>
+<input type="file" #fileInput (change)="onFileSelected($event)" hidden>
+
   </div>
 
   <div class="file-list" *ngIf="files.length">
@@ -42,6 +43,10 @@ export class MyUploadComponent {
   files: File[] = [];
 
   @ViewChild('fileInput') fileInput: ElementRef;
+
+triggerFileInput() {
+  this.fileInput.nativeElement.click();
+}
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
