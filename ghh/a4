@@ -1,3 +1,76 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+@Component({
+  selector: 'app-custom-datatable',
+  templateUrl: './custom-datatable.component.html',
+  styleUrls: ['./custom-datatable.component.css']
+})
+export class CustomDatatableComponent {
+
+  @Input() columns: string[] = [];
+  @Input() data: any[] = [];
+  @Input() showActions: boolean = false;
+
+  @Output() edit: EventEmitter<any> = new EventEmitter();
+  @Output() delete: EventEmitter<any> = new EventEmitter();
+
+  isIconObject(value: any): boolean {
+    return typeof value === 'object' && value?.icon;
+  }
+
+  onEdit(item: any): void {
+    this.edit.emit(item);
+  }
+
+  onDelete(item: any): void {
+    this.delete.emit(item);
+  }
+
+}
+
+
+
+<mat-table [dataSource]="data">
+
+  <!-- Define the columns and the data for each column -->
+  <ng-container *ngFor="let col of columns" [matColumnDef]="col">
+    <mat-header-cell *matHeaderCellDef> {{ col }} </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+
+      <!-- If the data is an object with an icon, display icon and text -->
+      <ng-container *ngIf="isIconObject(element[col])">
+        <mat-icon>{{ element[col].icon }}</mat-icon>
+        {{ element[col].text }}
+      </ng-container>
+
+      <!-- If not an object, just display the data -->
+      <ng-container *ngIf="!isIconObject(element[col])">
+        {{ element[col] }}
+      </ng-container>
+
+    </mat-cell>
+  </ng-container>
+
+  <!-- If actions are to be shown, add Edit and Delete buttons -->
+  <ng-container *ngIf="showActions" matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <button mat-button (click)="onEdit(element)">Edit</button>
+      <button mat-button (click)="onDelete(element)">Delete</button>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Add the columns to the row definitions -->
+  <mat-header-row *matHeaderRowDef="columns.concat(showActions ? ['actions'] : [])"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: columns.concat(showActions ? ['actions'] : [])"></mat-row>
+
+</mat-table>
+
+
+
+
+
+
 ng generate component custom-datatable
 
 
