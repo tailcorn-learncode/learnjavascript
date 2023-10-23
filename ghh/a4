@@ -1,3 +1,17 @@
+
+<input type="file" #fileInput (change)="onFileSelected($event)" hidden multiple>
+
+onFileSelected(event: any) {
+  const selectedFiles = <FileList>event.target.files;
+  for (let i = 0; i < selectedFiles.length; i++) {
+    const file = selectedFiles[i];
+    this.files.push({ name: file.name, progress: 0 }); // For now, just storing the name and progress. You can extend this to include the file object if needed.
+    // If you're using some method to upload the files, you can do so here.
+  }
+}
+
+
+
 <div class="file-list" *ngIf="files.length">
   <div *ngFor="let file of files" class="file-item">
     <mat-icon>description</mat-icon> <!-- File Icon -->
