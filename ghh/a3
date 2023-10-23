@@ -1,6 +1,81 @@
 <!-- Heading outside of the card -->
 <h2>Completed Milestones</h2>
 
+<div class="completed-milestones-card">
+
+    <!-- Left Section: Image -->
+    <div fxLayout="column" fxFlex="30%">
+        <img src="path-to-your-milestone-image.jpg" alt="Milestone Icon" class="milestone-image">
+    </div>
+    
+    <!-- Right Section: Content -->
+    <div fxLayout="column" fxFlex="70%" class="milestone-details">
+        <!-- Milestone Item. You can repeat this for each milestone or use *ngFor if data-driven -->
+        <div class="milestone-item" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="milestone-icon">event_note</mat-icon>
+            <span class="milestone-date">Milestone Reached on September 5th, 2023</span>
+        </div>
+        <div class="milestone-label">Label text</div>
+        <div class="milestone-action">Have a Voya Consultation</div>
+        <!-- Divider -->
+        <mat-divider></mat-divider>
+        <!-- Repeat for other milestones -->
+    </div>
+    
+</div>
+
+.completed-milestones-card {
+    background-color: #EAEAEA; /* Gray background color */
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+}
+
+.milestone-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px; /* Some space beneath the image */
+}
+
+.milestone-details {
+    margin-left: 20px; /* Some space between the image and the details */
+}
+
+.milestone-item {
+    margin-top: 10px; /* Some space between items */
+    align-items: center;
+    display: flex;
+}
+
+.milestone-icon {
+    margin-right: 10px;
+    color: #333; /* Dark color for the icon, adjust as necessary */
+}
+
+.milestone-date {
+    font-weight: bold;
+}
+
+.milestone-label {
+    margin-top: 10px;
+    font-size: 16px; /* Adjust as necessary */
+}
+
+.milestone-action {
+    margin-top: 5px;
+    font-size: 14px; /* Adjust as necessary */
+    color: #1976D2; /* Blue color, adjust as necessary */
+}
+
+mat-divider {
+    margin: 15px 0; /* Add some space above and below the divider */
+}
+
+
+
+<!-- Heading outside of the card -->
+<h2>Completed Milestones</h2>
+
 <div fxLayout="row" fxLayoutGap="20px" class="completed-milestones-card">
 
     <!-- Left Section: Image -->
