@@ -1,3 +1,40 @@
+[
+    {"username": "user1", "password": "password1"},
+    {"username": "user2", "password": "password2"},
+    {"username": "user3", "password": "password3"}
+]
+
+
+import playwright.sync as p
+import json
+
+# Define a Playwright test function that takes data as parameters
+def login_test(username, password):
+    with p.sync_playwright() as sync_p:
+        browser = sync_p.chromium.launch()
+        page = browser.new_page()
+
+        page.goto('https://example.com/login')
+        page.fill('input[name="username"]', username)
+        page.fill('input[name="password"]', password)
+        page.click('input[type="submit"]')
+
+        # Add assertions or further actions here as needed
+
+        page.close()
+        browser.close()
+
+# Read data from the JSON file
+with open('testdata.json', 'r') as file:
+    test_data = json.load(file)
+
+# Iterate through the data and run the test
+for data in test_data:
+    username = data['username']
+    password = data['password']
+    login_test(username, password)
+
+
 import playwright.sync as p
 import pandas as pd
 
