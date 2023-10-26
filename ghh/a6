@@ -1,4 +1,17 @@
 
+
+<div class="bg-gray-300 flex items-center rounded-r-lg justify-center">
+                                            <div class="flex relative w-16">
+                                               
+                                                <input x-model="split.split" :disabled="!isEditable()" @change="splitcalc(split.text)" min="0" :max="split.max" type="number" name="" placeholder="0" value="" class="bg-gray-300 block border border-gray-300 caret-indigo-600 font-black h-[55px] flex-1 focus:border-indigo-600 focus:ring-indigo-600 min-w-0 placeholder-gray-500 rounded-md text-2xl ml-2 pl-2" max="100">
+
+                                                <div class="absolute flex inset-y-0 items-center pointer-events-none right-1 top-1/2 transform -translate-y-1/2 text-lg text-gray-900">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
