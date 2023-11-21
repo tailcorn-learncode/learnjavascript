@@ -1,0 +1,301 @@
+<div class="w-[871px] h-[480px] relative rounded-2xl border border-neutral-300">
+  <!-- Pressed Error + Unselected -->
+  <div class="h-12 left-[565px] top-[404px] absolute rounded-[100px] justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-20 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-red-700"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Focussed Error + Unselected -->
+  <div class="h-12 left-[379px] top-[404px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-20 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-red-700"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text  </div>
+          </div>
+      </div>
+  </div>
+  <!-- Hovered Error + Unselected -->
+  <div class="h-12 left-[193px] top-[404px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-red-700"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+  <!-- Default Error + Unselected -->
+  <div class="h-12 left-[15px] top-[404px] absolute justify-center items-center inline-flex">
+      <div class="p-[11px] rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-red-700"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+  <!-- Pressed Error + Indeterminate-->
+  <div class="h-12 left-[565px] top-[332px] absolute rounded-[100px] justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-20 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+  <!-- Focussed Error + Indeterminate-->
+  <div class="h-12 left-[379px] top-[332px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-20 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Hovered Error + Indeterminate-->
+  <div class="h-12 left-[193px] top-[332px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Default Error + Indeterminate-->
+  <div class="h-12 left-[15px] top-[332px] absolute justify-center items-center inline-flex">
+      <div class="p-[11px] rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Pressed Error + Selected-->
+  <div class="h-12 left-[565px] top-[260px] absolute rounded-[100px] justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-20 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text2 </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Focussed Error + Selected-->
+  <div class="h-12 left-[379px] top-[260px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-20 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Hovered Error + Selected-->
+  <div class="h-12 left-[193px] top-[260px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-red-700 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Default Error + Selected-->
+  <div class="h-12 left-[15px] top-[260px] absolute justify-center items-center inline-flex">
+      <div class="p-[11px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-red-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Pressed UnSelected-->
+  <div class="h-12 left-[565px] top-[188px] absolute rounded-[100px] justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-zinc-900 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-zinc-900"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Focussed UnSelected-->
+  <div class="h-12 left-[379px] top-[188px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-zinc-900 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-zinc-900"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Hovered UnSelected-->
+  <div class="h-12 left-[193px] top-[188px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-zinc-900 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-zinc-900"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Default UnSelected-->
+  <div class="h-12 left-[15px] top-[188px] absolute justify-center items-center inline-flex">
+      <div class="p-[11px] rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] rounded-sm border-2 border-zinc-700"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Pressed Indeterminate-->
+  <div class="h-12 left-[565px] top-[116px] absolute rounded-[100px] justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-slate-500 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Focussed Indeterminate-->
+  <div class="h-12 left-[379px] top-[116px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-slate-500 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Hovered Indeterminate-->
+  <div class="h-12 left-[193px] top-[116px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-slate-500 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Default Indeterminate-->
+  <div class="h-12 left-[15px] top-[116px] absolute justify-center items-center inline-flex">
+      <div class="p-[11px] rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Pressed Selected-->
+  <div class="h-12 left-[565px] top-[44px] absolute rounded-[100px] justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-slate-500 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Focussed Selected-->
+  <div class="h-12 left-[379px] top-[44px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-slate-500 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="self-stretch flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Hovered Selected-->
+  <div class="h-12 left-[193px] top-[44px] absolute justify-start items-start gap-2 inline-flex">
+      <div class="p-[11px] bg-slate-500 bg-opacity-10 rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Default Selected-->
+  <div class="left-[15px] top-[44px] absolute justify-start items-start inline-flex">
+      <div class="p-[11px] rounded-[100px] justify-center items-center flex">
+          <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+          <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+      </div>
+      <div class="flex-col justify-start items-start inline-flex">
+          <div class="self-stretch pt-2 justify-center items-center gap-2.5 inline-flex">
+              <div class="grow shrink basis-0 text-zinc-900 text-base font-normal font-['Roboto'] leading-normal tracking-wide">Label text </div>
+          </div>
+      </div>
+  </div>
+</div>
