@@ -1,0 +1,21 @@
+<div class="w-[360px] h-14 flex-col justify-center items-center inline-flex">
+    <div class="w-[360px] h-14 left-0 top-0 absolute"></div>
+    <div class="self-stretch h-14 pl-4 pr-6 py-2 justify-start items-center gap-4 inline-flex">
+        <div class="flex-col justify-center items-start inline-flex">
+            <div class="w-10 h-10 relative bg-blue-100 rounded-[100px]">
+                <div class="w-10 h-10 left-0 top-0 absolute text-center text-slate-900 text-base font-medium font-['Roboto'] leading-normal tracking-tight">WL</div>
+            </div>
+        </div>
+        <div class="grow shrink basis-0 self-stretch flex-col justify-center items-start inline-flex">
+            <div class="self-stretch text-zinc-700 text-base font-normal font-['Roboto'] leading-normal tracking-wide">List item</div>
+        </div>
+        <div class="justify-start items-center gap-2.5 flex">
+            <div class="justify-start items-start gap-1 flex">
+                <div class="p-[11px] rounded-[100px] justify-center items-center flex">
+                    <div class="w-[18px] h-[18px] bg-sky-700 rounded-sm"></div>
+                    <div class="w-6 h-6 left-[8px] top-[8px] absolute"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
