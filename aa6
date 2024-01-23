@@ -1,0 +1,169 @@
+package gov.mipath.atlas.admin.common.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import gov.mipath.atlas.admin.common.model.Address;
+
+public interface AddressRepository extends JpaRepository<Address, Integer> {
+    // Additional methods if required
+}
+
+
+@Service
+public class AddressService {
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
+
+    public List<AddressDto> getAddressesByOrganizationId(Integer organizationId) {
+        return addressRepository.findByOrganizationId(organizationId).stream()
+                                .map(AddressDto::create)
+                                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateAddressesForOrganization(Integer organizationId, List<AddressDto> addressDtos) {
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new RuntimeException("Organization not found"));
+
+        // This code assumes that all addresses in the list are to be updated
+        // and belong to the specified organization.
+        addressDtos.forEach(addressDto -> {
+            Address address = addressRepository.findById(addressDto.getAddrId())
+                    .orElseThrow(() -> new RuntimeException("Address not found"));
+            // Update address fields from addressDto
+            // ...
+            address.setOrganization(organization); // Link to organization
+            addressRepository.save(address);
+        });
+    }
+}
+
+
+
+@RestController
+@RequestMapping("/admin/organizations")
+public class AddressController {
+
+    @Autowired
+    private AddressService addressService;
+
+    @GetMapping("/{organizationId}/addresses")
+    public ResponseEntity<List<AddressDto>> getAddressesByOrganization(@PathVariable Integer organizationId) {
+        List<AddressDto> addresses = addressService.getAddressesByOrganizationId(organizationId);
+        return ResponseEntity.ok(addresses);
+    }
+
+    @PatchMapping("/{organizationId}/addresses")
+    public ResponseEntity<Void> updateAddressesForOrganization(@PathVariable Integer organizationId, @RequestBody List<AddressDto> addressDtos) {
+        try {
+            addressService.updateAddressesForOrganization(organizationId, addressDtos);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package gov.mipath.atlas.admin.common.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import gov.mipath.atlas.admin.common.model.Address;
+import gov.mipath.atlas.admin.common.model.Organization;
+import gov.mipath.atlas.admin.common.repository.AddressRepository;
+import gov.mipath.atlas.admin.common.repository.OrganizationRepository;
+import gov.mipath.atlas.admin.common.dto.AddressDto;
+
+@Service
+public class AddressService {
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
+
+    public AddressDto getAddressWithOrganization(Integer addressId) {
+        Address address = addressRepository.findById(addressId).orElse(null);
+        return address != null ? AddressDto.create(address) : null;
+    }
+
+    @Transactional
+    public Address updateAddressAndOrganization(Integer addressId, AddressDto addressDto) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        // Update address fields from addressDto
+        // ...
+
+        if (addressDto.getOrganizationId() != null) {
+            Organization organization = organizationRepository.findById(addressDto.getOrganizationId())
+                    .orElseThrow(() -> new RuntimeException("Organization not found"));
+
+            // Update organization fields from addressDto
+            // ...
+
+            organizationRepository.save(organization);
+        }
+
+        return addressRepository.save(address);
+    }
+}
+
+
+
+package gov.mipath.atlas.admin.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import gov.mipath.atlas.admin.common.service.AddressService;
+import gov.mipath.atlas.admin.common.dto.AddressDto;
+
+@RestController
+@RequestMapping("/admin/addresses")
+public class AddressController {
+
+    @Autowired
+    private AddressService addressService;
+
+    @GetMapping("/{addressId}")
+    public ResponseEntity<AddressDto> getAddressWithOrganization(@PathVariable Integer addressId) {
+        AddressDto addressDto = addressService.getAddressWithOrganization(addressId);
+        return addressDto != null ? ResponseEntity.ok(addressDto) : ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{addressId}")
+    public ResponseEntity<AddressDto> updateAddress(@PathVariable Integer addressId, @RequestBody AddressDto addressDto) {
+        try {
+            Address updatedAddress = addressService.updateAddressAndOrganization(addressId, addressDto);
+            return ResponseEntity.ok(AddressDto.create(updatedAddress));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+}
+
