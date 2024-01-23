@@ -1,0 +1,114 @@
+package gov.mipath.atlas.admin.common.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "case_role_link", schema = "dbo")
+public class CaseRoleLink {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "case_role_link_id")
+    private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "case_id", referencedColumnName = "case_id")
+    private Case caseRef;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+    private Role role;
+}
+
+
+
+
+package gov.mipath.atlas.admin.common.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class CaseRoleLinkDto {
+    private long id;
+    private long caseId;
+    private String caseCode;
+    private String caseName;
+    private long roleId;
+
+    // Constructors, getters, and setters
+}
+
+
+
+package gov.mipath.atlas.admin.common.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import gov.mipath.atlas.admin.common.dto.CaseRoleLinkDto;
+import gov.mipath.atlas.admin.common.model.CaseRoleLink;
+import java.util.List;
+
+public interface CaseRoleLinkRepository extends JpaRepository<CaseRoleLink, Integer> {
+    
+    @Query("SELECT new gov.mipath.atlas.admin.common.dto.CaseRoleLinkDto(" +
+       "l.id, c.id, c.caseCode, c.caseName, r.id) " +
+       "FROM CaseRoleLink l " +
+       "JOIN l.caseRef c " +
+       "JOIN l.role r " +
+       "WHERE r.id = :roleId")
+    List<CaseRoleLinkDto> findCaseRoleLinksByRoleId(@Param("roleId") int roleId);
+}
+
+
+
+package gov.mipath.atlas.admin.common.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import gov.mipath.atlas.admin.common.dto.CaseRoleLinkDto;
+import gov.mipath.atlas.admin.common.repository.CaseRoleLinkRepository;
+import java.util.List;
+
+@Service
+public class CaseRoleLinkService {
+
+    @Autowired
+    private CaseRoleLinkRepository repository;
+
+    public List<CaseRoleLinkDto> findCaseRoleLinksByRoleId(int roleId) {
+        return repository.findCaseRoleLinksByRoleId(roleId);
+    }
+}
+
+
+
+package gov.mipath.atlas.admin.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import gov.mipath.atlas.admin.common.dto.CaseRoleLinkDto;
+import gov.mipath.atlas.admin.common.service.CaseRoleLinkService;
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/case-role-links")
+public class CaseRoleLinkController {
+
+    @Autowired
+    private CaseRoleLinkService service;
+
+    @GetMapping(value="/by-role/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CaseRoleLinkDto>> getCaseRoleLinksByRoleId(@PathVariable int roleId) {
+        List<CaseRoleLinkDto> results = service.findCaseRoleLinksByRoleId(roleId);
+        return ResponseEntity.ok(results);
+    }
+}
+
+
