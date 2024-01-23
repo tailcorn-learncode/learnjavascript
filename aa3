@@ -1,0 +1,300 @@
+Given below sprint boot models for tables notification_type_ref and role_ref
+
+NotificationType Model.. 
+
+package gov.mipath.atlas.admin.common.model;
+
+import gov.mipath.atlas.arch.model.Base;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@Entity
+@Table(name = "notification_type_ref", schema = "dbo")
+@AttributeOverride(name = "id", column = @Column(name = "notification_type_id", nullable = false))
+public class NotificationType extends Base {
+
+    @Column(name = "application_cd")
+    private String applicationCode;
+
+    @Column(name = "notification_type_cd")
+    private String notificationTypeCode;
+
+    @Column(name = "notification_type_dsc")
+    private String notificationTypeDescription;
+}
+
+
+Role Model
+
+package gov.mipath.atlas.admin.common.model;
+
+import gov.mipath.atlas.arch.model.Base;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@Entity
+@Table(name = "role_ref", schema = "dbo")
+@AttributeOverride(name = "id", column = @Column(name = "role_id", nullable = false))
+@EqualsAndHashCode(callSuper = false)
+public class Role extends Base {
+
+    @Column(name = "application_cd")
+    private String applicationCode;
+
+    @Column(name = "role_nm")
+    private String roleName;
+
+    @Column(name = "active_ind")
+    private Boolean activeIndicator;
+
+}
+
+
+I implemented notification_type_role_link table spring boot api like below
+
+NotificationTypeRoleLink Model..
+
+package gov.mipath.atlas.admin.common.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "notification_type_role_link", schema = "dbo")
+public class NotificationTypeRoleLink {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "notification_type_role_id")
+    private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "notification_type_id", referencedColumnName = "notification_type_id")
+    private NotificationType notificationType;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+    private Role role;
+
+}
+
+
+NotificationTypeRoleLinkDto..
+
+package gov.mipath.atlas.admin.common.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import gov.mipath.atlas.admin.common.model.NotificationType;
+import gov.mipath.atlas.admin.common.model.NotificationTypeRoleLink;
+import gov.mipath.atlas.admin.common.model.Role;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class NotificationTypeRoleLinkDto {
+    private long id;
+    private long notificationTypeId;
+    private String notificationTypeCode; 
+    private long roleId;
+    private String roleName;
+
+    public NotificationTypeRoleLinkDto() {
+        
+    }
+
+    public NotificationTypeRoleLinkDto(long id, long notificationTypeId, String notificationTypeCode, long roleId, String roleName) {
+        this.id = id;
+        this.notificationTypeId = notificationTypeId;
+        this.notificationTypeCode = notificationTypeCode;
+        this.roleId = roleId;
+        this.roleName = roleName;
+    }
+
+    
+    public static NotificationTypeRoleLinkDto create(NotificationTypeRoleLink entity) {
+        NotificationTypeRoleLinkDto dto = new NotificationTypeRoleLinkDto();
+        dto.setId(entity.getId());
+        dto.setNotificationTypeId(entity.getNotificationType().getId());        
+        dto.setRoleId(entity.getRole().getId());       
+        return dto;
+    }
+
+    
+    public NotificationTypeRoleLink parse(NotificationTypeRoleLink existingEntity, NotificationType notificationType, Role role) {
+        if (existingEntity != null) {
+            existingEntity.setNotificationType(notificationType);
+            existingEntity.setRole(role);
+            return existingEntity;
+        } else {
+            NotificationTypeRoleLink entity = new NotificationTypeRoleLink();
+            entity.setNotificationType(notificationType);
+            entity.setRole(role);
+            return entity;
+        }
+    }
+}
+
+
+NotificationTypeRoleLinkService..
+
+package gov.mipath.atlas.admin.common.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import gov.mipath.atlas.admin.common.dto.NotificationTypeRoleLinkDto;
+import gov.mipath.atlas.admin.common.repository.NotificationTypeRoleLinkRepository;
+import java.util.List;
+
+@Service
+public class NotificationTypeRoleLinkService {
+
+    @Autowired
+    private NotificationTypeRoleLinkRepository repository;
+
+    
+    public List<NotificationTypeRoleLinkDto> findNotificationTypeRoleLinksByRoleId(int roleId) {
+        return repository.findNotificationTypeRoleLinksByRoleId(roleId);
+    }
+}
+
+
+NotificationTypeRoleLinkRepository..
+
+package gov.mipath.atlas.admin.common.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import gov.mipath.atlas.admin.common.dto.NotificationTypeRoleLinkDto;
+import gov.mipath.atlas.admin.common.model.NotificationTypeRoleLink;
+import java.util.List;
+
+public interface NotificationTypeRoleLinkRepository extends JpaRepository<NotificationTypeRoleLink, Integer> {
+    
+    @Query("SELECT new gov.mipath.atlas.admin.common.dto.NotificationTypeRoleLinkDto(" +
+       "l.id, t.id, t.notificationTypeCode, r.id, r.roleName) " +
+       "FROM NotificationTypeRoleLink l " +
+       "JOIN l.notificationType t " +
+       "JOIN l.role r " +
+       "WHERE r.id = :roleId")
+List<NotificationTypeRoleLinkDto> findNotificationTypeRoleLinksByRoleId(@Param("roleId") int roleId);
+
+}
+
+
+NotificationTypeRoleLinkController..
+
+package gov.mipath.atlas.admin.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import gov.mipath.atlas.admin.common.dto.NotificationTypeRoleLinkDto;
+import gov.mipath.atlas.admin.common.service.NotificationTypeRoleLinkService;
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/notification-type-role-links")
+public class NotificationTypeRoleLinkController {
+
+    @Autowired
+    private NotificationTypeRoleLinkService service;
+
+    @GetMapping(value="/by-role/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<NotificationTypeRoleLinkDto>> getNotificationTypeRoleLinksByRoleId(@PathVariable int roleId) {
+        List<NotificationTypeRoleLinkDto> results = service.findNotificationTypeRoleLinksByRoleId(roleId);
+        return ResponseEntity.ok(results);
+    }
+}
+
+
+
+Now based on above exampe, I need to write spring boot api for case_role_link table exactly like how we did for notification_type_role_link. Implement same API - get caseid, casecode, casename based on roleid
+
+case_role_link table schema..
+
+case_role_link_id (PK) int
+case_id (FK) int
+role_id (FK) int
+
+
+Below Im putting model for case
+
+Case Model..
+
+package gov.mipath.atlas.admin.common.model;
+
+import gov.mipath.atlas.arch.model.Base;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@Entity
+@Table(name = "case_ref", schema = "dbo")
+@AttributeOverride(name = "id", column = @Column(name = "case_id", nullable = false, columnDefinition = "BIGINT UNSIGNED"))
+@EqualsAndHashCode(callSuper = false)
+public class Case extends Base {
+        
+    @Column(name = "application_cd")
+    private String applicationCode;
+
+    @Column(name = "case_cd")
+    private String caseCode;
+
+    @Column(name = "case_nm")
+    private String caseName;
+  
+    @Column(name = "category_cd")
+    private String categoryCode;
+    
+    @Column(name = "category_nm")
+    private String categoryName; 
+
+    private boolean caseIndicator;
+    
+    @Column(name = "active_ind")
+    private Boolean activeIndicator; 
+    
+    @Column(name = "days_to_co")
+    private Integer daysToComplete; 
+    
+    @Column(name = "case_mode_cd")
+    private Integer caseModeCode;      
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
+    
+}
+
+
+
+
+
+
+
+
