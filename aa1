@@ -1,0 +1,296 @@
+I need springboot crud API code for Organization and Address tables with all the required files based on example given for MenuTable with all the required files.
+Write full code for all the Organization or Address files. I need API where based on Organization id, I can get all the addresses for that organization along with organization information.
+Response should be in JSON format. Also API should be able to update or patch organization and address information.
+
+organization table..
+
+Column_name	Type
+organization_id	int
+organization_cd	varchar
+organization_nm	varchar
+organization_type_cd	varchar
+organization_effective_dt	date
+organization_status_cd	varchar
+employer_ind	tinyint
+tax_nbr	varchar
+nbk_num	numeric
+document_folder_num	numeric
+service_contract_org_id	int
+school_district_nbr	varchar
+county_cd	varchar
+employer_reporting_mda_cd	varchar
+first_posting_dt	date
+payroll_deduction_ind	tinyint
+reporting_frequency_cd	varchar
+reporting_format_cd	varchar
+reporting_unit_id	int
+
+
+addr table..
+
+Column_name	Type
+addr_id	int
+addr_ln1_nm	varchar
+addr_ln2_nm	varchar
+city_nm	varchar
+st_cd	char
+zip_cd	char
+addr_ln3_nm	varchar
+addr_ln4_nm	varchar
+zip2	varchar
+frgn_prov_nm	varchar
+ctry_cd	varchar
+frgn_post_cd	char
+zip_cd_encrypt	varbinary
+zip_cd_mask	char
+phone_nbr	varchar
+email_nm	varchar
+organization_id	int
+
+Below is the code for Menu table for reference.
+
+Menu schema
+
+menu_id (PK) int
+application_cd varchar(5)
+menu_cd varchar(5)
+menu_nm varchar(60)
+menu_ord int
+active_ind tinyint
+search_ind smallint
+
+MenuModel
+
+package gov.mipath.atlas.admin.common.model;
+
+import gov.mipath.atlas.arch.model.Base;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@Entity
+@Table(name = "menu_ref", schema = "dbo")
+@AttributeOverride(name = "id", column = @Column(name = "menu_id", nullable = false, columnDefinition = "BIGINT UNSIGNED"))
+@EqualsAndHashCode(callSuper = false)
+public class Menu extends Base {
+
+    @Column(name = "application_cd")
+    private String applicationCode;
+
+    @Column(name = "menu_cd")
+    private String menuCode;
+
+    @Column(name = "menu_nm")
+    private String menuName;
+
+    @Column(name = "menu_ord")
+    private Integer menuOrder;
+
+    @Column(name = "active_ind")
+    private Boolean activeIndicator;
+}
+
+
+MenuDTO
+
+package gov.mipath.atlas.admin.common.dto;
+
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import gov.mipath.atlas.admin.common.model.Menu;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class MenuDto {
+    private long id;
+    private String applicationCode;
+    private String menuCode;
+    private String menuName;
+    private Integer menuOrder;
+    private Boolean activeIndicator;
+
+    public static MenuDto create(Menu entity) {
+        var model = new MenuDto();
+        model.setId(entity.getId());
+        model.setApplicationCode(entity.getApplicationCode());
+        model.setMenuCode(entity.getMenuCode());
+        model.setMenuName(entity.getMenuName());
+        model.setMenuOrder(entity.getMenuOrder());
+        model.setActiveIndicator(entity.getActiveIndicator());
+        return model;
+    }
+
+    public Menu parse() {
+        var entity = new Menu();
+        entity.setId(this.id);
+        entity.setApplicationCode(this.applicationCode);
+        entity.setMenuCode(this.menuCode);
+        entity.setMenuName(this.menuName);
+        entity.setMenuOrder(this.menuOrder);
+        entity.setActiveIndicator(this.activeIndicator);
+        return entity;
+    }
+}
+
+
+MenuRepository
+
+package gov.mipath.atlas.admin.common.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import gov.mipath.atlas.admin.common.model.Menu;
+
+public interface MenuRepository extends JpaRepository<Menu, Long> {
+}
+
+
+MenuService
+
+package gov.mipath.atlas.admin.common.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import gov.mipath.atlas.admin.common.model.Menu;
+import gov.mipath.atlas.admin.common.repository.MenuRepository;
+
+import java.util.List;
+
+@Service
+public class MenuService {
+
+    @Autowired
+    private MenuRepository repository;
+
+    public List<Menu> findAll() {
+        return repository.findAll();
+    }
+
+    public Menu findById(long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public Menu addOrUpdate(Menu model) {    
+        return repository.save(model);
+    }
+
+    public void delete(long id) {
+        repository.deleteById(id);
+    }
+}
+
+
+MenuController
+
+package gov.mipath.atlas.admin.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import gov.mipath.atlas.admin.common.dto.MenuDto;
+import gov.mipath.atlas.admin.common.service.MenuService;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.NoSuchElementException; 
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/admin/menus")
+@Slf4j
+public class MenuController {
+
+    @Autowired
+    private MenuService service;
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<MenuDto>> getAllMenus() {
+        try {
+			return new ResponseEntity<List<MenuDto>>(
+                        service.findAll().stream().map(t -> MenuDto.create(t)).collect(Collectors.toList()), 
+                        HttpStatus.OK
+            );
+
+		} catch (NoSuchElementException e) {
+			log.error("Unable to find " + e.getMessage());
+			return new ResponseEntity<List<MenuDto>>(HttpStatus.NOT_FOUND);
+		}
+    }
+
+    @GetMapping(value="/{id}")
+    public ResponseEntity<MenuDto> getAllById(@PathVariable Long id) {
+        try { 
+			var target = service.findById(id);
+			if (target == null) {
+			    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "menu not found");
+			}
+			return new ResponseEntity<MenuDto>(
+                        MenuDto.create(target), 
+                        HttpStatus.OK
+            );
+
+		} catch (NoSuchElementException e) {
+			return new ResponseEntity<MenuDto>(HttpStatus.NOT_FOUND);
+		}
+    }
+
+    @PostMapping(produces = "application/json")
+    public ResponseEntity<MenuDto> create(@RequestBody MenuDto model) {
+        try {
+			var entity = service.addOrUpdate(model.parse());
+			return new ResponseEntity<MenuDto>(
+                        MenuDto.create(entity), 
+                        HttpStatus.OK
+            );
+
+        } catch (Exception e) {
+                log.error("Unable to save " + e.getMessage()); 
+        }
+
+		return new ResponseEntity<MenuDto>(HttpStatus.BAD_REQUEST); 
+    }
+
+    @PutMapping(value="/{id}")
+    public ResponseEntity<MenuDto> update(@PathVariable Long id, @RequestBody MenuDto model) {
+        try {
+			var target = service.findById(id);
+			if (target == null) {
+			    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu found for menu id provided");
+			}
+			model.setId(id);
+			var result = service.addOrUpdate(model.parse());
+			return new ResponseEntity<MenuDto>(
+                		MenuDto.create(result), 
+                        HttpStatus.OK
+            );
+			
+		} catch (NoSuchElementException e) {
+			log.error("Unable to update " + e.getMessage());
+			return new ResponseEntity<MenuDto>(HttpStatus.NOT_FOUND);
+		}
+    }
+
+    @DeleteMapping(value="/{id}")
+    public ResponseEntity<MenuDto> delete(@PathVariable Long id) {
+        try {
+			service.delete(id);
+			return ResponseEntity.noContent().build();
+
+		} catch (EmptyResultDataAccessException e) {
+			log.error("Unable to delete " + e.getMessage());
+			return ResponseEntity.noContent().build();
+		}
+    }
+}
