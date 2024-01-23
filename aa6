@@ -8,6 +8,19 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
 }
 
 
+package gov.mipath.atlas.admin.common.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import gov.mipath.atlas.admin.common.model.Address;
+import java.util.List;
+
+public interface AddressRepository extends JpaRepository<Address, Integer> {
+    List<Address> findByOrganizationId(Integer organizationId);
+}
+
+
+
+
 @Service
 public class AddressService {
 
