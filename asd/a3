@@ -1,0 +1,11 @@
+I want to write description and accceptance criteria for my user story neatly step by step which I explained below.
+write keeping in mind user navigation, as if user navigating, this is for project ESS for internal ess user
+
+
+When user comes to homepage, he can select employer from employer dropdown in header, 
+Based on employer selected, Notifications carousal is shown at first section of home page. 
+These notifications are dependent on employer selected and role of user. We get notifications codes which belongs to role 
+from backend admin service and based on this notification codes we get all notifications from employer service.
+Getting notification codes from admin service and storing in localstorage is done in last sprint. And API for getting notifications from employer service is done in last sprint. Now, we need to pass this notification codes to new api. we need to implement this. Editing notification is taken care by another user story which is assigned to Jason. 
+
+Another task is on menus. When user comes to page, menus are shown based on cases user is assigned. When user hovers over menu, cases are shown. These tasks are done in last sprint. Now we have to implement menu preferences functionality where user can change the visibility and order of menus from menu preferences dialog. So, these menus are shown in order based on menu preferences user sets in menu preferences dialog
