@@ -7,12 +7,12 @@ show panels based on cases. So, the task is Panels management based on case.
 So, page will have case name, List of panels shown as tabs.
 Display panels grouped by cases as tabs based on caseid. Fill with some Data in Database.
 
-More Details about above points..
+More Details steps..
 
-1. once user clicks on case (hover on menu and click any case)
-   catch the case id (from routeparam)
-   call service to get panels based on caseid
-   show panels as tabs
+once user clicks on case (hover on menu and click any case),
+catch the case id (from routeparam),
+call service to get panels based on caseid,
+show panels as tabs
 
 For example:
    when user clicks on work on reports case, show 3 tabs as unposted,posted,create which are panels belonging to work on reports case
