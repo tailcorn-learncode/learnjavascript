@@ -1,0 +1,25 @@
+I want to write description and accceptance criteria for my user story neatly step by step which I explained below.
+write keeping in mind user navigation, as if user navigating, this is for project ESS for internal ess user
+
+
+When user comes to homepage, he an select hover on menu and it shows cases related to menu and when case selected, it should route to the page where we 
+show panels based on cases. So, the task is Panels management based on case. 
+So, page will have case name, List of panels shown as tabs.
+Display panels grouped by cases as tabs based on caseid. Fill with some Data in Database.
+
+More Details about above points..
+
+1. once user clicks on case (hover on menu and click any case)
+   catch the case id (from routeparam)
+   call service to get panels based on caseid
+   show panels as tabs
+
+For example:
+   when user clicks on work on reports case, show 3 tabs as unposted,posted,create which are panels belonging to work on reports case
+   and when user clicks on another case like payments, show tabs which belongs to payment
+ 
+   So, create components for cases workonreports, payments to show it when required
+
+   In this each component we get panels based on respective caseid
+
+
