@@ -9,3 +9,53 @@ from backend admin service and based on this notification codes we get all notif
 Getting notification codes from admin service and storing in localstorage is done in last sprint. And API for getting notifications from employer service is done in last sprint. Now, we need to pass this notification codes to new api. we need to implement this. Editing notification is taken care by another user story which is assigned to Jason. 
 
 Another task is on menus. When user comes to page, menus are shown based on cases user is assigned. When user hovers over menu, cases are shown. These tasks are done in last sprint. Now we have to implement menu preferences functionality where user can change the visibility and order of menus from menu preferences dialog. So, these menus are shown in order based on menu preferences user sets in menu preferences dialog
+
+
+
+
+### User Story Description
+
+**Title:** Enhancing User Experience on ESS Homepage
+
+**Description:**
+As an internal ESS user, I want to have a dynamic and personalized experience on the ESS homepage so that I can efficiently access information and functionalities relevant to my role and employer.
+
+**Detailed Steps:**
+
+1. **Employer Selection and Notification Carousel:**
+   - Upon arriving at the homepage, the user should see a dropdown in the header to select an employer.
+   - Once an employer is selected, a notification carousel appears at the top of the homepage.
+   - These notifications are tailored to the user's role and the selected employer.
+   - Notification codes relevant to the user's role are fetched from the backend admin service (completed in the last sprint).
+   - The existing functionality stores these codes in local storage.
+   - **New Implementation:** Use the stored notification codes to fetch corresponding notifications from the employer service via the new API.
+
+2. **Menu Interaction and Personalization:**
+   - Menus on the homepage are displayed based on the cases assigned to the user (completed in the last sprint).
+   - Hovering over a menu item reveals the cases associated with it.
+   - **New Implementation:** Introduce a 'Menu Preferences' dialog.
+     - Users can access this dialog to customize their menu experience.
+     - Functionality includes changing the visibility and order of the menu items.
+     - The homepage menus will reflect these preferences in their display order and visibility.
+
+### Acceptance Criteria
+
+1. **Employer Selection and Notification Carousel:**
+   - The employer dropdown must be easily accessible and functional.
+   - Selecting an employer should immediately trigger the display of the notification carousel.
+   - Notifications displayed must be specific to the user's role and the selected employer.
+   - Ensure the integration with the new API is seamless and the notifications fetched are accurate.
+
+2. **Menu Personalization:**
+   - The 'Menu Preferences' dialog should be intuitive to use.
+   - Users must be able to change the order and visibility of the menu items.
+   - Changes made in the 'Menu Preferences' dialog must be accurately reflected on the homepage.
+   - Ensure the personalization settings persist across sessions.
+
+3. **General:**
+   - The new features should be compatible with existing functionalities.
+   - Performance should not be compromised; ensure quick loading times and responsive interactions.
+   - Conduct thorough testing to ensure there are no bugs or glitches.
+   - Ensure the user interface remains clean and user-friendly.
+
+_Note: Coordination with Jason is required to ensure that the editing of notifications (handled in a separate user story) aligns seamlessly with the notification display functionality._
