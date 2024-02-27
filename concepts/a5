@@ -40,3 +40,27 @@ export class MyComponent implements OnInit {
     });
   }
 }
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MyService {
+  constructor(private http: HttpClient) { }
+
+  getUserInfo(): Observable<any> {
+    // Extract protocol, hostname, and port from the current location
+    const { protocol, hostname, port } = window.location;
+    const baseUrl = `${protocol}//${hostname}:${port}`;
+
+    // Append your specific API endpoint
+    const apiUrl = `${baseUrl}/oauth2/userinfo`;
+
+    // Make the HTTP GET request
+    return this.http.get(apiUrl);
+  }
+}
+
