@@ -1,0 +1,42 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common'; // Import Location
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MyService {
+  constructor(private http: HttpClient, private location: Location) { }
+
+  getUserInfo(): Observable<any> {
+    // Construct the full URL
+    const apiUrl = `${this.location.normalize(this.location.path())}/oauth2/userinfo`;
+
+    // Make the HTTP GET request
+    return this.http.get(apiUrl);
+  }
+}
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { MyService } from './my.service';
+
+@Component({
+  selector: 'app-my-component',
+  templateUrl: './my-component.component.html',
+  styleUrls: ['./my-component.component.css']
+})
+export class MyComponent implements OnInit {
+
+  constructor(private myService: MyService) { }
+
+  ngOnInit(): void {
+    this.myService.getUserInfo().subscribe(data => {
+      console.log(data);
+    }, error => {
+      console.error("Failed to get user info:", error);
+    });
+  }
+}
