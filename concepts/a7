@@ -46,3 +46,17 @@ export class CookieService {
   }
 
 }
+
+
+getAuthData() {
+  const url = 'http://localhost:4180/oauth2/auth';
+  // Specify that you want the full response with observe option
+  this.http.get(url, { observe: 'response' }).subscribe(response => {
+    // Read the X-Auth header
+    const xAuth = response.headers.get('X-Auth');
+    console.log('X-Auth:', xAuth);
+  }, error => {
+    console.error('There was an error making the request', error);
+  });
+}
+
