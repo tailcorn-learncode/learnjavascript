@@ -27,3 +27,42 @@ html..
           <div class="avatar-initials">WL</div>
         </div>
       </div>
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { EssHeaderService } from './ess-header.service'; // Adjust the path as necessary
+import jwtDecode from 'jwt-decode'; // Ensure jwt-decode is installed
+
+@Component({
+  selector: 'app-your-component', // Adjust as necessary
+  templateUrl: './your-component.component.html',
+  styleUrls: ['./your-component.component.css']
+})
+export class YourComponent implements OnInit {
+  fullname: string = '';
+  initials: string = '';
+
+  constructor(private essHeaderService: EssHeaderService) { }
+
+  ngOnInit() {
+    this.essHeaderService.getUserInfo().subscribe(data => {
+      const XAuthRequestAccessToken = data.headers.get('X-Auth-Request-Access-Token');
+      if (XAuthRequestAccessToken) {
+        const userinfo = jwtDecode(XAuthRequestAccessToken);
+        this.fullname = this.formatFullName(userinfo.first_name, userinfo.last_name);
+        this.initials = this.getInitials(userinfo.first_name, userinfo.last_name);
+      }
+    });
+  }
+
+  private formatFullName(firstName: string, lastName: string): string {
+    return `${firstName || ''} ${lastName || ''}`.trim();
+  }
+
+  private getInitials(firstName: string, lastName: string): string {
+    const firstInitial = firstName && firstName.length > 0 ? firstName.charAt(0) : '';
+    const lastInitial = lastName && lastName.length > 0 ? lastName.charAt(0) : '';
+    return `${firstInitial}${lastInitial}`.toUpperCase();
+  }
+}
