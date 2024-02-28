@@ -1,0 +1,29 @@
+below are angular component,service,html.
+I want to give fullname for class="user-name" and 
+initials for class="avatar-initials". write neat code and also handle null check.
+
+component..
+fullname: string = '';
+this.essHeaderService.getUserInfo().subscribe(data => {
+      const XAuthRequestAccessToken = data.headers.get('X-Auth-Request-Access-Token');
+      const userinfo = jwtDecode(XAuthRequestAccessToken);
+      fullname = userinfo.first_name+ ' ' + userinfo.last_name;
+    });
+
+
+service..
+getUserInfo(): Observable<any> {
+    const { protocol, hostname, port } = window.location;
+    const baseUrl = `${protocol}//${hostname}:${port}`;
+    const apiUrl = `${baseUrl}/oauth2/auth`;
+    return this.http.get(apiUrl, { observe: 'response' });
+  }
+
+
+html..
+  <div class="user-info">
+        <div class="user-name">{{fullname}}</div>
+        <div class="user-avatar">
+          <div class="avatar-initials">WL</div>
+        </div>
+      </div>
