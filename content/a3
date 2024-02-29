@@ -84,3 +84,187 @@ atlas-banner.component.scss..
 .banner-bg-color {
     background-color: #F6FFF2;
 }
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+<!-- Success -->
+<div *ngIf="type === 'success' && showBanner" class="banner-container success-banner">
+    <div class="banner-content">
+        <img [src]="getIcon()" class="icon-image" alt="Icon"/>
+        <div class="text-container">
+            <div class="header-text success-text">{{header}}</div>
+            <div class="subtext success-subtext">{{subtext}}</div>
+        </div>
+        <div class="close-icon-container" (click)="closeBanner()">
+            <span class="material-symbols-outlined">close</span>
+        </div>
+    </div>
+</div>
+
+<!-- Error -->
+<div *ngIf="type === 'error' && showBanner" class="banner-container error-banner">
+    <div class="banner-content">
+        <img [src]="getIcon()" class="icon-image" alt="Icon"/>
+        <div class="text-container">
+            <div class="header-text error-text">{{header}}</div>
+            <div class="subtext error-subtext">{{subtext}}</div>
+        </div>
+        <div class="close-icon-container" (click)="closeBanner()">
+            <span class="material-symbols-outlined">close</span>
+        </div>
+    </div>
+</div>
+
+<!-- Warning -->
+<div *ngIf="type === 'warning' && showBanner" class="banner-container warning-banner">
+    <div class="banner-content">
+        <img [src]="getIcon()" class="icon-image" alt="Icon"/>
+        <div class="text-container">
+            <div class="header-text warning-text">{{header}}</div>
+            <div class="subtext warning-subtext">{{subtext}}</div>
+        </div>
+        <div class="close-icon-container" (click)="closeBanner()">
+            <span class="material-symbols-outlined">close</span>
+        </div>
+    </div>
+</div>
+
+<!-- Info -->
+<div *ngIf="type === 'info' && showBanner" class="banner-container info-banner">
+    <div class="banner-content">
+        <img [src]="getIcon()" class="icon-image" alt="Icon"/>
+        <div class="text-container">
+            <div class="header-text info-text">{{header}}</div>
+            <div class="subtext info-subtext">{{subtext}}</div>
+        </div>
+        <div class="close-icon-container" (click)="closeBanner()">
+            <span class="material-symbols-outlined">close</span>
+        </div>
+    </div>
+</div>
+
+
+
+.banner-container {
+    width: 100%;
+    max-width: 1062px;
+    border-radius: 1.25rem;
+    border: 1px solid #D1D5DB;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Background colors for different banner types */
+.success-banner {
+    background-color: #F6FFF2; /* Light green for success */
+}
+
+.error-banner {
+    background-color: #FEE2E2; /* Light red for error */
+}
+
+.warning-banner {
+    background-color: #FEF3C7; /* Light yellow for warning */
+}
+
+.info-banner {
+    background-color: #BFDBFE; /* Light blue for info */
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon-image {
+    width: 2rem;
+    height: 2rem;
+}
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.header-text {
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    line-height: normal;
+    letter-spacing: 0.05em;
+}
+
+.subtext {
+    font-size: 0.875rem;
+    font-family: 'Roboto', sans-serif;
+    line-height: tight;
+    letter-spacing: tighter;
+}
+
+/* Text colors for different banner types */
+.success-text, .success-subtext {
+    color: #1E293B; /* Dark for success */
+}
+
+.error-text, .error-subtext {
+    color: #B91C1C; /* Red for error */
+}
+
+.warning-text, .warning-subtext {
+    color: #92400E; /* Orange for warning */
+}
+
+.info-text, .info-subtext {
+    color: #1E40AF; /* Blue for info */
+}
+
+.close-icon-container {
+    margin-left: auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Additional styling for the close icon if necessary */
+.material-symbols-outlined {
+    font-size: 24px; /* Adjust size as needed */
+    color: #64748B; /* A neutral color, can be adjusted based on theme */
+}
+
+/* Ensure responsiveness for smaller screens */
+@media (max-width: 1024px) {
+    .banner-container {
+        width: 100%; /* Full width on smaller screens */
+        border-radius: 0.5rem; /* Smaller radius for a softer look on mobile */
+    }
+}
+
+/* Additional utility classes for spacing, if needed */
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.py-5 {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+}
+
+/* Adjustments for gap utility, if used directly in HTML */
+.gap-4 {
+    gap: 1rem;
+}
+
