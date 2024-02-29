@@ -1,0 +1,44 @@
+Given below is atlas-card angular component. Inside this tailwindcss used with prefix - "t-". Need to remove tailwindcss and use vanilla css instead with meaning full class names.
+dont remove classes which are not tailwind. write vanila css in atlas-card.component.scss. make sure you not miss any css and look should be exact.
+
+atlas-card.component.html..
+
+<div class="t-p-5 t-rounded-2xl t-border t-border-neutral-300 t-flex-col t-justify-start t-items-start t-inline-flex">  
+    <div class="t-p-5 t-rounded-[5px] t-justify-center t-items-start t-gap-12 t-inline-flex">    
+        <div class="t-rounded-xl t-justify-start t-items-start t-flex">
+            <div class="t-grow t-shrink t-basis-0 t-h-[486px] t-rounded-xl t-justify-start t-items-start t-gap-2.5 t-flex">
+                <div class="t-grow t-shrink t-basis-0 t-flex-col t-justify-start t-items-center t-inline-flex">
+                    <div class="t-w-[360px] t-h-[270px] t-relative">
+                        <img class="t-w-[360px] t-h-[270px] t-left-0 t-top-0 t-absolute" [src]="imageUrl" />
+                    </div>
+                    <div class="t-self-stretch t-px-4 t-pt-3 t-pb-4 t-justify-start t-items-center t-inline-flex">
+                        <div class="t-grow t-shrink t-basis-0 t-h-12 t-justify-start t-items-center t-gap-4 t-flex">
+                            <div class="t-grow t-shrink t-basis-0 t-flex-col t-justify-start t-items-start t-gap-1 t-inline-flex">
+                                <div class="t-self-stretch t-text-zinc-900 title-large">{{ header }}</div>
+                                <div class="t-text-zinc-900 title-medium">{{ subheader }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="t-self-stretch t-h-[140px] t-px-4 t-pt-2 t-pb-4 t-flex-col t-justify-start t-items-start t-gap-8 t-flex">
+                        <div class="t-self-stretch t-text-zinc-700 label-large">{{ description }}</div>
+                        <div class="t-self-stretch t-justify-start t-items-start t-gap-2 t-inline-flex">
+                            <div class="t-grow t-shrink t-basis-0 t-h-11 t-rounded-[100px] t-border t-border-zinc-500 t-flex-col t-justify-center t-items-center t-gap-2 t-inline-flex">
+                                <div class="t-self-stretch t-grow t-shrink t-basis-0 t-px-6 t-py-2.5 t-justify-center t-items-center t-gap-2 t-inline-flex" (click)="onButton1Click()">
+                                    <div class="t-text-center label-large primary-text">{{ label1 }}</div>
+                                </div>
+                            </div>
+                            <div class="t-grow t-shrink t-basis-0 t-h-11 t-rounded-[100px] t-border t-border-zinc-500 t-flex-col t-justify-center t-items-center t-gap-2 t-inline-flex">
+                              <div class="t-self-stretch t-grow t-shrink t-basis-0 t-px-6 t-py-2.5 t-justify-center t-items-center t-gap-2 t-inline-flex" (click)="onButton2Click()">
+                                  <div class="t-text-center label-large primary-text">{{ label2 }}</div>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+atlas-card.component.scss..
+
