@@ -1,0 +1,20 @@
+Given below is atlas-badge angular component. Inside this tailwindcss used with prefix - "t-". Need to remove tailwindcss and use vanilla css instead with meaning full class names.
+dont remove classes which are not tailwind. write vanila css in atlas-badge.component.scss. make sure you not miss any css and look should be exact.
+
+atlas-badge.component.html..
+
+<!-- big with label-->
+<div *ngIf="size === 'big'" class="t-w-4 t-h-4 t-px-1 badge-red t-rounded-[100px] t-justify-center t-items-center t-inline-flex">
+    <div class="t-grow t-shrink t-basis-0 t-text-center t-text-white t-text-[11px] t-font-medium t-font-['Roboto'] t-leading-none t-tracking-wide">{{label}}</div>
+  </div>
+  
+  <!-- small -->
+  <div *ngIf="size === 'small'" class="t-w-1.5 t-h-1.5 t-p-0.5 badge-red t-rounded-[100px] t-justify-center t-items-center t-inline-flex">
+    <div class="t-w-0.5 t-h-0.5 t-relative"></div>
+  </div>
+
+atlas-badge.component.scss..
+
+.badge-red {
+    background-color: #BA1A1A
+}
