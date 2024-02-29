@@ -18,3 +18,64 @@ atlas-badge.component.scss..
 .badge-red {
     background-color: #BA1A1A
 }
+
+
+
+
+/* Base styles for the badge */
+.badge-base {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px; /* Tailwind rounded-[100px] */
+  font-family: 'Roboto', sans-serif; /* Specifying font */
+}
+
+/* Styles for the big badge */
+.big-badge {
+  width: 1rem; /* Tailwind w-4 */
+  height: 1rem; /* Tailwind h-4 */
+  padding: 0.25rem; /* Tailwind px-1 (horizontal padding) */
+}
+
+.big-badge-text {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  text-align: center;
+  color: white; /* Tailwind text-white */
+  font-size: 11px; /* Tailwind text-[11px] */
+  font-weight: medium; /* Tailwind font-medium */
+  line-height: 1; /* Tailwind leading-none */
+  letter-spacing: wider; /* Tailwind tracking-wide */
+}
+
+/* Styles for the small badge */
+.small-badge {
+  width: 0.375rem; /* Tailwind w-1.5 */
+  height: 0.375rem; /* Tailwind h-1.5 */
+  padding: 0.125rem; /* Tailwind p-0.5 */
+}
+
+.small-badge-dot {
+  width: 0.125rem; /* Tailwind w-0.5 */
+  height: 0.125rem; /* Tailwind h-0.5 */
+  position: relative;
+}
+
+/* Custom class for the red background */
+.badge-red {
+  background-color: #BA1A1A;
+}
+
+
+
+<!-- big with label -->
+<div *ngIf="size === 'big'" class="big-badge badge-red badge-base">
+  <div class="big-badge-text">{{label}}</div>
+</div>
+
+<!-- small -->
+<div *ngIf="size === 'small'" class="small-badge badge-red badge-base">
+  <div class="small-badge-dot"></div>
+</div>
