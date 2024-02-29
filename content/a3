@@ -1,0 +1,86 @@
+Given below is atlas-banner angular component. Inside this tailwindcss used with prefix - "t-". Need to remove tailwindcss and use vanilla css instead with meaning full class names.
+dont remove classes which are not tailwind. write vanila css in atlas-badge.component.scss. make sure you not miss any css and look should be exact.
+
+atlas-banner.component.html..
+
+<!-- success -->
+<div *ngIf="type === 'success' && showBanner" class="t-w-full t-lg:w-[1062px] banner-bg-color t-rounded-2xl t-border t-border-neutral-300 t-flex-col t-justify-center t-items-start t-inline-flex">
+    <div class="t-self-stretch t-px-6 t-py-5 t-justify-start t-items-start t-gap-4 t-inline-flex">
+        <img [src]="getIcon()" class="t-w-8 t-h-8" alt="Icon"/>
+        <div class="t-grow t-shrink t-basis-0 t-flex-col t-justify-start t-items-start t-inline-flex">
+            <div class="t-self-stretch t-text-zinc-900 t-text-base t-font-normal t-font-['Roboto'] t-leading-normal t-tracking-wide">{{header}}</div>
+            <div class="t-self-stretch t-text-zinc-700 t-text-sm t-font-normal t-font-['Roboto'] t-leading-tight t-tracking-tight">{{subtext}}</div>
+        </div>
+        <div class="t-w-12 t-h-12 t-flex-col t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+          <div class="t-rounded-[100px] t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+              <div class="t-p-2 t-justify-center t-items-center t-gap-2.5 t-flex t-cursor-pointer" (click)="closeBanner()">
+                <span class="material-symbols-outlined">
+                  close
+                  </span>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- error -->
+  <div *ngIf="type === 'error' && showBanner" class="t-w-full t-lg:w-[1062px] t-bg-white t-rounded-2xl t-border t-border-neutral-300 t-flex-col t-justify-center t-items-start t-inline-flex">
+    <div class="t-self-stretch t-px-6 t-py-5 t-justify-start t-items-start t-gap-4 t-inline-flex">
+        <img [src]="getIcon()" class="t-w-8 t-h-8" alt="Icon"/>
+        <div class="t-grow t-shrink t-basis-0 t-flex-col t-justify-start t-items-start t-inline-flex">
+            <div class="t-self-stretch t-text-red-950 t-text-base t-font-normal t-font-['Roboto'] t-leading-normal t-tracking-wide">{{header}}</div>
+            <div class="t-self-stretch t-text-red-950 t-text-sm t-font-normal t-font-['Roboto'] t-leading-tight t-tracking-tight">{{subtext}}</div>
+        </div>
+        <div class="t-w-12 t-h-12 t-flex-col t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+          <div class="t-rounded-[100px] t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+              <div class="t-p-2 t-justify-center t-items-center t-gap-2.5 t-flex t-cursor-pointer" (click)="closeBanner()">
+                <span class="material-symbols-outlined">
+                  close
+                  </span>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- warning -->
+  <div *ngIf="type === 'warning' && showBanner" class="t-w-full t-lg:w-[1062px] t-bg-white t-rounded-2xl t-border t-border-neutral-300 t-px-6 t-py-5 t-justify-start t-items-start t-gap-4 t-inline-flex">
+    <img [src]="getIcon()" class="t-w-8 t-h-8" alt="Icon"/>
+    <div class="t-grow t-shrink t-basis-0 t-flex-col t-justify-start t-items-start t-inline-flex">
+        <div class="t-self-stretch t-text-zinc-900 t-text-base t-font-normal t-font-['Roboto'] t-leading-normal t-tracking-wide">{{header}}</div>
+        <div class="t-self-stretch t-text-zinc-700 t-text-sm t-font-normal t-font-['Roboto'] t-leading-tight t-tracking-tight">{{subtext}}</div>
+    </div>
+    <div class="t-w-12 t-h-12 t-flex-col t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+        <div class="t-rounded-[100px] t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+            <div class="t-p-2 t-justify-center t-items-center t-gap-2.5 t-flex t-cursor-pointer" (click)="closeBanner()">
+              <span class="material-symbols-outlined">
+                close
+                </span>
+            </div>
+        </div>
+    </div>
+  </div>
+  
+  <!-- info -->
+  <div *ngIf="type === 'info' && showBanner" class="t-w-full t-lg:w-[1062px] t-bg-white t-rounded-2xl t-border t-border-neutral-300 t-px-6 t-py-5 t-justify-start t-items-start t-gap-4 t-inline-flex">
+    <img [src]="getIcon()" class="t-w-8 t-h-8" alt="Icon"/>
+    <div class="t-grow t-shrink t-basis-0 t-flex-col t-justify-start t-items-start t-inline-flex">
+        <div class="t-self-stretch t-text-zinc-900 t-text-base t-font-normal t-font-['Roboto'] t-leading-normal t-tracking-wide">{{header}}</div>
+        <div class="t-self-stretch t-text-zinc-700 t-text-sm t-font-normal t-font-['Roboto'] t-leading-tight t-tracking-tight">{{subtext}}</div>
+    </div>
+    <div class="t-w-12 t-h-12 t-flex-col t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+        <div class="t-rounded-[100px] t-justify-center t-items-center t-gap-2.5 t-inline-flex">
+            <div class="t-p-2 t-justify-center t-items-center t-gap-2.5 t-flex t-cursor-pointer" (click)="closeBanner()">
+              <span class="material-symbols-outlined">
+                close
+                </span>
+            </div>
+        </div>
+    </div>
+  </div>
+
+atlas-banner.component.scss..
+
+.banner-bg-color {
+    background-color: #F6FFF2;
+}
