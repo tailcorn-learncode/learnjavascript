@@ -1,0 +1,582 @@
+Given below is atlas-components angular component. Inside this tailwindcss used with prefix - "t-". Need to remove tailwindcss and use vanilla css instead with meaning full class names.
+dont remove classes which are not tailwind. write vanila css in atlas-components.component.scss. make sure you not miss any css and look should be exact.
+
+atlas-components.component.html..
+
+
+
+          <div class="t-flex t-flex-col t-flex-1 t-overflow-x-hidden">
+              <main>
+                  <div class="t-py-6">
+
+                      <div class="t-px-4 t-mx-auto t-mt-8 t-sm:px-6 t-md:px-8">
+                          <div class="t-space-y-5 t-sm:space-y-6">
+                              <!-- <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-sm:grid-cols-2 t-lg:grid-cols-4">
+                                  <div class="t-bg-white t-border t-border-gray-200 t-rounded-xl">
+                                      <div class="t-px-5 t-py-4">
+                                          <p class="t-text-xs t-font-medium t-tracking-wider t-text-gray-500 t-uppercase">Today's Sale</p>
+                                          <div class="t-flex t-items-center t-justify-between t-mt-3">
+                                              <p class="t-text-xl t-font-bold t-text-gray-900">$12,426</p>
+
+                                              <span class="t-inline-flex t-items-center t-text-sm t-font-semibold t-text-green-500">
+                                                  + 36%
+                                                  <svg xmlns="http://www.w3.org/2000/svg" class="t-w-3 t-h-3 t-ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                                                  </svg>
+                                              </span>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="t-bg-white t-border t-border-gray-200 t-rounded-xl">
+                                      <div class="t-px-5 t-py-4">
+                                          <p class="t-text-xs t-font-medium t-tracking-wider t-text-gray-500 t-uppercase">Total Sales</p>
+                                          <div class="t-flex t-items-center t-justify-between t-mt-3">
+                                              <p class="t-text-xl t-font-bold t-text-gray-900">$2,38,485</p>
+
+                                              <span class="t-inline-flex t-items-center t-text-sm t-font-semibold t-text-red-500">
+                                                  - 14%
+                                                  <svg xmlns="http://www.w3.org/2000/svg" class="t-w-3 t-h-3 t-ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                                                  </svg>
+                                              </span>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="t-bg-white t-border t-border-gray-200 t-rounded-xl">
+                                      <div class="t-px-5 t-py-4">
+                                          <p class="t-text-xs t-font-medium t-tracking-wider t-text-gray-500 t-uppercase">Total ORders</p>
+                                          <div class="t-flex t-items-center t-justify-between t-mt-3">
+                                              <p class="t-text-xl t-font-bold t-text-gray-900">84,382</p>
+
+                                              <span class="t-inline-flex t-items-center t-text-sm t-font-semibold t-text-green-500">
+                                                  + 36%
+                                                  <svg xmlns="http://www.w3.org/2000/svg" class="t-w-3 t-h-3 t-ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                                                  </svg>
+                                              </span>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="t-bg-white t-border t-border-gray-200 t-rounded-xl">
+                                      <div class="t-px-5 t-py-4">
+                                          <p class="t-text-xs t-font-medium t-tracking-wider t-text-gray-500 t-uppercase">Total Customers</p>
+                                          <div class="t-flex t-items-center t-justify-between t-mt-3">
+                                              <p class="t-text-xl t-font-bold t-text-gray-900">33,493</p>
+
+                                              <span class="t-inline-flex t-items-center t-text-sm t-font-semibold t-text-green-500">
+                                                  + 36%
+                                                  <svg xmlns="http://www.w3.org/2000/svg" class="t-w-3 t-h-3 t-ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                                                  </svg>
+                                              </span>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div> -->
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-4">
+                                      <div class="t-px-4 t-pt-5 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-lg:order-1">Accordion</p>
+
+
+
+
+                                          </div>
+
+                                          <app-atlas-accordian [headers]="['Header1']">
+                                            <div class="t-content-0">
+                                                Content 0
+                                            </div>
+                                          </app-atlas-accordian>
+                                      </div>
+                                  </div>
+
+                                  <!-- <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-2">
+                                    <div class="t-px-4 t-py-5 t-sm:p-6">
+                                        <div class="t-sm:flex t-sm:items-center t-sm:justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900">Accordion-v2</p>
+                                            <app-atlas-accordian-v2 [headlineIcon]="'person'" [headline]="'Header 1'">
+                                              <div class="accordion-content">
+                                                  <div class="title">This is Title</div>
+                                                  <div class="">
+                                                      <p>Users expand and collapse an expansion panel within an accordion by clicking/tapping any part of the header section. The header section is the area above the content that appears in the panel when expanded</p>
+                                                      <p>Multiple panels can be open at one time. In other words, expanding one expansion panel in an accordion does not collapse the others.</p>
+                                                  </div>
+                                              </div>
+                                          </app-atlas-accordian-v2>
+                                          <br>
+                                         
+                                          </div>
+                                        </div>
+                                    </div> -->
+
+
+
+
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-2">
+                                      <div class="t-px-4 t-py-5 t-sm:p-6">
+                                          <div class="t-sm:flex t-sm:items-center t-sm:justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900">Badge</p>
+
+
+                                          </div>
+
+                                          <app-atlas-badge size="big" label="1"></app-atlas-badge>
+                                          <app-atlas-badge size="small" class="t-ml-10"></app-atlas-badge>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                      <div class="t-px-4 t-pt-5 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-lg:order-1">Banner</p>
+
+
+
+
+                                          </div>
+
+                                          <app-atlas-banner type="success" header="Success" subtext="Supporting line text lorem ipsum dolor sit amet, consectetur."></app-atlas-banner>
+                                          <app-atlas-banner type="error" header="Error" subtext="Supporting line text lorem ipsum dolor sit amet, consectetur."></app-atlas-banner>
+                                          <app-atlas-banner type="warning" header="Warning" subtext="Supporting line text lorem ipsum dolor sit amet, consectetur."></app-atlas-banner>
+                                          <app-atlas-banner type="info" header="Info" subtext="Supporting line text lorem ipsum dolor sit amet, consectetur."></app-atlas-banner>
+                                      </div>
+                                  </div>
+
+                                  <!-- <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-2">
+                                      <div class="t-px-4 t-py-5 t-sm:p-6">
+                                          <div class="t-sm:flex t-sm:items-center t-sm:justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900">Badge</p>
+
+
+                                          </div>
+
+                                          <app-atlas-badge size="big" label="1"></app-atlas-badge>
+                                          <app-atlas-badge size="small" class="t-ml-10"></app-atlas-badge>
+                                      </div>
+                                  </div> -->
+                              </div>
+
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Stepper</p>
+                                          </div>
+
+                                          <ng-template #step1Content>
+                                              <div>Your HTML content for step 1 goes here</div>
+                                            </ng-template>
+
+                                            <ng-template #step2Content>
+                                              <div>Your HTML content for step 2 goes here</div>
+                                            </ng-template>
+
+                                            <ng-template #step3Content>
+                                              <div>Your HTML content for step 3 goes here</div>
+                                            </ng-template>
+
+                                            <app-atlas-stepper [orientation]="'vertical'" [steps]="[{label: 'Step 1', content: step1Content}, {label: 'Step 2', content: step2Content}, {label: 'Step 3', content: step3Content}]"></app-atlas-stepper>
+
+                                      </div>
+                                  </div>
+
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Tabs</p>
+                                          </div>
+
+                                          <ng-template #tab1Content>
+                                              <div>Your HTML content for Tab 1 goes here</div>
+                                            </ng-template>
+
+                                            <ng-template #tab2Content>
+                                              <div>Your HTML content for Tab 2 goes here</div>
+                                            </ng-template>
+
+                                            <ng-template #tab3Content>
+                                              <div>Your HTML content for Tab 3 goes here</div>
+                                            </ng-template>
+
+                                            <app-atlas-tab [stretchTabs]="true" [tabs]="[{label: 'Tab 1', content: tab1Content}, {label: 'Tab 2', content: tab2Content}, {label: 'Tab 3', content: tab3Content}]"></app-atlas-tab>
+                                      </div>
+                                  </div>
+
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-3">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Tree</p>
+                                          </div>
+
+                                          <app-atlas-tree [treeData]="treeData"></app-atlas-tree>
+                                      </div>
+                                  </div>
+                                 
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-3">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Upload</p>
+                                          </div>
+
+                                          <app-atlas-upload></app-atlas-upload>
+                                      </div>
+                                  </div>
+
+                                  <div class="t-flex t-flex-col t-gap-10 t-lg:col-span-3">
+                                  <div class="t-flex-1 t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Link</p>
+                                          </div>
+
+                                          <app-atlas-link [linkType]="'default'" [hyperlink]="'https://example.com'"></app-atlas-link>
+  <app-atlas-link [linkType]="'definition'" [hyperlink]="'https://another-example.com'"></app-atlas-link>
+
+                                      </div>
+                                  </div>
+
+                                  <div class="t-flex-1 t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">List</p>
+                                          </div>
+
+                                          <app-atlas-list [items]="listItems"></app-atlas-list>
+
+                                      </div>
+                                  </div>
+                              </div>
+
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Data Table</p>
+                                          </div>
+
+                                          <app-data-table class="t-upload-card"
+                                          [columns]="['Profile column', 'Text column', 'Icon+text column','Label text']"
+                                          [data]="yourDataArray"
+                                          [showActions]="true"
+                                          (edit)="onEdit($event)"
+                                          (delete)="onDelete($event)">
+                                        </app-data-table>
+
+                                      </div>
+                                  </div>
+
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-3">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Card</p>
+                                          </div>
+
+                                          <app-atlas-card></app-atlas-card>
+
+                                      </div>
+
+                                  </div>
+
+                              </div>
+                                                           
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Switch</p>
+                                          </div>
+
+                                          <app-atlas-switch [isOn]="switchState" (switchChange)="onSwitchChange($event)"></app-atlas-switch>
+
+                                      </div>
+                                  </div>
+
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Tooltip</p>
+                                          </div>
+
+                                          <app-atlas-tooltip (action1)="handleAction1()" (action2)="handleAction2()" [position]="'right'"></app-atlas-tooltip>
+                                      </div>
+                                  </div>
+
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Button</p>
+                                        </div>
+
+                                        <div class="comp-container">
+                                          <div class="row">
+                                              <app-atlas-button buttonType="primary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="primary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="primary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                          </div><br>
+                                          <div class="row">
+                                              <app-atlas-button buttonType="secondary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="secondary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="secondary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                          </div><br>
+                                          <div class="row">
+                                              <app-atlas-button buttonType="tertiary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="tertiary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="tertiary" buttonName="Button" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                          </div><br>
+                                          <div class="row">
+                                              <app-atlas-button buttonType="primary" buttonName="Button" [buttonIcon]="'add'" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="secondary" buttonName="Button" [buttonIcon]="'add'" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                              <app-atlas-button buttonType="tertiary" buttonName="Button" [buttonIcon]="'add'" (buttonClick)="onButtonClick()"></app-atlas-button>
+                                          </div>
+
+                                      </div>
+                                    </div>
+                                </div>
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Dialog</p>
+                                        </div>
+
+                                        <app-atlas-button buttonType="primary" buttonName="Open Dialog" (buttonClick)="openDialog()"></app-atlas-button>
+                                        <br>
+                                        <app-atlas-button buttonType="primary" buttonName="Open Dialog" buttonIcon="add" (buttonClick)="openDialog2()"></app-atlas-button>
+                                    </div>
+                                </div>
+                              </div>
+
+
+                                <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                  <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                      <div class="t-px-4 t-py-4 t-sm:px-6">
+                                          <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                              <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Menu</p>
+                                          </div>
+
+                                          <app-atlas-menu [menu]="menu" (action)="action($event)" (select)="onMenuItemSelected($event)">
+                                            <app-atlas-button buttonType="primary" buttonName="Open Menu" buttonIcon="more_vert"></app-atlas-button>
+                                        </app-atlas-menu>
+                                      </div>
+                                 </div>
+
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Paginator</p>
+                                        </div>
+                                        <mat-paginator
+                                        [pageSizeOptions]="[5, 10, 20]"
+                                        aria-label="Select page of Roles"
+                                      >
+                                      </mat-paginator>
+                                    </div>
+                                </div>
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">progress-indicator</p>
+                                        </div>
+                                        <app-atlas-progress-indicator [isLinear]="true" [valueProgress]="25"></app-atlas-progress-indicator>
+                                        <br>
+                                        <app-atlas-progress-indicator [isLinear]="true" [valueProgress]="80"></app-atlas-progress-indicator>
+                                        <br>
+                                        <app-atlas-progress-indicator [isCircular]="true" [valueProgress]="90"></app-atlas-progress-indicator>
+                                    </div>
+                                </div>
+
+                              </div>
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">radio-button</p>
+                                        </div>
+                                        <app-atlas-radio-button
+                                          [groupName]="'Name of State of Michigan Department?'"
+                                          [options]="radioOptions"
+                                          (select)="onSelectionChanged($event)"
+                                      ></app-atlas-radio-button>
+                                    </div>
+                                </div>
+
+                              </div>
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">record-display</p>
+                                        </div>
+                                        <app-atlas-record-display></app-atlas-record-display>
+                                    </div>
+                                </div>
+
+                              </div>
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Breadcrumb</p>
+                                        </div>
+
+                                        <app-atlas-breadcrumb [labels]="['Home', 'Components']" [links]="['/', '/components']"></app-atlas-breadcrumb>
+                                          <app-atlas-breadcrumb [labels]="['Home', 'Components', 'Item']" [links]="['/', '/components', '/item']"></app-atlas-breadcrumb>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">search</p>
+                                        </div>
+
+                                        <div class="comp-container upload-card">
+                                          <app-atlas-search></app-atlas-search>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                              </div>
+                              <!-- <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">snackbar</p>
+                                        </div>
+                                        <app-atlas-snackbar
+                                        message="Snackbar supporting text"
+                                        actionButton="Action"
+                                        closeButton="close"
+                                        duration="min"
+                                      ></app-atlas-snackbar>
+                                      <app-atlas-button buttonType="primary" buttonName="Open Snackbar" (buttonClick)="showSnackbar()"></app-atlas-button>
+                                    </div>
+                                </div>
+
+                              </div> -->
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">text-field</p>
+                                        </div>
+
+                                        <app-atlas-text-field-v2 [id]="'firstNm'" [label]="'First Name'" (inputValueOnChange)="onInputValue($event)"></app-atlas-text-field-v2>
+                                        <app-atlas-text-field-v2 [id]="'lastNm'" [label]="'Last Name'" [textSupport]="'Supporting text'"></app-atlas-text-field-v2>
+                                        <app-atlas-text-field-v2 [id]="'address'" [label]="'Address'"></app-atlas-text-field-v2>
+                                        <p>Textfield input: {{ textfieldInput }}</p>
+                                    </div>
+                                </div>
+
+                              </div>
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">chips</p>
+                                        </div>
+                                        <app-atlas-chips></app-atlas-chips>
+                                    </div>
+                                </div>
+
+                              </div>
+
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">select</p>
+                                        </div>
+                                        <!-- Single Select -->
+                                        <app-atlas-select [options]="dataOptions" (select)="onSingleSelect($event)" [isRequired]="true" errorMessage="Input is required"></app-atlas-select>
+
+                                        <!-- Multiple Select -->
+                                        <app-atlas-select [options]="dataOptions" [multiSelect]="true" (select)="onMultipleSelect($event)"></app-atlas-select>
+                                    </div>
+                                </div>
+
+                              </div>
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">dividers</p>
+                                        </div>
+                                        <app-atlas-divider></app-atlas-divider>
+                                    </div>
+                                </div>
+
+                              </div>
+                              <div class="t-grid t-grid-cols-1 t-gap-5 t-sm:gap-6 t-lg:grid-cols-6">
+                                <div class="t-overflow-hidden t-bg-white t-border t-border-gray-200 t-rounded-xl t-lg:col-span-6">
+                                    <div class="t-px-4 t-py-4 t-sm:px-6">
+                                        <div class="t-flex t-flex-wrap t-items-center t-justify-between">
+                                            <p class="t-text-base t-font-bold t-text-gray-900 t-mb-4 ">Footer</p>
+                                        </div>
+
+                                        <app-atlas-footer></app-atlas-footer>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+
+atlas-components.component.scss..
