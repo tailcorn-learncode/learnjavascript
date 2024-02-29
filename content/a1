@@ -27,3 +27,70 @@ atlas-accordian.component.html..
 </mat-accordion>
 
 
+
+
+
+/* Expansion panel header height */
+.expansion-panel-header {
+  height: 2.5rem; /* Tailwind h-10 equivalent */
+}
+
+/* Flex container for header content */
+.header-content-container {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Title style within the header */
+.header-title {
+  align-self: stretch;
+  font-size: 1rem; /* Tailwind text-base equivalent */
+  /* Additional class for header color will be added dynamically with [ngClass] */
+}
+
+/* Flex container for icons */
+.icons-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.625rem; /* Tailwind gap-2.5 equivalent */
+}
+
+/* Icon style */
+.icon-style {
+  font-size: 1rem; /* Tailwind text-base equivalent */
+  /* Additional class for icon color will be added dynamically with [ngClass] */
+}
+
+/* Content margin top */
+.content-margin-top {
+  margin-top: 0.5rem; /* Tailwind mt-2 equivalent */
+}
+
+
+
+<mat-accordion>
+  <mat-expansion-panel [class.mat-expansion-panel]="false" *ngFor="let header of headers; let i = index" (opened)="togglePanel(i)" (closed)="togglePanel(i)" [expanded]="i === 0">
+    <mat-expansion-panel-header class="expansion-panel-header">
+      <div class="header-content-container">
+        <div class="header-title" [ngClass]="headerColor">
+          {{ header }}
+        </div>
+      </div>
+      <div class="icons-container">
+        <span class="material-symbols-outlined icon-style" [ngClass]="iconColor" *ngIf="panelOpenState[i] === false">{{expandIcon}}</span>
+        <span class="material-symbols-outlined icon-style" [ngClass]="iconColor" *ngIf="panelOpenState[i]">{{collapseIcon}}</span>
+      </div>
+    </mat-expansion-panel-header>
+    <div class="content-margin-top">
+      <ng-content select=".content-{{i}}"></ng-content>
+      <ng-content *ngIf="!hasContent(i)"></ng-content>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
