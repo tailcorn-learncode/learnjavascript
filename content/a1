@@ -1,0 +1,29 @@
+Given below is atlas-accordian angular component. Inside this tailwindcss used with prefix - "t-". Need to remove tailwindcss and use vanilla css instead with meaning full class names.
+write vanila css in atlas-accordian.component.scss. make you not miss any css and look should be exact.
+
+atlas-accordian.component.html..
+
+<mat-accordion>
+  <mat-expansion-panel [class.mat-expansion-panel]="false" *ngFor="let header of headers; let i = index" (opened)="togglePanel(i)" (closed)="togglePanel(i)" [expanded]="i === 0">
+    <mat-expansion-panel-header class="t-h-10">
+      <!-- <div class="t-justify-center t-items-center t-flex">
+        <span class="material-symbols-outlined">person</span>
+      </div> -->
+      <div class="t-grow t-shrink t-basis-0 t-self-stretch t-flex-col t-justify-center t-items-start t-inline-flex">
+        <div class="t-self-stretch t-text-base title-large" [ngClass]="headerColor">
+          {{ header }}
+        </div>
+      </div>
+      <div class="t-justify-start t-items-center t-gap-2.5 t-flex">
+        <span class="material-symbols-outlined t-text-base" [ngClass]="iconColor" *ngIf="panelOpenState[i] === false">{{expandIcon}}</span>
+        <span class="material-symbols-outlined t-text-base" [ngClass]="iconColor" *ngIf="panelOpenState[i]">{{collapseIcon}}</span>
+      </div>
+    </mat-expansion-panel-header>
+    <div class="t-mt-2">
+      <ng-content select=".content-{{i}}"></ng-content>
+    <ng-content *ngIf="!hasContent(i)"></ng-content>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+
+
