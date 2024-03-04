@@ -42,3 +42,150 @@ atlas-card.component.html..
 
 atlas-card.component.scss..
 
+<div class="card-container">  
+    <div class="card-content">    
+        <div class="image-container">
+            <div class="image-wrapper">
+                <div class="image-box">
+                    <img class="image" [src]="imageUrl" />
+                </div>
+                <div class="text-section">
+                    <div>
+                        <div class="title-large">{{ header }}</div>
+                        <div class="title-medium">{{ subheader }}</div>
+                    </div>
+                </div>
+                <div class="description-section">
+                    <div class="label-large">{{ description }}</div>
+                    <div class="button-container">
+                        <div class="button" (click)="onButton1Click()">
+                            <div class="primary-text">{{ label1 }}</div>
+                        </div>
+                        <div class="button" (click)="onButton2Click()">
+                            <div class="primary-text">{{ label2 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+/* atlas-card.component.scss */
+.card-container {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #d1d5db; /* border-neutral-300 */
+  display: inline-flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+}
+
+.card-content {
+  padding: 20px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: start;
+  justify-content: center;
+  gap: 48px; /* Tailwind's gap-12 is 3rem or 48px */
+}
+
+.image-container {
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+  height: 486px;
+  border-radius: 16px; /* rounded-xl */
+  gap: 10px; /* gap-2.5 */
+}
+
+.image-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+}
+
+.image-box {
+  width: 360px;
+  height: 270px;
+  position: relative;
+}
+
+.image {
+  width: 360px;
+  height: 270px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.text-section {
+  padding: 16px 16px 16px 16px; /* px-4, pt-3, pb-4 */
+  display: inline-flex;
+  justify-content: start;
+  align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+  height: 48px; /* h-12 */
+  gap: 16px; /* gap-4 */
+}
+
+.description-section {
+  padding: 8px 16px 16px 16px; /* px-4, pt-2, pb-4 */
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 32px; /* gap-8 */
+  height: 140px;
+}
+
+.button-container {
+  display: inline-flex;
+  justify-content: start;
+  align-items: start;
+  gap: 8px; /* gap-2 */
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+  height: 44px; /* h-11 */
+  border-radius: 100px;
+  border: 1px solid #71717a; /* border-zinc-500 */
+}
+
+.button {
+  padding: 10px 24px; /* px-6, py-2.5 */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* gap-2 */
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+}
+
+.title-large {
+  color: #1e293b; /* text-zinc-900 */
+  /* Add font size and weight here based on your app's design system */
+}
+
+.title-medium {
+  color: #1e293b; /* Same as title-large for consistency */
+  /* Add font size and weight here */
+}
+
+.label-large, .primary-text {
+  color: #374151; /* text-zinc-700 for label, adjust for primary-text if different */
+  /* Add font size and weight here */
+}
