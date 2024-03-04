@@ -224,3 +224,26 @@ adjustItemsToShow() {
 ngOnInit() {
     this.adjustItemsToShow();
 }
+
+
+
+updateDisplayHeaders() {
+    // Check if the current index is within bounds
+    if (this.currentIndex < 0) {
+        this.currentIndex = 0; // Prevents going below the first index
+    }
+    if (this.currentIndex > this.cardheaders.length - this.itemsToShow) {
+        this.currentIndex = this.cardheaders.length - this.itemsToShow; // Adjusts if beyond the last possible index
+    }
+
+    // Guard against negative values which can occur if `cardheaders` has fewer items than `itemsToShow`
+    const safeIndex = Math.max(this.currentIndex, 0);
+
+    // Determine the slice of `cardheaders` to show based on `currentIndex` and `itemsToShow`
+    this.displayHeaders = this.cardheaders.slice(safeIndex, safeIndex + this.itemsToShow);
+
+    // Update the transition offset to adjust the carousel's position
+    // Assuming each item (including margins/paddings) occupies exactly 300px width
+    const itemWidth = 300; // Update this if your item width or the gap changes
+    this.transitionOffset = -safeIndex * itemWidth;
+}
