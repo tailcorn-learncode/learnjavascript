@@ -247,3 +247,24 @@ updateDisplayHeaders() {
     const itemWidth = 300; // Update this if your item width or the gap changes
     this.transitionOffset = -safeIndex * itemWidth;
 }
+
+
+import { HostListener } from '@angular/core';
+
+// Inside the component class
+
+ngOnInit() {
+  this.calculateItemsToShow();
+  window.addEventListener('resize', this.calculateItemsToShow.bind(this));
+}
+
+ngOnDestroy() {
+  window.removeEventListener('resize', this.calculateItemsToShow.bind(this));
+}
+
+@HostListener('window:resize', ['$event'])
+calculateItemsToShow() {
+  const containerWidth = document.querySelector('.notification-carousel-container').clientWidth;
+  this.itemsToShow = Math.floor(containerWidth / 300); // Assuming 300px per item
+  this.updateDisplayHeaders();
+}
