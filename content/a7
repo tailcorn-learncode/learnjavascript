@@ -1,0 +1,32 @@
+import * as fs from 'fs';
+import * as cheerio from 'cheerio';
+
+// Function to read HTML file and extract unique class names starting with "t-"
+function extractClassNames(filePath: string): void {
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading the HTML file:', err);
+      return;
+    }
+
+    const $ = cheerio.load(data);
+    const classNamesSet: Set<string> = new Set(); // Use a set to ensure uniqueness
+
+    // Iterate over all elements with class attributes
+    $('[class]').each((index, element) => {
+      const classes: string[] = $(element).attr('class')!.split(/\s+/); // Split classes by whitespace
+      classes.forEach((className) => {
+        if (className.startsWith('t-')) {
+          classNamesSet.add(className);
+        }
+      });
+    });
+
+    // Join unique class names into a string separated by space
+    const classNamesString: string = Array.from(classNamesSet).join(' ');
+    console.log(classNamesString);
+  });
+}
+
+// Replace 'path/to/your/file.html' with the actual file path
+extractClassNames('path/to/your/file.html');
