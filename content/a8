@@ -1,0 +1,203 @@
+i have angular component which displays carousel of items. In below code i want to restrict each carousel item width to 300px, based on that change code
+
+
+component.html
+<div class="notification-carousel-container flex gap-4">
+                    <button
+                        *ngIf="showPrevButton()"
+                        (click)="previous()"
+                        class="notification-carousel-control"
+                    >
+                        <span class="material-symbols-outlined text-gray-400">
+                            arrow_back_ios
+                        </span>
+                    </button>
+                    <div
+                        class="notification-carousel-slide gap-6"
+                        [style.transform]="
+                            'translateX(' + transitionOffset + '%)'
+                        "
+                    >
+                        <div
+                            *ngFor="let header of displayHeaders"
+                            class="notification-carousel-item"
+                        >
+                            <div class="background-white rounded-xl">
+                                <app-atlas-accordian
+                                    [fontSize]="'title-medium'"
+                                    [headers]="[getDescription(header.title)]"
+                                    [statusText]="getStatusText(header.date)"
+                                >
+                                    <!-- <div *ngIf="isOverDue(header.date)">
+                                        <div class="input-chip">
+                                            <span class="label-text"
+                                                >Over Due</span
+                                            >
+                                        </div>
+                                    </div> -->
+                                    <div class="content">
+                                        <div
+                                            class="margin-top-2 text-extra-small"
+                                        >
+                                            {{ header.date }}
+                                        </div>
+                                        <!-- <span
+                                            class="badge rounded-pill text-bg-danger"
+                                            >Danger</span
+                                        > -->
+                                        <div
+                                            class="padding-top-2 margin-top-4 flex-column justify-start items-start gap-8 inline-flex"
+                                        >
+                                            <div
+                                                class="self-stretch text-zinc-700 text-small font-normal font-roboto leading-tight tracking-tight"
+                                            >
+                                                {{ header.description }}
+                                            </div>
+                                            <div
+                                                class="t-mt-4 self-stretch justify-end items-start gap-2 inline-flex"
+                                            >
+                                                <div
+                                                    class="height-11 rounded-100 flex-column justify-center items-center gap-2 inline-flex"
+                                                >
+                                                    <div
+                                                        class="self-stretch grow shrink basis-0 padding-x-3 padding-y-2p5 justify-center items-center gap-2 inline-flex"
+                                                    >
+                                                        <div
+                                                            class="text-center text-blue-600 text-small font-medium font-roboto leading-tight tracking-tight t-cursor-pointer"
+                                                            (click)="
+                                                                setReminder(
+                                                                    header
+                                                                )
+                                                            "
+                                                        >
+                                                            Remind Later
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <app-atlas-button
+                                                    buttonType="primary"
+                                                    buttonName="Work Now"
+                                                    (buttonClick)="onWorkNow()"
+                                                ></app-atlas-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </app-atlas-accordian>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        *ngIf="showNextButton()"
+                        (click)="next()"
+                        class="notification-carousel-control"
+                    >
+                        <span class="material-symbols-outlined text-gray-400">
+                            arrow_forward_ios
+                        </span>
+                    </button>
+                </div>
+
+
+component.scss
+
+.notification-carousel-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.notification-carousel-slide {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.notification-carousel-item {
+  flex: 0 0 25%;
+}
+
+.notification-carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.notification-carousel-control:first-child {
+  left: 0;
+}
+
+.notification-carousel-control:last-child {
+  right: 0;
+}
+
+.input-chip {
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-border-danger, #B30518);
+  background: var(--color-bg-danger-lighter, #FFE8E3);
+  display: flex;
+  padding: 0rem 0.5rem;
+  align-items: center;
+  gap: 0.375rem;
+  color: #BD2435;
+}
+
+.t-mt-4 {
+  margin-top: 1rem
+}
+.t-cursor-pointer {
+  cursor: pointer
+}
+
+
+component.ts
+displayHeaders = [];
+    currentIndex = 0;
+    itemsToShow = 4;
+
+    transitionOffset = 0;
+
+    routename: string;
+
+    infoItems: any;
+
+    contactItems: any;
+
+    planItems: any;
+
+    notifications: any;
+
+    cardheaders = [];
+
+    payloadData: any;
+
+    currentDate = new Date();
+
+updateDisplayHeaders() {
+        this.displayHeaders = this.cardheaders;
+        this.transitionOffset = -100 * this.currentIndex;
+    }
+
+    next() {
+        if (this.currentIndex < this.cardheaders.length - this.itemsToShow) {
+            this.currentIndex++;
+            this.updateDisplayHeaders();
+        }
+    }
+
+    previous() {
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+            this.updateDisplayHeaders();
+        }
+    }
+
+    showPrevButton(): boolean {
+        return this.currentIndex > 0;
+    }
+
+    showNextButton(): boolean {
+        return this.currentIndex < this.cardheaders.length - this.itemsToShow;
+    }
