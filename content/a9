@@ -1,0 +1,26 @@
+// In your component.ts
+
+ngAfterViewInit() {
+  this.calculateFlexBasis();
+  window.addEventListener('resize', this.calculateFlexBasis.bind(this));
+}
+
+ngOnDestroy() {
+  window.removeEventListener('resize', this.calculateFlexBasis.bind(this));
+}
+
+calculateFlexBasis = () => {
+  // Assuming the container width can be determined or using window width as a fallback
+  const containerWidth = document.querySelector('.notification-carousel-container')?.clientWidth || window.innerWidth;
+  // Calculate how many items can fit into the container if each item is approximately 300px
+  const itemsThatFit = Math.floor(containerWidth / 300);
+  // Calculate the flex basis percentage for each item
+  this.flexBasisPercent = itemsThatFit > 0 ? (100 / itemsThatFit) : 100; // Prevent division by zero
+  this.updateDisplayHeaders();
+}
+
+
+<!-- In your component.html -->
+<div *ngFor="let header of displayHeaders" class="notification-carousel-item" [ngStyle]="{'flex': '0 0 ' + flexBasisPercent + '%'}">
+    <!-- Carousel item content -->
+</div>
