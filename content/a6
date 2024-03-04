@@ -1,0 +1,36 @@
+Given below is atlas-dialog angular component. Inside this tailwindcss used with prefix - "t-". Need to remove tailwindcss and use vanilla css instead with meaning full class names.
+dont remove classes which are not tailwind. write vanila css in atlas-dialog.component.scss. make sure you not miss any css and look should be exact.
+
+atlas-dialog.component.html..
+
+<div class="t-px-4 t-py-4 t-bg-[#f4f3f7] t-rounded-lg t-shadow-lg">
+  <div class="t-flex">
+<div class="t-flex-1 headline-small">
+{{data.title}}
+</div>
+<div (click)="onClose()" class="t-cursor-pointer">
+  <span class="material-symbols-outlined">
+    close
+    </span>
+</div>
+    </div>
+
+
+    <div class="t-flex-col t-w-[350px]">
+    <div *ngFor="let item of data.items" class="t-mt-6">
+      <app-atlas-textfield [id]="item.name" [name]="item.name" [(text)]="item.value" [backgroundClass]="'t-bg-gray-200 text-gray-600'"></app-atlas-textfield>
+    </div>
+  </div>
+
+  <div class="t-flex t-justify-end t-items-end t-mt-6">
+    <div class="t-flex t-gap-2">
+      
+      <app-atlas-button buttonType="secondary" buttonName="Cancel" (buttonClick)="onClose()"></app-atlas-button>
+      
+      <app-atlas-button buttonType="primary" buttonName="Save" (buttonClick)="onOk()"></app-atlas-button>
+    </div>
+  </div>
+ 
+</div>
+
+atlas-dialog.component.scss
