@@ -201,3 +201,26 @@ updateDisplayHeaders() {
     showNextButton(): boolean {
         return this.currentIndex < this.cardheaders.length - this.itemsToShow;
     }
+
+
+
+
+import { HostListener } from '@angular/core';
+
+// Inside your component class
+@HostListener('window:resize', ['$event'])
+onResize(event?) {
+   this.adjustItemsToShow();
+}
+
+adjustItemsToShow() {
+    const containerWidth = document.querySelector('.notification-carousel-container').clientWidth;
+    const itemWidth = 300; // Fixed width for each item
+    const gap = 24; // Assuming a gap of 24px between items, adjust according to your actual gap
+    this.itemsToShow = Math.floor((containerWidth + gap) / (itemWidth + gap));
+    this.updateDisplayHeaders(); // Make sure this method adjusts display based on itemsToShow
+}
+
+ngOnInit() {
+    this.adjustItemsToShow();
+}
