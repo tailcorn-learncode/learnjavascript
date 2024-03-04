@@ -34,3 +34,85 @@ atlas-dialog.component.html..
 </div>
 
 atlas-dialog.component.scss
+
+
+
+
+
+<div class="dialog-container">
+  <div class="dialog-header">
+    <div class="title-container">
+      {{data.title}}
+    </div>
+    <div (click)="onClose()" class="close-icon">
+      <span class="material-symbols-outlined">
+        close
+      </span>
+    </div>
+  </div>
+
+  <div class="content-container">
+    <div *ngFor="let item of data.items" class="item-container">
+      <app-atlas-textfield [id]="item.name" [name]="item.name" [(text)]="item.value" [backgroundClass]="'textfield-background text-gray-600'"></app-atlas-textfield>
+    </div>
+  </div>
+
+  <div class="actions-container">
+    <div class="buttons-container">
+      <app-atlas-button buttonType="secondary" buttonName="Cancel" (buttonClick)="onClose()"></app-atlas-button>
+      <app-atlas-button buttonType="primary" buttonName="Save" (buttonClick)="onOk()"></app-atlas-button>
+    </div>
+  </div>
+</div>
+
+
+
+.dialog-container {
+  padding: 1rem; /* t-px-4 t-py-4 */
+  background-color: #f4f3f7; /* t-bg-[#f4f3f7] */
+  border-radius: 0.5rem; /* t-rounded-lg */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* t-shadow-lg */
+}
+
+.dialog-header {
+  display: flex; /* t-flex */
+}
+
+.title-container {
+  flex: 1; /* t-flex-1 */
+  /* Assume 'headline-small' is a custom class not to be removed. */
+}
+
+.close-icon {
+  cursor: pointer; /* t-cursor-pointer */
+  /* The 'material-symbols-outlined' class is assumed to be handling the icon itself and is not modified. */
+}
+
+.content-container {
+  display: flex; /* t-flex-col */
+  width: 350px; /* t-w-[350px] */
+}
+
+.item-container {
+  margin-top: 1.5rem; /* t-mt-6 */
+  /* The 'app-atlas-textfield' component will handle its internal styling. We just ensure the backgroundClass is set correctly. */
+}
+
+.actions-container {
+  display: flex; /* t-flex */
+  justify-content: end; /* t-justify-end */
+  align-items: end; /* t-items-end */
+  margin-top: 1.5rem; /* t-mt-6 */
+}
+
+.buttons-container {
+  display: flex; /* t-flex */
+  gap: 0.5rem; /* t-gap-2 */
+  /* The 'app-atlas-button' components will handle their internal styling. */
+}
+
+.textfield-background {
+  background-color: #e2e8f0; /* t-bg-gray-200 equivalent */
+  color: #4a5568; /* Assuming this is what 'text-gray-600' would translate to */
+}
+
