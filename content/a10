@@ -1,0 +1,31 @@
+Given below is user story details, need to rewrite them in below format
+
+
+Title:
+
+As a <type of iser>
+
+I want to <perform some task>
+
+so that I can <achieve some goal>
+
+
+Acceptance criteria
+
+Given <some context>
+
+When <some action is carried out>
+
+Then <a set of observable outcomes should occur>
+
+
+details:
+
+Menu navigation, all components aligned with Figma. Design should match like figma.
+
+Implement security by passing jwt token, headers with app_code which is based on applications - Atlas, ESS, Member. Get access token for authenticated user in oauth2proxy at front end.
+
+Add validation login in Atlas microservice and make sure the user has role. If not invalidate the request.
+If valid allow the API request for other microservices like ESS, Member
+
+Integrate all components in front end and verify if any broken links and get required user information from access token
