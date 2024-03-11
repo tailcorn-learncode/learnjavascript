@@ -1,3 +1,72 @@
+ChatGPT 4
+
+User
+Given below is user story details, need to rewrite them in below format
+
+
+Title:
+
+As a <type of iser>
+
+I want to <perform some task>
+
+so that I can <achieve some goal>
+
+
+Acceptance criteria
+
+Given <some context>
+
+When <some action is carried out>
+
+Then <a set of observable outcomes should occur>
+
+
+details:
+
+Menu navigation, all components aligned with Figma. Design should match like figma.
+
+Implement security by passing jwt token, headers with app_code which is based on applications - Atlas, ESS, Member. Get access token for authenticated user in oauth2proxy at front end.
+
+Add validation login in Atlas microservice and make sure the user has role. If not invalidate the request.
+If valid allow the API request for other microservices like ESS, Member
+
+Integrate all components in front end and verify if any broken links and get required user information from access token
+
+ChatGPT
+Title: Enhancing User Interface Alignment and Security Integration
+As a developer,
+
+I want to align all menu components with the design specified in Figma and implement security measures by passing a JWT token and headers with an app_code specific to applications (Atlas, ESS, Member), as well as add validation logic in the Atlas microservice to ensure the user has the appropriate role,
+
+so that I can ensure the application's design is consistent with the Figma prototype and enhance the security and usability of our application by managing authenticated user access and role-based validation effectively.
+
+Acceptance Criteria
+Given a user interacts with the application,
+
+When the user navigates the menu,
+
+Then all components should be aligned as specified in the Figma design, ensuring a seamless user interface.
+
+Given a user attempts to authenticate,
+
+When the user provides their credentials,
+
+Then the system should pass a JWT token and headers with an app_code related to Atlas, ESS, or Member applications to authenticate the user and obtain an access token via oauth2proxy at the front end.
+
+Given an authenticated user attempts to access the Atlas microservice,
+
+When a request is made,
+
+Then the system should validate the user's role within the Atlas microservice; if the user does not have the appropriate role, the request should be invalidated, otherwise, allow the API request for other microservices like ESS, Member.
+
+Given a user is interacting with the front-end application,
+
+When the user navigates between different components,
+
+Then the system should integrate all components seamlessly, verify there are no broken links, and retrieve the required user information from the access token, ensuring a functional and secure user experience.
+
+
 Given below is user story details, need to rewrite them in below format
 
 
