@@ -1,0 +1,29 @@
+Given below is user story details, need to rewrite them in below format
+
+
+Title:
+
+As a <type of iser>
+
+I want to <perform some task>
+
+so that I can <achieve some goal>
+
+
+Acceptance criteria
+
+Given <some context>
+
+When <some action is carried out>
+
+Then <a set of observable outcomes should occur>
+
+
+details:
+
+Post man API test in all microservice projects (admin, ess, member and document).
+Write/Test all Get,Post,Put,Delete API calls for all microservices.
+Pass Headers api_code and access_code for all microservices and validate.
+Verify responses or proper errors from api calls.
+Store all api's in collection with proper namings.
+Make sure these collections when exported and imported by any other developer or tester, those should work as it is
