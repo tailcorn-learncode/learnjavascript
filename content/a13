@@ -1,3 +1,64 @@
+
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { YourComponent1 } from './your-component1/your-component1.component';
+import { YourComponent2 } from './your-component2/your-component2.component';
+// Import other components
+
+const routes: Routes = [
+  { path: 'route1', component: YourComponent1, data: { title: 'Route 1' } },
+  { path: 'route2', component: YourComponent2, data: { title: 'Route 2' } },
+  // Add more routes here
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+
+
+import { Component } from '@angular/core';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
+})
+export class HeaderComponent {
+  currentRoute: string = '';
+
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(() => {
+        let route = this.activatedRoute.firstChild;
+        let child = route;
+        while (child) {
+          if (child.firstChild) {
+            child = child.firstChild;
+          } else {
+            child = null;
+          }
+          route = child ? child : route;
+        }
+        return route;
+      }),
+      filter(route => route.outlet === 'primary'),
+      map(route => route.snapshot.data['title'] || route.snapshot.url[0].path)
+    ).subscribe((title) => {
+      this.currentRoute = title;
+    });
+  }
+}
+
+
+
+
+
 import { Component } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
