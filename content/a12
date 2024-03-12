@@ -1,0 +1,28 @@
+User
+Given below is user story details, need to rewrite them in below format
+
+
+Title:
+
+As a <type of iser>
+
+I want to <perform some task>
+
+so that I can <achieve some goal>
+
+
+Acceptance criteria
+
+Given <some context>
+
+When <some action is carried out>
+
+Then <a set of observable outcomes should occur>
+
+
+details:
+
+Set playwright boiler plate code with page object model.
+Develop Continuous Integration and deployment for playwright testing framework.
+write build pipeline to deploy playwright code to Azure cloud.
+Make sure when code is commited to main branch pipeline will work and deploy seemlessly.
