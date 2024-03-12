@@ -1,3 +1,47 @@
+import { Component } from '@angular/core';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
+})
+export class HeaderComponent {
+  currentRoute: string = '';
+
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(() => {
+        let route = this.activatedRoute.firstChild;
+        let child = route;
+        while (child) {
+          if (child.firstChild) {
+            child = child.firstChild;
+          } else {
+            child = null;
+          }
+          route = child ? child : route;
+        }
+        return route;
+      }),
+      filter(route => route.outlet === 'primary'),
+      map(route => {
+        // Get the route name or title
+        let routeName = route.snapshot.data['title'] || route.snapshot.url[0].path;
+        // Capitalize the first letter and return
+        return routeName.charAt(0).toUpperCase() + routeName.slice(1);
+      })
+    ).subscribe((title) => {
+      this.currentRoute = title;
+    });
+  }
+}
+
+
+
+
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
