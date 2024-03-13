@@ -1,3 +1,13 @@
+
+const uniqueByApplicationCode = dataArray.reduce((accumulator, current) => {
+    if (!accumulator.some(item => item.applicationCode === current.applicationCode)) {
+        accumulator.push(current);
+    }
+    return accumulator;
+}, []);
+
+
+
 [{
         "id": 2,
         "applicationCode": "EMPR",
