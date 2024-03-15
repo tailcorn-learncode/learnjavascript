@@ -1,3 +1,66 @@
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private accessToken: string;
+
+  constructor() { }
+
+  setAccessToken(token: string) {
+    this.accessToken = token;
+  }
+
+  getAccessToken(): string {
+    return this.accessToken;
+  }
+}
+
+
+
+this.essHeaderService.getUserInfo().subscribe(data => {
+  if (data && data.headers) {
+    const XAuthRequestAccessToken = data.headers.get('X-Auth-Request-Access-Token');
+    if (XAuthRequestAccessToken) {
+      // Store the token
+      this.authService.setAccessToken(XAuthRequestAccessToken);
+      // Rest of your code...
+    }
+  }
+}, error => {
+  console.log('Error reading user info', error)
+});
+
+
+
+
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    constructor(private authService: AuthService) {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        // Retrieve the stored token
+        const accessToken = this.authService.getAccessToken();
+        
+        if (accessToken) {
+            request = request.clone({
+                setHeaders: {
+                    Authorization: `Bearer ${accessToken}`,
+                    apicode: environment.apicode,
+                    accesscode: environment.accesscode
+                }
+            });
+        }
+
+        return next.handle(request);
+    }
+}
+
+
+
+
+
+
 Need to pass authorization bearer with token in auth interceptor, access toke we get in header component
 
 below is authinterceptor
