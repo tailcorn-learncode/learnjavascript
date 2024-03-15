@@ -1,0 +1,188 @@
+Need to pass authorization bearer with token in auth interceptor, access toke we get in header component
+
+below is authinterceptor
+
+import {Injectable} from '@angular/core';
+import {
+    HttpRequest,
+    HttpHandler,
+    HttpEvent,
+    HttpInterceptor
+} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {AuthService} from '../services/auth.service';
+import {environment} from '../../environments/environment';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    private loginUser = environment.currentuser;
+    private tokenKey = environment.token;
+    private apicode = environment.apicode;
+    private accesscode = environment.accesscode;
+    constructor(private authService: AuthService) {}
+
+    intercept(
+        request: HttpRequest<any>,
+        next: HttpHandler
+    ): Observable<HttpEvent<any>> {
+        const key = // authorization key
+        if (key) {
+            request = request.clone({
+                headers: request.headers
+                    .set('apicode', this.apicode)
+                    .set('accesscode', this.accesscode)
+               });
+        }
+
+        return next.handle(request);
+    }
+}
+
+
+In header component , im getting access token XAuthRequestAccessToken
+
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { AtlasSelectConfig } from '../../arch/atlas-comp/atlas-select/atlasSelectConfig.model';
+import { EmployerService } from '../../services/employer.service';
+import { MenuselectorComponent } from '../menuselector/menuselector.component';
+import { HeaderService } from './header.service';
+import { SharedService } from '../main/shared.service';
+import {jwtDecode} from 'jwt-decode';
+import { filter, map } from 'rxjs';
+
+@Component({
+  selector: 'app-ess-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
+})
+export class HeaderComponent implements OnInit {
+  
+  routename: string = 'Home';
+  username: string = 'Welcome, Warren';
+  fullname: string = '';
+  initials: string = '';
+
+  employerSelectConfig: AtlasSelectConfig = {
+    name: 'employer-select',
+    labelText: 'Working With',
+    displayMember: 'name',
+    valueMember: 'id',
+    items: [
+      { 
+        id: 115809,
+        name: 'Sample Employer'
+      },
+      {
+        id: 2,
+        name: 'Coldwater Community Schools'
+      },
+      {
+        id: 3,
+        name: 'Foo Bar'
+      }
+    ]
+  };
+
+  employerOptions = [{id:1,value:'Employer 1'}, {id:2,value:'Employer 2'}, {id:3,value:'Employer 3'}];
+
+  caseOptions = [{id:1,value:'Case 1'}, {id:2,value:'Case 2'}];
+  
+  constructor(private router: Router, private activatedRoute: ActivatedRoute,
+              private dialog: MatDialog,
+              private essHeaderService: HeaderService,private sharedService: SharedService,
+              private employerService: EmployerService) { 
+
+                this.router.events.pipe(
+                  filter(event => event instanceof NavigationEnd),
+                  map(() => {
+                    let route = this.activatedRoute.firstChild;
+                    let child = route;
+                    while (child) {
+                      if (child.firstChild) {
+                        child = child.firstChild;
+                      } else {
+                        child = null;
+                      }
+                      route = child ? child : route;
+                    }
+                    return route;
+                  }),
+                  filter(route => route.outlet === 'primary'),
+                  map(route => {
+                    let routeName = route.snapshot.data['title'] || route.snapshot.url[0].path;
+                    return routeName.charAt(0).toUpperCase() + routeName.slice(1);
+                  })
+                ).subscribe((title) => {
+                  this.routename = title;
+                });
+
+              }
+
+  ngOnInit() {
+       
+    this.essHeaderService.getUserInfo().subscribe(data => {
+      if(data && data.headers)
+      {
+        const XAuthRequestAccessToken = data.headers.get('X-Auth-Request-Access-Token');
+        if (XAuthRequestAccessToken) {
+          const userinfo = jwtDecode<any>(XAuthRequestAccessToken);
+          this.fullname = this.formatFullName(userinfo.given_name, userinfo.family_name);
+          this.initials = this.getInitials(userinfo.given_name, userinfo.family_name);
+          this.username = this.formatWelcomeName(userinfo.given_name);
+        }
+      }
+    }, error => {
+      console.log('Error reading user info', error)
+    });
+
+
+    this.essHeaderService.getEmployers().subscribe(data => {
+      this.employerOptions = data;
+    });
+
+    this.essHeaderService.getCases().subscribe(data => {
+      this.caseOptions = data;
+    });
+  }
+
+  private formatFullName(firstName: string, lastName: string): string {
+    return `${firstName || ''} ${lastName || ''}`.trim();
+  }
+
+  private getInitials(firstName: string, lastName: string): string {
+    const firstInitial = firstName && firstName.length > 0 ? firstName.charAt(0) : '';
+    const lastInitial = lastName && lastName.length > 0 ? lastName.charAt(0) : '';
+    return `${firstInitial}${lastInitial}`.toUpperCase();
+  }
+
+  private formatWelcomeName(firstName: string): string {
+    return `Welcome ${firstName || ''}`.trim();
+  }
+
+  onValueChange(value: string) {
+    console.log('Selected value:', value);
+    const employerId = parseInt(value);
+    this.employerService.setEmployer(employerId);
+    this.sharedService.changeEmployerId(employerId);
+  }
+
+  onCaseChange(value: string) {
+    console.log('Selected value:', value);
+  }
+
+  onEmployerChanged(id: number) {
+    this.employerService.setEmployer(id);
+  }
+
+
+  openDialog(): void {
+    const dialogConfig = {
+      
+    };
+  
+    this.dialog.open(MenuselectorComponent, dialogConfig);
+  }
+
+}
