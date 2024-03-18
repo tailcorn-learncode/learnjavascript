@@ -15,6 +15,36 @@ export class AuthService {
   }
 }
 
+import { Injectable } from '@angular/core';
+import {
+    HttpRequest, HttpHandler, HttpEvent, HttpInterceptor
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+import { switchMap, take } from 'rxjs/operators';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    constructor(private authService: AuthService) {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        return this.authService.accessToken$.pipe(
+            take(1), // Take the first value emitted
+            switchMap(accessToken => {
+                if (accessToken) {
+                    // Clone and modify the request with the accessToken
+                    request = request.clone({
+                        setHeaders: {
+                            Authorization: `Bearer ${accessToken}`,
+                            // Include other headers as needed
+                        }
+                    });
+                }
+                return next.handle(request);
+            })
+        );
+    }
+}
 
 
 import { Injectable } from '@angular/core';
