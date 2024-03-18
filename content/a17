@@ -1,0 +1,52 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private accessTokenSource = new BehaviorSubject<string | null>(null);
+  accessToken$ = this.accessTokenSource.asObservable();
+
+  constructor() { }
+
+  setAccessToken(token: string) {
+    this.accessTokenSource.next(token);
+  }
+}
+
+
+
+import { Injectable } from '@angular/core';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+import { first, switchMap } from 'rxjs/operators';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    constructor(private authService: AuthService) {}
+
+    async intercept(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+        const accessToken = await this.authService.accessToken$.pipe(first()).toPromise();
+
+        if (accessToken) {
+            request = request.clone({
+                setHeaders: {
+                    Authorization: `Bearer ${accessToken}`
+                    // Include other headers as needed
+                }
+            });
+        }
+
+        return next.handle(request).toPromise();
+    }
+}
+
+
+
