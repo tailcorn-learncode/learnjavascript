@@ -29,7 +29,102 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 }
 
+server:
+  port: 8181
 
+## Gateway
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway-service
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          "[/**]":
+            allow-credentials: false
+            allowed-origins: "*"
+            allowed-headers: "*"
+            allowed-methods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+              - PATCH
+      routes:
+        - id: discovery-server
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+
+        - id: discovery-server-static
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/**
+
+        - id: admin-service
+          # uri: lb://admin-service
+          uri: http://localhost:8900
+          predicates:
+            - Header=apicode, atlas
+            - Header=accesscode, P20240101
+            - Path=/gateway/api/admin/**
+          filters:
+            - RewritePath=/gateway/api/admin/(?<segment>.*), /api/admin/$\{segment}
+            - name: CustomFilter
+              args: {}
+
+        - id: employer-service
+          # uri: lb://employer-service
+          uri: http://localhost:8901
+          predicates:
+            - Header=apicode, atlas
+            - Header=accesscode, P20240101
+            - Path=/gateway/api/ess/**
+          filters:
+            - RewritePath=/gateway/api/ess/(?<segment>.*), /api/ess/$\{segment}
+
+        - id: member-service
+          # uri: lb://member-service
+          uri: http://localhost:8902
+          predicates:
+            - Header=apicode, atlas
+            - Header=accesscode, P20240101
+            - Path=/gateway/api/member/**
+          filters:
+            - RewritePath=/gateway/api/member/(?<segment>.*), /api/member/$\{segment}
+
+        - id: batch-service
+          # uri: lb://batch-service
+          uri: http://localhost:8903
+          predicates:
+            - Header=apicode, atlas
+            - Header=accesscode, P20240101
+            - Path=/gateway/api/batch/**
+          filters:
+            - RewritePath=/gateway/api/batch/(?<segment>.*), /api/batch/$\{segment}
+
+        - id: document-service
+          # uri: lb://document-service
+          uri: http://localhost:8904
+          predicates:
+            - Header=apicode, atlas
+            - Header=accesscode, P20240101
+            - Path=/gateway/api/document/**
+          filters:
+            - RewritePath=/gateway/api/document/(?<segment>.*), /api/document/$\{segment}
+
+    compatibility-verifier:
+      enabled: false
 
 
 i implemented azure ad setup in frontend angular and im passing bearer token form angular to springboot api. 
