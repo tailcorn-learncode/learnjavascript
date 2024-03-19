@@ -1,0 +1,73 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError, shareReplay } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private accessToken$: Observable<string>;
+
+  constructor(private http: HttpClient) {}
+
+  fetchAccessToken(): Observable<string> {
+    if (!this.accessToken$) {
+      const { protocol, hostname, port } = window.location;
+      const baseUrl = `${protocol}//${hostname}:${port}`;
+      const apiUrl = `${baseUrl}/oauth2/auth`;
+
+      this.accessToken$ = this.http.get(apiUrl, { observe: 'response' }).pipe(
+        map(response => {
+          const token = response.headers.get('X-Auth-Request-Access-Token');
+          if (token) {
+            return token;
+          }
+          throw new Error('Token not found');
+        }),
+        catchError(error => {
+          console.error('Error fetching access token', error);
+          return throwError(error);
+        }),
+        shareReplay(1) // Ensures all subscribers get the latest token without re-fetching
+      );
+    }
+    return this.accessToken$;
+  }
+}
+
+
+
+import { Injectable } from '@angular/core';
+import {
+    HttpRequest,
+    HttpHandler,
+    HttpEvent,
+    HttpInterceptor
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+
+    constructor(private authService: AuthService) {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        // Check if the request is for the token URL, if so, bypass the interceptor logic
+        if (request.url.includes('/oauth2/auth')) {
+            return next.handle(request);
+        }
+
+        return this.authService.fetchAccessToken().pipe(
+            switchMap(token => {
+                request = request.clone({
+                    setHeaders: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                return next.handle(request);
+            })
+        );
+    }
+}
