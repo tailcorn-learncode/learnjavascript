@@ -1,0 +1,107 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private accessToken = new BehaviorSubject<string | null>(null);
+
+  constructor(private http: HttpClient) {}
+
+  // Method to fetch and store the access token
+  fetchAccessToken(): Observable<string> {
+    const { protocol, hostname, port } = window.location;
+    const baseUrl = `${protocol}//${hostname}:${port}`;
+    const apiUrl = `${baseUrl}/oauth2/auth`;
+
+    return this.http.get(apiUrl, { observe: 'response' }).pipe(
+      map(response => {
+        const token = response.headers.get('X-Auth-Request-Access-Token');
+        if (token) {
+          this.accessToken.next(token);
+          return token;
+        }
+        throw new Error('Token not found');
+      })
+    );
+  }
+
+  // Getter for the access token as an Observable
+  getAccessToken(): Observable<string | null> {
+    return this.accessToken.asObservable();
+  }
+
+  // Utility method to decode JWT
+  decodeToken(token: string) {
+    // Implement jwtDecode logic or use a library
+  }
+}
+
+
+
+import { Injectable } from '@angular/core';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
+import { Observable, from, switchMap } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+
+    constructor(private authService: AuthService) {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        return from(this.authService.getAccessToken()).pipe(
+            switchMap(token => {
+                if (token) {
+                    request = request.clone({
+                        headers: request.headers
+                            .set('Authorization', `Bearer ${token}`)
+                            .set('apicode', environment.apicode)
+                            .set('accesscode', environment.accesscode)
+                    });
+                }
+                return next.handle(request);
+            })
+        );
+    }
+}
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+
+@Component({
+  selector: 'app-ess-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
+})
+export class HeaderComponent implements OnInit {
+
+  fullname: string = '';
+  initials: string = '';
+  username: string = '';
+  
+  constructor(private authService: AuthService) { }
+
+  ngOnInit() {
+    this.authService.getAccessToken().subscribe(token => {
+      if (token) {
+        const userinfo = this.authService.decodeToken(token);
+        // Assuming decodeToken is implemented to return user info
+        if (userinfo) {
+          this.fullname = `${userinfo.given_name} ${userinfo.family_name}`;
+          // Implement getInitials and formatWelcomeName accordingly
+          this.initials = `${userinfo.given_name[0]}${userinfo.family_name[0]}`;
+          this.username = `Welcome, ${userinfo.given_name}`;
+        }
+      }
+    }, error => {
+      console.log('Error reading user info', error)
+    });
+  }
+}
