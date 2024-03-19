@@ -1,4 +1,55 @@
 import { Injectable } from '@angular/core';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor,
+  HttpErrorResponse
+} from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+import { catchError, switchMap, first } from 'rxjs/operators';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+
+  constructor(private authService: AuthService) {}
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Use `first()` to make sure we only subscribe once and complete.
+    return this.authService.getAccessToken().pipe(
+      first(),
+      switchMap(token => {
+        // If the token is available, clone the request and add the authorization header.
+        if (token) {
+          request = request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+        }
+        return next.handle(request);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // Handle specific HTTP errors here, potentially refreshing the token or redirecting
+        // For example, if you get a 401 Unauthorized response, you might want to refresh the token
+        if (error.status === 401) {
+          // Optionally refresh token or handle unauthorized error
+        }
+        return throwError(error);
+      })
+    );
+  }
+}
+
+
+
+
+
+
+
+
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
