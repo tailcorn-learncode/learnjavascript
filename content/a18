@@ -1,0 +1,112 @@
+Below is angular code.. I'm getting access token in header component. I want to put accesstoken XAuthRequestAccessToken in authinterceptor in header. write code to implement that..
+
+
+authinterceptor..
+
+import {Injectable} from '@angular/core';
+import {
+    HttpRequest,
+    HttpHandler,
+    HttpEvent,
+    HttpInterceptor
+} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {AuthService} from '../services/auth.service';
+import {environment} from '../../environments/environment';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    private loginUser = environment.currentuser;
+    private tokenKey = environment.token;
+    private apicode = environment.apicode;
+    private accesscode = environment.accesscode;
+    constructor(private authService: AuthService) {}
+
+    intercept(
+        request: HttpRequest<any>,
+        next: HttpHandler
+    ): Observable<HttpEvent<any>> {
+        const key = // declare access token here
+        if (key) {
+            request = request.clone({
+                headers: request.headers
+                    .set('Authorization', `Bearer ${key}`)
+                    .set('apicode', this.apicode)
+                    .set('accesscode', this.accesscode)
+              });
+        }
+
+        return next.handle(request);
+    }
+}
+
+------------------------------------------------------------
+
+header.component.ts
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-ess-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
+})
+export class HeaderComponent implements OnInit {
+  
+   
+  constructor(private essHeaderService: HeaderService) { }
+
+  ngOnInit() {
+       
+    this.essHeaderService.getUserInfo().subscribe(data => {
+      if(data && data.headers)
+      {
+        const XAuthRequestAccessToken = data.headers.get('X-Auth-Request-Access-Token');
+        if (XAuthRequestAccessToken) {
+          const userinfo = jwtDecode<any>(XAuthRequestAccessToken);
+          this.fullname = this.formatFullName(userinfo.given_name, userinfo.family_name);
+          this.initials = this.getInitials(userinfo.given_name, userinfo.family_name);
+          this.username = this.formatWelcomeName(userinfo.given_name);
+        }
+      }
+    }, error => {
+      console.log('Error reading user info', error)
+    });
+ } 
+}
+
+
+---------------------------------------------------------------
+
+header.service.ts
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from 'projects/employer/src/environments/environment';
+
+interface ApiOrganization {
+    organization: {
+        organizationId: number;
+        organizationName: string;
+    }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class HeaderService {
+  private apiUrl = `${environment.app_url}/member/addr`;
+
+  private adminApiUrl = `${environment.app_url}/admin/case`;
+
+  constructor(private http: HttpClient) { }
+
+  getUserInfo(): Observable<any> {
+    const { protocol, hostname, port } = window.location;
+    const baseUrl = `${protocol}//${hostname}:${port}`;
+    const apiUrl = `${baseUrl}/oauth2/auth`;
+    return this.http.get(apiUrl, { observe: 'response' });
+  }
+}
