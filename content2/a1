@@ -1,0 +1,4 @@
+i implemented azure ad setup in frontend angular and im passing bearer token form angular to springboot api. 
+i want to validate that token in springboot. write springboot code.
+write any helloworld api in spring boot with required pom.xml, config etc., showing how jwttoken validated for api call.
+i have azure tenentid, clientid, clientsecret, issuerurl.
