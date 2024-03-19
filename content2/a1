@@ -1,4 +1,77 @@
 
+server:
+  port: 8181
+
+## Gateway
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway-service
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          "[/**]":
+            allow-credentials: false
+            allowed-origins: "*"
+            allowed-headers: "*"
+            allowed-methods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+              - PATCH
+      routes:
+        # Your existing route configurations
+    compatibility-verifier:
+      enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: YOUR_ISSUER_URI
+          jwk-set-uri: https://login.microsoftonline.com/YOUR_TENANT_ID/discovery/v2.0/keys
+
+
+
+package com.example.gateway;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@Configuration
+@EnableWebFluxSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        http
+            .authorizeExchange(exchanges -> exchanges
+                .pathMatchers("/gateway/api/**").authenticated()
+                .anyExchange().permitAll()
+            )
+            .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);
+        return http.build();
+    }
+}
+
+
+
+
+
+
+
+
 spring:
   security:
     oauth2:
