@@ -1,3 +1,74 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private accessToken = new BehaviorSubject<string | null>(null);
+
+  constructor() {}
+
+  setAccessToken(token: string) {
+    this.accessToken.next(token);
+  }
+
+  getAccessToken() {
+    return this.accessToken.asObservable();
+  }
+}
+
+
+
+// Inside your subscription where you get XAuthRequestAccessToken
+if (XAuthRequestAccessToken) {
+  this.authService.setAccessToken(XAuthRequestAccessToken);
+  // your existing code to handle user info
+}
+
+
+
+import { Injectable } from '@angular/core';
+import {
+    HttpRequest,
+    HttpHandler,
+    HttpEvent
+    } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { take, switchMap } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+private apicode = environment.apicode;
+private accesscode = environment.accesscode;
+constructor(private authService: AuthService) {}
+
+intercept(
+    request: HttpRequest<any>,
+    next: HttpHandler
+): Observable<HttpEvent<any>> {
+    return this.authService.getAccessToken().pipe(
+        take(1), // Take the current value of the access token
+        switchMap(token => {
+            if (token) {
+                request = request.clone({
+                    headers: request.headers
+                        .set('Authorization', `Bearer ${token}`)
+                        .set('apicode', this.apicode)
+                        .set('accesscode', this.accesscode)
+                });
+            }
+            return next.handle(request);
+        })
+    );
+}
+
+
+------------------------------------------------------------------------------------
+
+
 Below is angular code.. I'm getting access token in header component. I want to put accesstoken XAuthRequestAccessToken in authinterceptor in header. write code to implement that..
 
 
