@@ -1,0 +1,47 @@
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@Configuration
+@EnableWebFluxSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http
+            .authorizeExchange()
+            .anyExchange().authenticated()
+            .and()
+            .oauth2ResourceServer()
+            .jwt();
+        return http.build();
+    }
+
+    @Bean
+    public ReactiveJwtDecoder jwtDecoder() {
+        // Replace "issuer-uri" with your Azure AD issuer URL
+        return NimbusReactiveJwtDecoder.withJwkSetUri("issuer-uri/.well-known/openid-configuration/jwks").build();
+    }
+}
+
+
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+
+@RestController
+public class DemoController {
+
+    @GetMapping("/api/demo")
+    public Mono<String> demo() {
+        return Mono.just("Access token is valid, and data is accessible!");
+    }
+}
+
+
+
