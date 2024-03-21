@@ -1,0 +1,1 @@
+curl -H "Content-Type: application/x-www-form-urlencoded" -d 'grant_type=password&client_id=<web-apiB-client-id>&scope=<app-id-uri>/Obo.WebApiB.ExampleScope&client_secret=<web-apiB-client-secret>&username=<username>&password=<password>' 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
