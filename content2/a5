@@ -177,3 +177,29 @@ return adminServiceClient.isUserActive(email)
             return exchange.getResponse().setComplete();
         }));
 
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@Configuration
+@EnableWebFluxSecurity
+public class SecurityConfig {
+
+    private final TokenValidationFilter tokenValidationFilter;
+
+    @Autowired
+    public SecurityConfig(TokenValidationFilter tokenValidationFilter) {
+        this.tokenValidationFilter = tokenValidationFilter;
+    }
+
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http
+            // Your existing security configuration
+            .addFilterAt(tokenValidationFilter, SecurityWebFiltersOrder.AUTHENTICATION);
+        return http.build();
+    }
+}
