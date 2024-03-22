@@ -35,41 +35,6 @@ public class SecurityConfig implements WebFluxConfigurer {
 }
 
 
-JwtAuthenticationFilter.java..
-
-package gov.mipath.atlas.gateway.util;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
-
-@Component
-public class JwtAuthenticationFilter implements WebFilter {
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        
-       String authorizationHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        String apiCode = exchange.getRequest().getHeaders().getFirst("apicode");
-        String accessCode = exchange.getRequest().getHeaders().getFirst("accesscode");
-        
-         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-             String jwt = authorizationHeader.substring(7);
-             String username = // extract username from jwt
-         }
-        return chain.filter(exchange);
-    }
-}
-
-
-
 ---------------------------------------------------------------------------------
 
 admin microservice..
