@@ -1,0 +1,114 @@
+@Bean
+public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    http.csrf(csrf -> csrf.disable())
+        .addFilterAt(new TokenValidationFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+    return http.build();
+}
+
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
+
+@Configuration
+public class WebClientConfig {
+
+    @Bean
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
+    }
+}
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+@Service
+public class AdminServiceClient {
+
+    private final WebClient webClient;
+
+    @Autowired
+    public AdminServiceClient(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8900").build(); // Adjust the base URL as necessary
+    }
+
+    public Mono<UserProfileDto> getUserProfile(String email) {
+        return this.webClient.get()
+                .uri("/api/admin/users/email/{email}", email)
+                .retrieve()
+                .bodyToMono(UserProfileDto.class);
+    }
+}
+
+
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+import java.util.Date;
+import java.util.List;
+
+@Component
+public class TokenValidationFilter implements WebFilter {
+
+    private final AdminServiceClient adminServiceClient;
+
+    @Autowired
+    public TokenValidationFilter(AdminServiceClient adminServiceClient) {
+        this.adminServiceClient = adminServiceClient;
+    }
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
+        if (authHeaders.isEmpty()) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+
+        String token = authHeaders.get(0).substring(7); // Remove "Bearer "
+        try {
+            Claims claims = Jwts.parserBuilder().build().parseClaimsJws(token).getBody();
+            Date expiration = claims.getExpiration();
+            Date now = new Date();
+
+            if (expiration.before(now)) {
+                throw new ExpiredJwtException(null, null, "Token expired");
+            }
+
+            String email = claims.get("unique_name", String.class);
+            
+            // Assuming getUserProfile method is used to determine if user is active based on non-null response
+            return adminServiceClient.getUserProfile(email)
+                    .flatMap(userProfileDto -> {
+                        if (Boolean.TRUE.equals(userProfileDto.getActiveIndicator())) {
+                            return chain.filter(exchange); // User is active; continue with request
+                        } else {
+                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                            return exchange.getResponse().setComplete(); // User is not active; block the request
+                        }
+                    }).switchIfEmpty(Mono.defer(() -> {
+                        exchange.getResponse().setStatusCode(HttpStatus.NOT_FOUND);
+                        return exchange.getResponse().setComplete(); // User not found; block the request
+                    }));
+
+        } catch (ExpiredJwtException e) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        } catch (Exception e) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+    }
+}
