@@ -112,3 +112,26 @@ public class TokenValidationFilter implements WebFilter {
         }
     }
 }
+
+@GetMapping(value="/email/{email}")
+public ResponseEntity<UserProfileDto> findByEmail(@PathVariable String email) {
+    try {
+        var entity = service.findByEmail(email);
+        if(entity == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user profile not found");
+        }
+        return new ResponseEntity<>(
+                UserProfileDto.create(entity), 
+                HttpStatus.OK
+        );
+
+    } catch (NoSuchElementException e) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
+
+
+public UserProfile findByEmailAndIsActive(String email) {
+    return userProfileRepository.findByEmailAddressAndActiveIndicator(email, true)
+        .orElseThrow(() -> new NoSuchElementException("Active user not found with email: " + email));
+}
