@@ -1,0 +1,296 @@
+i have springboot microservices gateway and admin.
+admin running on port 8900. gateway running on port 8181.
+we can access admin api's through gateway too.
+admin microservice has api's related to userprofile.
+http://localhost:8900/api/admin/users is same as 
+http://localhost:8181/gateway/api/admin/users.
+Now from frontend application im passing jwt token in authentication header bearer.
+we need to decode bearer token and get unique_name from jwt token and call api to admin service 
+from gateway. This api checks if user exists with unique_name which is email_nm in userprofile table.
+Also need to check token expiration. If user exists and is valid token then it should allow any api or else give 
+invalid cretential error to frontend. write code in gateway and also admin to acheive this
+
+gateway microservice..
+
+SecurityConfig.java
+package gov.mipath.atlas.gateway.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+
+@Configuration
+@EnableWebFluxSecurity
+public class SecurityConfig implements WebFluxConfigurer {
+
+   
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http.csrf(csrf -> csrf.disable());
+        return http.build();
+    }
+}
+
+
+JwtAuthenticationFilter.java..
+
+package gov.mipath.atlas.gateway.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+@Component
+public class JwtAuthenticationFilter implements WebFilter {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        
+       String authorizationHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        String apiCode = exchange.getRequest().getHeaders().getFirst("apicode");
+        String accessCode = exchange.getRequest().getHeaders().getFirst("accesscode");
+        
+         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+             String jwt = authorizationHeader.substring(7);
+             String username = // extract username from jwt
+         }
+        return chain.filter(exchange);
+    }
+}
+
+
+
+---------------------------------------------------------------------------------
+
+admin microservice..
+
+UserProfile.java (for user_profile table)
+
+package gov.mipath.atlas.admin.common.model;
+
+import gov.mipath.atlas.arch.model.Base;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@Entity
+@Table(name = "user_profile", schema = "dbo")
+@AttributeOverride(name = "id", column = @Column(name = "user_profile_id", nullable = false, columnDefinition = "BIGINT UNSIGNED"))
+@EqualsAndHashCode(callSuper = false)
+public class UserProfile extends Base {
+    
+    @Column(name = "application_cd")
+    private String applicationCode;
+
+    @Column(name = "source_record_nm")
+    private String sourceRecordName;
+
+    @Column(name = "login_nm")
+    private String loginName;
+
+    @Column(name = "full_nm")
+    private String fullName;
+
+    @Column(name = "email_nm")
+    private String emailAddress;
+
+    @Column(name = "active_ind")
+    private Boolean activeIndicator;
+
+    @Column(name = "security_agreement_ind")
+    private Boolean securityAgreementIndicator;
+
+    @Column(name = "lock_released_ind")
+    private Boolean lockReleasedIndicator;
+
+    @Column(name = "security_level_id")
+    private Integer securityLevelId;
+
+    @Column(name = "user_type_id")
+    private Integer userTypeId;
+}
+
+
+UserProfileDto.java
+
+package gov.mipath.atlas.admin.common.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import gov.mipath.atlas.admin.common.model.UserProfile;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class UserProfileDto {
+    private long id;
+    private String applicationCode;
+    private String sourceRecordName;
+    private String loginName;
+    private String fullName;
+    private String emailAddress;
+    private Boolean activeIndicator;
+    private Boolean securityAgreementIndicator;
+    private Boolean lockReleasedIndicator;
+    private Integer securityLevelId;
+    private Integer userTypeId;
+
+    public static UserProfileDto create(UserProfile entity) {
+        var model = new UserProfileDto();
+        model.setId(entity.getId());
+        model.setApplicationCode(entity.getApplicationCode());
+        model.setSourceRecordName(entity.getSourceRecordName());
+        model.setLoginName(entity.getLoginName());
+        model.setFullName(entity.getFullName());
+        model.setEmailAddress(entity.getEmailAddress());
+        model.setActiveIndicator(entity.getActiveIndicator());
+        model.setSecurityAgreementIndicator(entity.getSecurityAgreementIndicator());
+        model.setLockReleasedIndicator(entity.getLockReleasedIndicator());
+        model.setSecurityLevelId(entity.getSecurityLevelId());
+        model.setUserTypeId(entity.getUserTypeId());
+        return model;
+    }
+
+    public UserProfile parse() {
+        var entity = new UserProfile();
+        entity.setId(this.id);
+        entity.setApplicationCode(this.applicationCode);
+        entity.setSourceRecordName(this.sourceRecordName);
+        entity.setLoginName(this.loginName);
+        entity.setFullName(this.fullName);
+        entity.setEmailAddress(this.emailAddress);
+        entity.setActiveIndicator(this.activeIndicator);
+        entity.setSecurityAgreementIndicator(this.securityAgreementIndicator);
+        entity.setLockReleasedIndicator(this.lockReleasedIndicator);
+        entity.setSecurityLevelId(this.securityLevelId);
+        entity.setUserTypeId(this.userTypeId);
+        return entity;
+    }
+}
+
+
+
+UserProfileController.java
+
+package gov.mipath.atlas.admin.controller;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import gov.mipath.atlas.admin.common.dto.UserProfileDto;
+import gov.mipath.atlas.admin.common.service.UserProfileService;
+import lombok.extern.slf4j.Slf4j;
+
+@RestController
+@RequestMapping("/api/admin/users")
+@Slf4j
+public class UserProfileController {
+
+    @Autowired
+    private UserProfileService service;
+
+    @GetMapping()
+    public ResponseEntity<List<UserProfileDto>> findAll() {
+        try {
+			return new ResponseEntity<List<UserProfileDto>>(
+                        service.findAll().stream().map(t -> UserProfileDto.create(t)).collect(Collectors.toList()), 
+                        HttpStatus.OK
+            );
+
+		} catch (NoSuchElementException e) {
+			log.error("Unable to find " + e.getMessage());
+			return new ResponseEntity<List<UserProfileDto>>(HttpStatus.NOT_FOUND);
+		}
+    }
+
+    @GetMapping(value="/{id}")
+    public ResponseEntity<UserProfileDto> findById(@PathVariable Long id) {
+        try {
+			var entity = service.findById(id);
+            if(entity == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user profile not found");
+            }
+			return new ResponseEntity<UserProfileDto>(
+                        UserProfileDto.create(entity), 
+                        HttpStatus.OK
+            );
+
+		} catch (NoSuchElementException e ) {
+			return new ResponseEntity<UserProfileDto>(HttpStatus.NOT_FOUND);
+		}
+    }
+
+    @PostMapping()
+    public ResponseEntity<UserProfileDto> create(@RequestBody UserProfileDto model) {
+        try {
+			var entity = service.addOrUpdate(model.parse());
+			return new ResponseEntity<UserProfileDto>(
+						UserProfileDto.create(entity), 
+						HttpStatus.OK
+			);
+
+		} catch (Exception e) {
+			log.error("Unable to save " + e.getMessage()); 
+			return new ResponseEntity<UserProfileDto>(HttpStatus.BAD_REQUEST); 
+		}
+
+    }
+
+    @PutMapping(value="/{id}")
+    public ResponseEntity<UserProfileDto> update(@PathVariable Long id, @RequestBody UserProfileDto model) {
+        try {
+            var entity = service.findById(id);
+            if(entity == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user profile not found");
+            }
+            model.setId(id);
+            var result = service.addOrUpdate(model.parse());
+            return new ResponseEntity<UserProfileDto>(
+                        UserProfileDto.create(result), 
+                        HttpStatus.OK
+            );
+			
+		} catch (NoSuchElementException e) {
+			log.error("Unable to update " + e.getMessage());
+			return new ResponseEntity<UserProfileDto>(HttpStatus.NOT_FOUND);
+		}
+    }
+
+    @DeleteMapping(value="/{id}")
+    public ResponseEntity<UserProfileDto> delete(@PathVariable Long id) {
+        try {
+			service.delete(id);
+			return ResponseEntity.noContent().build();
+
+		} catch (EmptyResultDataAccessException e) {
+			log.error("Unable to delete " + e.getMessage());
+			return ResponseEntity.noContent().build();
+		}      
+    }
+}
+
+
+
