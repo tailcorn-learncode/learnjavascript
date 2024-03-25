@@ -1,3 +1,16 @@
+public Mono<UserProfileDto> getUserProfile(String email) {
+    return this.webClient.get()
+            .uri("/api/admin/users/email/{email}", email)
+            .retrieve()
+            .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
+                // Handle 4xx errors. You could throw a custom exception here.
+                return Mono.error(new CustomClientException("User not found or other client error"));
+            })
+            .bodyToMono(UserProfileDto.class);
+}
+
+
+
 @GetMapping("/email/{email}")
 public ResponseEntity<?> findByEmail(@PathVariable String email) {
     Optional<UserProfile> userProfileOptional = userProfileService.findByEmailAndIsActive(email);
