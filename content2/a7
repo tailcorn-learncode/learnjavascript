@@ -1,3 +1,41 @@
+public Map<String, Object> decodeJWT(String jwtToken) {
+    String[] parts = jwtToken.split("\\.");
+    if (parts.length < 2) {
+        return Map.of(); // Return an empty map or handle error
+    }
+
+    String payload = parts[1];
+    byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
+    String decodedString = new String(decodedBytes);
+
+    try {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> claims = objectMapper.readValue(decodedString, Map.class);
+
+        // Convert exp claim safely to Long
+        Object expObj = claims.get("exp");
+        if (expObj != null) {
+            Long exp;
+            if (expObj instanceof Integer) {
+                exp = ((Integer) expObj).longValue(); // Safe conversion from Integer to Long
+            } else if (expObj instanceof Long) {
+                exp = (Long) expObj;
+            } else {
+                throw new IllegalArgumentException("Invalid exp claim");
+            }
+            claims.put("exp", exp); // Put back the converted value
+        }
+        
+        return claims;
+    } catch (Exception e) {
+        return Map.of(); // Return an empty map or handle error
+    }
+}
+
+
+
+
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
