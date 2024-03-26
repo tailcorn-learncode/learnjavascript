@@ -1,3 +1,67 @@
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { AuthService } from './auth.service';
+import { environment } from '../environments/environment'; // Adjust the path as necessary
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    private loginUser = environment.currentuser;
+    private tokenKey = environment.token;
+    private apicode = environment.apicode;
+    private accesscode = environment.accesscode;
+    private devmode = environment.devmode;
+
+    constructor(private authService: AuthService) {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        // Bypass for OAuth2 auth URLs
+        if (request.url.includes('/oauth2/auth')) {
+            return next.handle(request);
+        }
+
+        // If devmode is true, set headers without fetching an access token
+        if (this.devmode === true) {
+            const headers = {
+                Apicode: this.apicode,
+                Accesscode: this.accesscode,
+                devmode: 'dev' // Assuming you want to explicitly set a devmode header
+            };
+
+            request = request.clone({
+                setHeaders: headers
+            });
+
+            return next.handle(request);
+        }
+
+        // If devmode is false, proceed with fetching an access token
+        return this.authService.fetchAccessToken().pipe(
+            switchMap(token => {
+                const headers = {
+                    Apicode: this.apicode,
+                    Accesscode: this.accesscode
+                };
+
+                // Add Authorization header if token exists
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                request = request.clone({
+                    setHeaders: headers
+                });
+
+                return next.handle(request);
+            })
+        );
+    }
+}
+
+
+
+
 
 In below intecepter code get devmode key from environment, if it is true  dont do fetchAccessToken just pass apicode and accesscode. If devmode false, continue as given in code. ALso write code neatly if you feel so.
 
