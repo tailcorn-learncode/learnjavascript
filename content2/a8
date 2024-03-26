@@ -1,3 +1,49 @@
+
+@Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    // Retrieve the devmode and Authorization headers from the request
+    String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+    String authorizationHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+    // Check if devmode is not enabled (null) and Authorization header is either missing or does not start with "Bearer"
+    if (devmode == null && (authorizationHeader == null || !authorizationHeader.startsWith("Bearer "))) {
+        // If the conditions above are met, set the response status to UNAUTHORIZED and complete the request
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        return exchange.getResponse().setComplete();
+    }
+    
+    // Proceed with the existing logic if Authorization header is present and correctly formatted
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        String jwt = authorizationHeader.substring(7);
+        Map<String, Object> claims = decodeJWT(jwt);
+        Date expiration = new Date((Long) claims.get("exp") * 1000);
+        if (expiration.before(new Date())) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+
+        String email = (String) claims.get("unique_name");
+
+        return webClient.get().uri("/api/admin/users/email/{email}", email)
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> chain.filter(exchange))
+                .onErrorResume(WebClientResponseException.NotFound.class, e -> {
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
+                })
+                .onErrorResume(e -> {
+                    exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                    return exchange.getResponse().setComplete();
+                });
+    }
+
+    // If devmode is enabled, simply proceed with the filter chain without checking the Authorization header
+    return chain.filter(exchange);
+}
+
+
+
 check this below code..
 
 If from front end we pass Authorization with Bearertoken then no error or else return Unauthorized error.
