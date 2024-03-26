@@ -1,0 +1,110 @@
+
+im passing devmode and Authorization Bearer token from frontend. 
+In below code, it will validate jwt token with given logic, i need put this logic if Authorization key exists & has bearer token,
+if not it should throw Unauthorized exception to front end. Also if devmode key is present and has value dev, it should bypass, i mean it should not validae token,
+for all other cases it should throw Unauthorized exception. write neat code if possible..
+
+package gov.mipath.atlas.gateway.util;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+
+@Component
+// @Profile("jwt")
+public class JwtAuthenticationFilter implements WebFilter {
+
+    private WebClient webClient;
+    private final String adminServiceBaseUrl = "http://localhost:8900";
+
+    @Autowired
+    public void TokenValidationFilter(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl(adminServiceBaseUrl).build();
+    }
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+   
+    @Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {    
+    String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+    List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
+
+   
+    String jwt = authHeaders.get(0).substring(7); 
+    
+        Map<String, Object> claims = decodeJWT(jwt);
+        Date expiration = new Date((Long) claims.get("exp") * 1000);
+        if (expiration.before(new Date())) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+
+        String email = (String) claims.get("unique_name");
+
+        return webClient.get().uri("/api/admin/users/email/{email}", email)
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> chain.filter(exchange))
+                .onErrorResume(WebClientResponseException.NotFound.class, e -> {
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
+                })
+                .onErrorResume(e -> {
+                    exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                    return exchange.getResponse().setComplete();
+                });
+    
+    
+    //return chain.filter(exchange);
+}
+
+
+
+    private Map<String, Object> decodeJWT(String jwtToken) {
+        String[] parts = jwtToken.split("\\.");
+        if (parts.length < 2) {
+            return Map.of();
+        }
+
+        String payload = parts[1];
+        byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
+        String decodedString = new String(decodedBytes);
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> claims = objectMapper.readValue(decodedString, Map.class);
+
+            Object expObj = claims.get("exp");
+            if (expObj != null) {
+                Long exp;
+                if (expObj instanceof Integer) {
+                    exp = ((Integer) expObj).longValue();
+                } else if (expObj instanceof Long) {
+                    exp = (Long) expObj;
+                } else {
+                    throw new IllegalArgumentException("Invalid exp claim");
+                }
+                claims.put("exp", exp);
+            }
+
+            return claims;
+        } catch (Exception e) {
+            return Map.of();
+        }
+    }
+}
