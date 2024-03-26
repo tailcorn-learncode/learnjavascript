@@ -1,0 +1,52 @@
+check this below code..
+
+If from front end we pass Authorization with Bearertoken then no error or else return Unauthorized error.
+Implement to send error if no Authothorization.
+And then we we need to check devmode. In devmode (if devmode header is not null) there should be no error even if no Authorization.
+
+
+@Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+
+       
+        String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+        String authorizationHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwt = authorizationHeader.substring(7);
+            Map<String, Object> claims = decodeJWT(jwt);
+            Date expiration = new Date((Long) claims.get("exp") * 1000);
+            if (expiration.before(new Date())) {
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
+            }
+
+            String email = (String) claims.get("unique_name");
+
+            return webClient.get().uri("/api/admin/users/email/{email}", email)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .flatMap(response -> {
+                        return chain.filter(exchange);
+                    })
+                    .onErrorResume(WebClientResponseException.NotFound.class, e -> {
+                        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                        return exchange.getResponse().setComplete();
+                    })
+                    .onErrorResume(e -> {
+                        exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                        return exchange.getResponse().setComplete();
+                    });
+
+            // String username = jwtUtil.extractUsername(jwt);
+
+            // if (username != null && jwtUtil.validateToken(jwt, username)) {
+            // UsernamePasswordAuthenticationToken authentication = new
+            // UsernamePasswordAuthenticationToken(username, null, null);
+            // return
+            // chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+            // }
+        }
+                
+        return chain.filter(exchange);
+    }
