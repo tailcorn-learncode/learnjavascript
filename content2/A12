@@ -1,0 +1,87 @@
+package gov.mipath.atlas.gateway.util;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+import java.util.Base64;
+import java.util.Date;
+import java.util.Map;
+
+@Component
+public class JwtAuthenticationFilter implements WebFilter {
+
+    private WebClient webClient;
+    private final String adminServiceBaseUrl = "http://localhost:8900";
+
+    @Autowired
+    public JwtAuthenticationFilter(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl(adminServiceBaseUrl).build();
+    }
+
+    @Autowired
+    private JwtUtil jwtUtil; // Ensure JwtUtil is defined and autowired correctly
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("devmode"))
+                .flatMap(devmode -> {
+                    if ("dev".equals(devmode)) {
+                        return chain.filter(exchange); // Bypass authentication in dev mode
+                    } else {
+                        return performAuthentication(exchange, chain);
+                    }
+                })
+                .switchIfEmpty(performAuthentication(exchange, chain)); // Perform authentication if devmode header is not present
+    }
+
+    private Mono<Void> performAuthentication(ServerWebExchange exchange, WebFilterChain chain) {
+        List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
+        if (authHeaders.isEmpty() || !authHeaders.get(0).startsWith("Bearer ")) {
+            return Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized - Missing or invalid Authorization header"));
+        }
+
+        String jwt = authHeaders.get(0).substring(7);
+        try {
+            Map<String, Object> claims = decodeJWT(jwt);
+            Date expiration = new Date((Long) claims.get("exp") * 1000);
+            if (expiration.before(new Date())) {
+                return Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized - Token expired"));
+            }
+
+            String email = (String) claims.get("unique_name");
+            return webClient.get().uri("/api/admin/users/email/{email}", email)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .flatMap(response -> chain.filter(exchange))
+                    .onErrorResume(e -> Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized - Error during user validation")));
+        } catch (Exception e) {
+            return Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized - Invalid token"));
+        }
+    }
+
+    private Map<String, Object> decodeJWT(String jwtToken) {
+        String[] parts = jwtToken.split("\\.");
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Invalid JWT token");
+        }
+
+        String payload = parts[1];
+        byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
+        String decodedString = new String(decodedBytes);
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(decodedString, Map.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error decoding JWT token", e);
+        }
+    }
+}
