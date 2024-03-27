@@ -1,3 +1,22 @@
+public class UnauthorizedAccessFilter implements WebFilter {
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        Boolean isUnauthorized = exchange.getAttribute("unauthorizedDevMode");
+
+        if (Boolean.TRUE.equals(isUnauthorized)) {
+            // Log or handle the unauthorized access as needed
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete(); // Stop processing the request
+        }
+
+        // If not unauthorized, continue down the chain
+        return chain.filter(exchange);
+    }
+}
+
+
+
 @Override
 public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
