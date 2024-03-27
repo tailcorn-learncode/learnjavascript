@@ -1,0 +1,10 @@
+i have locust python code given below. im hitting url https://atlas-dev.state.mi.us. But im implementing azure ad before it loads page. It does windows azure ad authentication.
+so, how can i login and get page in locust.
+
+from locust import HttpUser, task
+
+class HelloWorldUser(HttpUser):
+    @task
+    def hello_world(self):
+        self.client.verify = False
+        self.client.get("/employer/home/dashboard")
