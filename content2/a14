@@ -1,0 +1,35 @@
+
+When I used below code.. Passed devmode as dev in headers from front end, it printed "dev"
+
+@Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {    
+    String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+    List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
+
+    System.out.println(devmode);      
+    
+    return chain.filter(exchange);
+}
+
+
+But When I used below code.. Passed devmode as dev in headers from front end, it printed null.
+
+ @Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {    
+    String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+    List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
+
+    System.out.println(devmode);
+    
+     if (authHeaders.isEmpty()) {
+         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+         return exchange.getResponse().setComplete();
+     }
+        
+    
+    return chain.filter(exchange);
+}
+
+How to fix this, please write code
+
+
