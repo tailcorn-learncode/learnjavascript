@@ -1,3 +1,32 @@
+@Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+    System.out.println("dev " + devmode);
+
+    // Check if devmode is not "dev"
+    if (!"dev".equals(devmode)) {
+        // Prepare a custom error response
+        String errorMessage = "Unauthorized - devmode header is not valid";
+        byte[] bytes = errorMessage.getBytes(StandardCharsets.UTF_8);
+
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        DataBuffer buffer = response.bufferFactory().wrap(bytes);
+
+        // Set the content type
+        response.getHeaders().setContentType(MediaType.TEXT_PLAIN);
+
+        // Write the error message to the response and then close it
+        return response.writeWith(Mono.just(buffer))
+                       .doOnError(error -> DataBufferUtils.release(buffer));
+    }
+
+    // Proceed with the filter chain if devmode is "dev"
+    return chain.filter(exchange);
+}
+
+
+
 in the below code, return response with unauthorized when devcode value is not dev
 
  @Override
