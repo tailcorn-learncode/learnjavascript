@@ -1,0 +1,72 @@
+In this below code, if there is token error , dont pass Authorization Bearer and calls should continue without that
+
+auth.interceptor
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    private loginUser = environment.currentuser;
+    private tokenKey = environment.token;
+    private apicode = environment.apicode;
+    private accesscode = environment.accesscode;
+    constructor(private authService: AuthService) {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {        
+        if (request.url.includes('/oauth2/auth')) {
+            return next.handle(request);
+        }
+
+        return this.authService.fetchAccessToken().pipe(
+            switchMap(token => {
+                const key = token;
+                request = request.clone({
+                    headers: request.headers
+                        .set('Authorization', `Bearer ${key}`)
+                        .set('apicode', this.apicode)
+                        .set('accesscode', this.accesscode)
+                });
+                return next.handle(request);
+            })
+        );
+    }
+    }
+
+
+auth.service
+
+ fetchAccessToken(): Observable<string> {
+    if (!this.accessToken$) {
+      const { protocol, hostname, port } = window.location;
+      const baseUrl = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+      const apiUrl = `${baseUrl}/oauth2/auth`;
+
+      this.accessToken$ = this.http.get(apiUrl, { observe: 'response' }).pipe(
+        map(response => {
+          const token = response.headers.get('X-Auth-Request-Access-Token');
+          if (!token) {
+            throw new Error('Token not found');
+          }
+          this.accessTokenSubject.next(token); 
+          return token;
+        }),
+        catchError(error => {
+          console.error('Error fetching access token:', error);
+          this.accessTokenSubject.next(null); 
+          return throwError(() => new Error('Failed to fetch access token'));
+        }),
+        shareReplay(1) 
+      );
+    }
+
+    return this.accessToken$;
+  }
+
+
+appcomponent
+
+ngOnInit() {
+      this.authService.fetchAccessToken().subscribe({
+        next: (token) => console.log('Access Token fetched', token),
+        error: (error) => console.error('Error fetching access token', error),
+      });
+    }
+
