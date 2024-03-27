@@ -4,7 +4,6 @@ When I used below code.. Passed devmode as dev in headers from front end, it pri
 @Override
 public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {    
     String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
-    List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
 
     System.out.println(devmode);      
     
@@ -17,15 +16,10 @@ But When I used below code.. Passed devmode as dev in headers from front end, it
  @Override
 public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {    
     String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
-    List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty("Authorization");
 
     System.out.println(devmode);
-    
-     if (authHeaders.isEmpty()) {
-         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-         return exchange.getResponse().setComplete();
-     }
-        
+   
+    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);        
     
     return chain.filter(exchange);
 }
