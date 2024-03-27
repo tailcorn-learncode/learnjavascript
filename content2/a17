@@ -1,4 +1,38 @@
- ngOnInit() {
+public Map<String, Object> decodeJWT(String jwtToken) {
+        String[] parts = jwtToken.split("\\.");
+        if (parts.length < 2) {
+            return Map.of(); 
+        }
+    
+        String payload = parts[1];
+        byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
+        String decodedString = new String(decodedBytes);
+    
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> claims = objectMapper.readValue(decodedString, Map.class);    
+            
+            Object expObj = claims.get("exp");
+            if (expObj != null) {
+                Long exp;
+                if (expObj instanceof Integer) {
+                    exp = ((Integer) expObj).longValue(); 
+                } else if (expObj instanceof Long) {
+                    exp = (Long) expObj;
+                } else {
+                    throw new IllegalArgumentException("Invalid exp claim");
+                }
+                claims.put("exp", exp); 
+            }
+            
+            return claims;
+        } catch (Exception e) {
+            return Map.of();
+        }
+    }
+
+
+ngOnInit() {
       this.authService.fetchAccessToken().subscribe({
         next: (token) => console.log('Access Token fetched', token),
         error: (error) => console.error('Error fetching access token', error),
