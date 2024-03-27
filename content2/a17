@@ -1,0 +1,6 @@
+ ngOnInit() {
+      this.authService.fetchAccessToken().subscribe({
+        next: (token) => console.log('Access Token fetched', token),
+        error: (error) => console.error('Error fetching access token', error),
+      });
+    }
