@@ -1,3 +1,53 @@
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { AuthService } from './auth.service';
+import { environment } from '../environments/environment';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    private loginUser = environment.currentuser;
+    private tokenKey = environment.token;
+    private apicode = environment.apicode;
+    private accesscode = environment.accesscode;
+
+    constructor(private authService: AuthService) {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        if (request.url.includes('/oauth2/auth')) {
+            return next.handle(request);
+        }
+
+        return this.authService.fetchAccessToken().pipe(
+            switchMap(token => {
+                // If token is successfully fetched, clone the request and add headers
+                request = request.clone({
+                    headers: request.headers
+                        .set('Authorization', `Bearer ${token}`)
+                        .set('apicode', this.apicode)
+                        .set('accesscode', this.accesscode)
+                });
+                return next.handle(request);
+            }),
+            catchError(error => {
+                // If there's an error (e.g., token not found), continue without Authorization header
+                console.error('Error fetching access token, continuing without Authorization header:', error);
+                // Clone the request without the Authorization header
+                request = request.clone({
+                    headers: request.headers
+                        .set('apicode', this.apicode)
+                        .set('accesscode', this.accesscode)
+                });
+                return next.handle(request);
+            })
+        );
+    }
+}
+
+
+
+
 In this below code, if there is token error , dont pass Authorization Bearer and calls should continue without that
 
 auth.interceptor
