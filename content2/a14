@@ -4,6 +4,25 @@ public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
     System.out.println(devmode);
 
+    if (devmode == null || !devmode.equals("dev")) {
+        // Set the status code to UNAUTHORIZED, but defer the action to just before the response is committed
+        exchange.getResponse().beforeCommit(() -> {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return Mono.empty();
+        });
+    }
+
+    // Proceed with the filter chain
+    return chain.filter(exchange);
+}
+
+
+
+@Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+    System.out.println(devmode);
+
     // Chain the filter first
     return chain.filter(exchange).then(Mono.defer(() -> {
         // Only if the devmode header does not meet your criteria, set the status code.
