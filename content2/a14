@@ -1,3 +1,21 @@
+@Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+    System.out.println(devmode);
+
+    if (devmode == null || !devmode.equals("dev")) {
+        // If the devmode is not as expected, set the status code to UNAUTHORIZED.
+        // Use the mutate method to modify the exchange in a non-disruptive manner.
+        return exchange.getResponse().setComplete().then(Mono.fromRunnable(() -> 
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)
+        ));
+    }
+
+    // Continue the chain if the devmode is as expected.
+    return chain.filter(exchange);
+}
+
+
 
 When I used below code.. Passed devmode as dev in headers from front end, it printed "dev"
 
