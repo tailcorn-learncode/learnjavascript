@@ -1,0 +1,7 @@
+<div style="flex: 1 1 0; height: 76px; justify-content: flex-start; align-items: center; gap: 16px; display: flex">
+      <div style="flex: 1 1 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex">
+          <div style="align-self: stretch; color: #1A1C1E; font-size: 16px; font-family: Roboto; font-weight: 500; line-height: 24px; letter-spacing: 0.15px; word-wrap: break-word">General Advisory</div>
+          <div style="align-self: stretch; color: #161618; font-size: 16px; font-family: Montserrat; font-weight: 400; line-height: 24px; word-wrap: break-word">Any general notice or message goes here.</div>
+      </div>
+  </div>
+</div>
