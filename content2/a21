@@ -1,3 +1,46 @@
+from locust import HttpUser, task, between
+import requests
+
+class AzureADUser(HttpUser):
+    wait_time = between(1, 5)
+
+    def on_start(self):
+        """On start, perform login"""
+        self.login()
+
+    def login(self):
+        # This is a simplified representation. You'll need to follow the actual steps for your Azure AD flow.
+        # Typically this involves getting an authentication token and storing it for future requests.
+        auth_url = "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+        client_id = "your-client-id"
+        client_secret = "your-client-secret"
+        scope = "api://your-app-id/.default"
+        grant_type = "client_credentials"  # For app permissions, change as needed for delegated permissions
+
+        payload = {
+            "client_id": client_id,
+            "scope": scope,
+            "client_secret": client_secret,
+            "grant_type": grant_type
+        }
+
+        with self.client.post(auth_url, data=payload, catch_response=True) as response:
+            if response.status_code == 200:
+                self.token = response.json()['access_token']
+            else:
+                response.failure("Failed to obtain token")
+
+    @task
+    def access_protected_page(self):
+        headers = {
+            "Authorization": f"Bearer {self.token}"
+        }
+        self.client.get("/employer/home/dashboard", headers=headers, verify=False)
+
+
+
+
+
 i have locust python code given below. im hitting url https://atlas-dev.state.mi.us. But im implementing azure ad before it loads page. It does windows azure ad authentication.
 so, how can i login and get page in locust.
 
