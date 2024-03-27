@@ -1,0 +1,8 @@
+in the below code, return response with unauthorized when devcode value is not dev
+
+ @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        String devmode = exchange.getRequest().getHeaders().getFirst("devmode");
+        System.out.println("dev "+devmode);
+       return chain.filter(exchange);
+}
