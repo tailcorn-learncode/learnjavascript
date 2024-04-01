@@ -9,8 +9,12 @@ Log Exceptions: Ensure that all handled exceptions are logged appropriately. Thi
 Integration with API Endpoints: Ensure that your API endpoints are designed to throw meaningful exceptions that your global exception handler can catch and process.
 
 
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 public class ApiErrorResponse {
     private LocalDateTime timestamp;
     private int status;
@@ -24,8 +28,9 @@ public class ApiErrorResponse {
         this.path = path;
     }
 
-    // Getters and Setters omitted for brevity
+    // Lombok annotations @Getter and @Setter eliminate the need for explicit getter and setter methods
 }
+
 
 
 import org.slf4j.Logger;
