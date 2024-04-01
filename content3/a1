@@ -1,0 +1,59 @@
+Given below is user story details, need to rewrite them in below format
+
+
+Title:
+
+As a <type of iser>
+
+I want to <perform some task>
+
+so that I can <achieve some goal>
+
+
+Acceptance criteria
+
+Given <some context>
+
+When <some action is carried out>
+
+Then <a set of observable outcomes should occur>
+
+
+details:
+
+Create an Error and Exception Handling interface for all modules
+For example
+
+Global Exception Handler
+
+Instead of catching and throwing Exceptions in the controllers methods, keep them simple by using a global ExceptionHandler using @ConrollerAdvice and @ExceptionHandler
+
+ 
+@ControllerAdvice
+public class RestResponseEntityExceptionHandler 
+
+  extends ResponseEntityExceptionHandler {
+
+ 
+
+    @ExceptionHandler(value 
+
+      = { IllegalArgumentException.class, IllegalStateException.class })
+
+    protected ResponseEntity<Object> handleConflict(
+
+      RuntimeException ex, WebRequest request) {
+
+        String bodyOfResponse = "This should be application specific";
+
+        return handleExceptionInternal(ex, bodyOfResponse, 
+
+          new HttpHeaders(), HttpStatus.CONFLICT, request);
+
+    }
+
+}
+
+
+Error and Exception handling defines all the common error and throws exceptions.
+Can be used in all modules.
