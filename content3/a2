@@ -1,0 +1,105 @@
+Define Custom Exception Classes: Depending on your application's requirements, define custom exceptions for specific error scenarios (e.g., ResourceNotFoundException, ValidationException, etc.). These exceptions will be thrown from your service layer or controllers.
+
+Create a Global Exception Handler: Use @ControllerAdvice to define a class that will serve as a global exception handler. This class will contain methods annotated with @ExceptionHandler to handle different types of exceptions. Each method can return a meaningful response to the client, including an appropriate HTTP status code and a descriptive error message.
+
+Standardize Error Response Format: Design a standard error response format that will be returned to the client when exceptions occur. This could include information such as error code, error message, and details about the request that led to the error.
+
+Log Exceptions: Ensure that all handled exceptions are logged appropriately. This is crucial for diagnosing issues in production.
+
+Integration with API Endpoints: Ensure that your API endpoints are designed to throw meaningful exceptions that your global exception handler can catch and process.
+
+
+import java.time.LocalDateTime;
+
+public class ApiErrorResponse {
+    private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private String path;
+
+    public ApiErrorResponse(LocalDateTime timestamp, int status, String error, String path) {
+        this.timestamp = timestamp;
+        this.status = status;
+        this.error = error;
+        this.path = path;
+    }
+
+    // Getters and Setters omitted for brevity
+}
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        log.error("ResourceNotFoundException: {}", ex.getMessage());
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                request.getRequestURI());
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+        log.error("Unhandled exception: {}", ex.getMessage(), ex);
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "An unexpected error occurred",
+                request.getRequestURI());
+
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
+public class ValidationException extends RuntimeException {
+    public ValidationException(String message) {
+        super(message);
+    }
+}
+
+
+
+@ExceptionHandler(ValidationException.class)
+public ResponseEntity<ApiErrorResponse> handleValidationException(ValidationException ex, HttpServletRequest request) {
+    log.info("ValidationException: {}", ex.getMessage());
+
+    ApiErrorResponse response = new ApiErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            ex.getMessage(),
+            request.getRequestURI());
+
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+}
+
+
+
+
+@PostMapping("/users")
+public ResponseEntity<User> createUser(@RequestBody User user) {
+    if (user.getName() == null || user.getName().isEmpty()) {
+        throw new ValidationException("User name must not be empty");
+    }
+    // Assume the userService saves the user and returns the saved instance
+    User savedUser = userService.save(user);
+    return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+}
+
+
