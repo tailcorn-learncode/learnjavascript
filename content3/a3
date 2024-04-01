@@ -1,0 +1,123 @@
+package exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+
+@ControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler({BadRequestException.class, MethodArgumentNotValidException.class})
+    public ResponseEntity<ApiErrorResponse> handleBadRequestException(Exception ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ResponseEntity<ApiErrorResponse> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), request.getRequestURI());
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        String error = "Validation error: " + ex.getBindingResult().toString();
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, error, request.getContextPath());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request.getRequestURI());
+    }
+
+    @ExceptionHandler({HttpMediaTypeNotSupportedException.class})
+    public ResponseEntity<ApiErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, HttpServletRequest request) {
+        String message = "Unsupported media type: " + ex.getContentType();
+        return buildResponseEntity(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, request.getRequestURI());
+    }
+
+    @ExceptionHandler({HttpMediaTypeNotAcceptableException.class})
+    public ResponseEntity<ApiErrorResponse> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.NOT_ACCEPTABLE, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        String message = "Malformed JSON request";
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String message = String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.CONFLICT, "Database error", request.getRequestURI());
+    }
+
+    private ResponseEntity<ApiErrorResponse> buildResponseEntity(HttpStatus status, String message, String path) {
+        ApiErrorResponse response = new ApiErrorResponse(LocalDateTime.now(), status.value(), message, path);
+        return new ResponseEntity<>(response, status);
+    }
+}
+
+
+
+package exception;
+
+public class CustomExceptions {
+
+    public static class BadRequestException extends RuntimeException {
+        public BadRequestException(String message) {
+            super(message);
+        }
+    }
+
+    public static class ConflictException extends RuntimeException {
+        public ConflictException(String message) {
+            super(message);
+        }
+    }
+
+    public static class ResourceNotFoundException extends RuntimeException {
+        public ResourceNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+    // Add more custom exception classes as inner classes here as needed.
+}
+
+
+
+throw new CustomExceptions.BadRequestException("Invalid request parameters.");
+
