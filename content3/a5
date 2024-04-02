@@ -1,0 +1,77 @@
+package exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import java.time.LocalDateTime;
+
+@ControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // Handle custom exceptions not already handled by ResponseEntityExceptionHandler
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        log.error("ResourceNotFoundException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        log.error("ConflictException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+    }
+
+    // Override ResponseEntityExceptionHandler methods to customize the response
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
+            HttpMediaTypeNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        log.error("HttpMediaTypeNotSupportedException: {}", ex.getMessage());
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
+                LocalDateTime.now(), HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+                "Unsupported media type: " + ex.getContentType(), request.getContextPath());
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        log.error("HttpRequestMethodNotSupportedException: {}", ex.getMessage());
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
+                LocalDateTime.now(), HttpStatus.METHOD_NOT_ALLOWED.value(),
+                "Method not allowed: " + ex.getMethod(), request.getContextPath());
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    // General exception handler as a fallback for other exceptions
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+        log.error("Unhandled exception: {}", ex.getMessage(), ex);
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
+                LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "An unexpected error occurred", request.getRequestURI());
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Utility method to build the ResponseEntity
+    private ResponseEntity<ApiErrorResponse> buildResponseEntity(HttpStatus status, String message, String path) {
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(LocalDateTime.now(), status.value(), message, path);
+        return new ResponseEntity<>(apiErrorResponse, status);
+    }
+
+    // Include other overridden methods and custom exception handlers as needed...
+}
