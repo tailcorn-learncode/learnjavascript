@@ -1,3 +1,5 @@
+Factory method 'handlerExceptionResolver' threw exception with message: Ambiguous @ExceptionHandler method mapped for [class org.springframework.web.HttpMediaTypeNotSupportedException]: {public org.springframework.http.ResponseEntity gov.mipath.atlas.admin.common.exception.GlobalExceptionHandler.handleHttpMediaTypeNotSupportedException(org.springframework.web.HttpMediaTypeNotSupportedException,javax.servlet.http.HttpServletRequest), public final org.springframework.http.ResponseEntity org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler.handleException(java.lang.Exception,org.springframework.web.context.request.WebRequest) throws java.lang.Exception}
+
 
 <dependency>
     <groupId>org.springframework.boot</groupId>
