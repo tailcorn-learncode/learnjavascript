@@ -1,0 +1,57 @@
+im implementing loadtest with locust.
+lets say im doing load testing for http://example.com/home.
+however we put azure ad oauth2 authentication before it redirects to home page.
+so, when I hit home page, I'm getting login page. so, write code to load test home page 
+after login & redirection. 
+
+
+import asyncio
+from locust import HttpUser, task, between, events
+from playwright.async_api import async_playwright
+
+async def login_with_playwright():
+    """Use Playwright to perform login and return cookies"""
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        context = await browser.new_context()
+        page = await context.new_page()
+        await page.goto('https://example.com/login')
+        # Fill in and submit login form. Adjust selectors as needed.
+        await page.fill('input[name="username"]', 'your_username')
+        await page.fill('input[name="password"]', 'your_password')
+        await page.click('button[type="submit"]')
+        await page.wait_for_load_state('networkidle')
+        
+        # Extract cookies
+        cookies = await context.cookies()
+        await browser.close()
+        return cookies
+
+def sync_login():
+    """Synchronous wrapper for the async login function"""
+    return asyncio.run(login_with_playwright())
+
+# Global variable to store cookies
+COOKIES = None
+
+@events.test_start.add_listener
+def on_test_start(environment, **kwargs):
+    """Event handler to perform login before the test starts"""
+    global COOKIES
+    COOKIES = sync_login()
+    print("Login completed, cookies obtained.")
+
+class UserBehavior(HttpUser):
+    wait_time = between(5, 9)
+
+    def on_start(self):
+        """Set the cookies for every simulated user"""
+        for cookie in COOKIES:
+            self.client.cookies.set(cookie['name'], cookie['value'])
+
+    @task
+    def my_task(self):
+        self.client.get("/protected_page")
+
+# Remember to replace 'https://example.com/login', 'your_username', 'your_password', 
+# and other placeholders with actual values suitable for your application.
