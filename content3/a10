@@ -1,3 +1,42 @@
+export const ENVIRONMENT = new InjectionToken<Environment>('environment');
+
+interface Environment {
+  production: boolean;
+  app_url: string;
+  auth_url: string;
+  // Add other environment properties here
+}
+
+const main = () => {
+  overrideEnv(environment).then((dynamicEnv) => {
+    platformBrowserDynamic([{ provide: ENVIRONMENT, useValue: dynamicEnv }])
+      .bootstrapModule(AppModule)
+      .catch((err) => console.error(err));
+  });
+};
+
+main();
+
+export const overrideEnv = (env: Environment): Promise<Environment> => {
+  return new Promise((resolve) => {
+    try {
+      if (env.production) {
+        const { protocol, hostname } = window.location;
+        env.app_url = `${protocol}//${hostname}/gateway/api`;
+        env.auth_url = `${protocol}//${hostname}/gateway/api/auth`;
+      }
+    } catch (e) {
+      console.error('Error overriding environment variables:', e);
+    }
+    resolve(env);
+  });
+};
+
+
+
+
+
+
 export const ENVIRONMENT = new InjectionToken<Record<string, unknown>>(
     'environment'
   );
