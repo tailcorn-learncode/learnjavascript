@@ -1,0 +1,76 @@
+# playwright_login.py
+import asyncio
+from playwright.async_api import async_playwright
+
+async def login_with_playwright():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.goto('https://example.com/login')
+        # Fill in and submit the login form
+        await page.fill('input[name="username"]', 'your_username')
+        await page.fill('input[name="password"]', 'your_password')
+        await page.click('button[type="submit"]')
+        await page.wait_for_load_state('networkidle')
+        cookies = await page.context.cookies()
+        await browser.close()
+        return cookies
+
+def perform_login():
+    return asyncio.run(login_with_playwright())
+
+
+
+# cookie_utilities.py
+import json
+from datetime import datetime
+import os
+
+COOKIES_FILE = 'auth_cookies.json'
+
+def cookies_are_valid():
+    if not os.path.exists(COOKIES_FILE):
+        return False
+    
+    with open(COOKIES_FILE, 'r') as file:
+        cookies = json.load(file)
+        for cookie in cookies:
+            if 'expires' in cookie and datetime.now().timestamp() > cookie['expires']:
+                return False
+    return True
+
+def load_cookies():
+    with open(COOKIES_FILE, 'r') as file:
+        return json.load(file)
+
+def save_cookies(cookies):
+    with open(COOKIES_FILE, 'w') as file:
+        json.dump(cookies, file)
+
+
+
+# locustfile.py
+from locust import HttpUser, task, between, events
+from playwright_login import perform_login
+from cookie_utilities import cookies_are_valid, load_cookies, save_cookies
+
+class WebsiteUser(HttpUser):
+    wait_time = between(1, 5)
+    
+    def on_start(self):
+        global COOKIES
+        if not cookies_are_valid():
+            print("Logging in to refresh cookies...")
+            COOKIES = perform_login()
+            save_cookies(COOKIES)
+        else:
+            print("Using existing cookies.")
+            COOKIES = load_cookies()
+        
+        for cookie in COOKIES:
+            self.client.cookies.set(cookie['name'], cookie['value'])
+    
+    @task
+    def perform_task(self):
+        self.client.get("/protected_page")
+
