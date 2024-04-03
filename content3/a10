@@ -1,0 +1,26 @@
+export const ENVIRONMENT = new InjectionToken<Record<string, unknown>>(
+    'environment'
+  );
+ 
+  const main = async () => {
+    overrideEnv(environment).then((dynamicEnv) => {
+      platformBrowserDynamic([{ provide: ENVIRONMENT, useValue: dynamicEnv }])
+        .bootstrapModule(AppModule)
+        .catch((err) => console.error(err));
+    });
+  };
+ 
+  main();
+ 
+  export const overrideEnv = async (env: any): Promise<any> => {
+    try {
+        if(environment.production){
+            const { protocol, hostname } = window.location;
+            const app_url = `${protocol}//${hostname}/gateway/api`;
+            const auth_url = `${protocol}//${hostname}/gateway/api/auth`;
+            env.app_url = app_url;
+            env.auth_url = auth_url;
+        }
+    } catch (e) {}
+    return env;
+  };
