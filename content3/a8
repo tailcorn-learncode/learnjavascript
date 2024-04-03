@@ -1,0 +1,71 @@
+import json
+from datetime import datetime
+import os
+
+COOKIES_FILE = 'auth_cookies.json'
+
+def cookies_are_valid():
+    """Check if the stored cookies are still valid."""
+    if not os.path.exists(COOKIES_FILE):
+        return False
+    
+    with open(COOKIES_FILE, 'r') as file:
+        cookies = json.load(file)
+        # Assuming cookies have an 'expires' field in UNIX timestamp format
+        for cookie in cookies:
+            if 'expires' in cookie and datetime.now().timestamp() > cookie['expires']:
+                return False
+    return True
+
+def load_cookies():
+    """Load cookies from a file."""
+    with open(COOKIES_FILE, 'r') as file:
+        return json.load(file)
+
+def save_cookies(cookies):
+    """Save cookies to a file."""
+    with open(COOKIES_FILE, 'w') as file:
+        json.dump(cookies, file)
+
+
+
+from locust import HttpUser, task, between, events
+import asyncio
+from playwright.async_api import async_playwright
+
+async def login_with_playwright():
+    """Async Playwright login, returning cookies."""
+    # Your Playwright login script here
+    pass  # Replace with actual login logic
+
+def sync_login():
+    """Synchronous wrapper around async Playwright login."""
+    return asyncio.run(login_with_playwright())
+
+@events.test_start.add_listener
+def on_test_start(environment, **kwargs):
+    """Event handler to perform login before the test starts, if needed."""
+    if not cookies_are_valid():
+        print("Logging in to refresh cookies...")
+        cookies = sync_login()
+        save_cookies(cookies)
+    else:
+        print("Using existing cookies.")
+
+class UserBehavior(HttpUser):
+    wait_time = between(5, 9)
+
+    def on_start(self):
+        """Set cookies for each user if they're valid or exist."""
+        if cookies_are_valid():
+            cookies = load_cookies()
+            for cookie in cookies:
+                self.client.cookies.set(cookie['name'], cookie['value'])
+        else:
+            print("No valid cookies found.")
+
+    @task
+    def my_task(self):
+        self.client.get("/protected_page")
+
+
