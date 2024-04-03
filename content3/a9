@@ -1,0 +1,17 @@
+In angular environment.ts
+
+export const environment = {
+    production: false,   
+    auth_url:'http://localhost:8181/gateway/api/auth',
+    app_url: 'http://localhost:8181/gateway/api',
+};
+
+I want to put baseurl as dynamic, get from address url, so i can only give relative paths like
+
+export const environment = {
+    production: false,   
+    auth_url:'/gateway/api/auth',
+    app_url: '/gateway/api',
+};
+
+write code to implement this
