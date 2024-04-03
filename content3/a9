@@ -1,3 +1,47 @@
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiService {
+  getBaseUrl(): string {
+    return `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+  }
+
+  getAuthUrl(): string {
+    return `${this.getBaseUrl()}/gateway/api/auth`;
+  }
+
+  getAppUrl(): string {
+    return `${this.getBaseUrl()}/gateway/api`;
+  }
+}
+
+
+
+@Injectable()
+export class BaseUrlInterceptor implements HttpInterceptor {
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+    const apiReq = request.clone({ url: `${baseUrl}${request.url}` });
+    return next.handle(apiReq);
+  }
+}
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule, HttpClientModule],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true }],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+
+
+
+
+
+
+
+
 In angular environment.ts
 
 export const environment = {
