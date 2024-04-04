@@ -1,0 +1,95 @@
+User Story 1
+Title: Report Tab Functionality Verification
+
+As a system tester,
+
+I want to verify the visibility and functionality of the 'Create New Report', 'Unposted Reports', and 'Posted Reports' tabs under the Reporting menu, and ensure the addition of demographic and wage data works as expected,
+
+so that I can confirm the reporting features are functioning correctly for users.
+
+Acceptance Criteria
+
+Given the user is on the dashboard at https://atlas-dev.state.mi.us/employer/home/dashboard,
+
+When the user clicks on the Reporting menu item,
+
+Then the tabs for 'Create New Report', 'Unposted Reports', and 'Posted Reports' should be visible.
+
+Given the user has clicked on 'Unposted Reports',
+
+When the user navigates within it,
+
+Then they should see 'Demographics', 'DB wages', 'DC wages', and 'TDP payments' tabs.
+
+And Given the user is in any of these tabs ('Demographics', 'DB wages', 'DC wages', 'TDP payments'),
+
+When they click the 'Add' button and complete the form,
+
+Then the new item should be added to the respective list.
+
+User Story 2
+Title: Validation Functionality Check for Reporting Data
+
+As a system tester,
+
+I want to validate the demographic and wage data from the 'Demographics', 'DC wage', 'DB wage', and 'TDP Payments' sections under the Reporting menu,
+
+so that I can ensure the validation process updates the reports correctly.
+
+Acceptance Criteria
+
+Given the user is on the Reporting section,
+When the user clicks on each report type ('Demographics', 'DC wage', 'DB wage', 'TDP Payments') and then on 'Validate',
+And after validation, clicks on 'Back to Reports',
+Then the validation status should be updated in the reports list.
+User Story 3
+Title: Tools Menu Functionality Verification
+
+As a system tester,
+
+I want to verify the functionality of the Tools menu, including dropdown selections, search, and date change,
+
+so that I can ensure that the tools section works properly for users.
+
+Acceptance Criteria
+
+Given the user is on the dashboard and clicks on the Tools menu item,
+
+When the user checks for dropdowns,
+
+Then 'classification code', 'retirement system', and 'document category' should be visible.
+
+And Given the user selects an option from any dropdown,
+
+When the selection is made,
+
+Then the data should populate accordingly and be cleared when 'clear selection' is clicked.
+
+And Given the user is in the 'History' tab,
+
+When they perform a search, select a date, or select a status,
+
+Then the search, date change, and status filter functionalities should work as expected.
+
+User Story 4
+Title: Recent Document Functionality Check
+
+As a system tester,
+
+I want to check the functionality of the 'Recent Document' section under the Tools menu,
+
+so that I can ensure the search, status selection, and document generation works correctly.
+
+Acceptance Criteria
+
+Given the user is in the 'Recent Document' section under the Tools menu,
+
+When the user performs a search, selects a status, or clears the selection,
+
+Then each functionality should work as expected, reflecting the correct data.
+
+And Given the user selects 'classification code' and a checkbox for an item in the data table,
+
+When they click 'generate',
+
+Then the generate functionality should work, confirming the system's ability to process document generation requests.
