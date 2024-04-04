@@ -1,0 +1,34 @@
+from locust import HttpUser, task, between
+from bs4 import BeautifulSoup
+
+class MyWebsiteUser(HttpUser):
+    wait_time = between(1, 5)
+
+    @task
+    def find_element_by_text(self):
+        # Make a request to the desired page
+        response = self.client.get("/your-page-url")
+        
+        # Parse the HTML response using BeautifulSoup
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Example 1: Check if a specific text exists in a paragraph <p>
+        if soup.find("p", string="Your specific text"):
+            print("Specific text found in a paragraph!")
+        else:
+            print("Specific text not found in any paragraph.")
+            response.failure("Specific text not found in any paragraph.")
+
+        # Example 2: Check for the presence of an element by class name
+        if soup.find(class_="your-class-name"):
+            print("Element with the specific class name found!")
+        else:
+            print("Element with the specific class name not found.")
+            response.failure("Element with the specific class name not found.")
+
+        # Example 3: More complex queries, like finding links with specific text
+        if soup.find("a", string="Link Text"):
+            print("Link with specific text found!")
+        else:
+            print("Link with specific text not found.")
+            response.failure("Link with specific text not found.")
