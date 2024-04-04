@@ -1,0 +1,151 @@
+Given below are 4 user story details, need to rewrite them in below format for each user story seperately
+
+
+Title:
+
+As a <type of user>
+
+I want to <perform some task>
+
+so that I can <achieve some goal>
+
+
+Acceptance criteria
+
+Given <some context>
+
+When <some action is carried out>
+
+Then <a set of observable outcomes should occur>
+
+
+User story 1
+
+Go to https://atlas-dev.state.mi.us/employer/home/dashboard
+
+Click Reporting menu item
+
+check if below 3 tabs visible > Create New Report, Unposted Reports, Posted Reports
+
+Click Unposted Reports
+
+check if 4 tabs visible > Demographics, DB wages, DC wages, TDP payments
+
+Click Demographics
+
+click Add Demographics button, add form, check item is added to Demographics list
+
+Click DC wage
+
+click Add DC wage button, add form, check item is added to DC wage list
+
+Click DB wage
+
+click Add DB wage button, add form, check item is added to DB wage list
+
+Click TDP Payments
+
+click Add TDP Payments button, add form, check item is added to TDP Payments list
+
+
+
+User story 2
+
+Go to https://atlas-dev.state.mi.us/employer/home/dashboard
+
+Click Reporting menu item
+
+Click Demographics
+
+Click Validate
+
+Click Back to Reports and check if validation updated
+
+Click DC wage
+
+Click Validate
+
+Click Back to Reports and check if validation updated
+
+Click DB wage
+
+Click Validate
+
+Click Back to Reports and check if validation updated
+
+Click TDP Payments
+
+Click Validate
+
+Click Back to Reports and check if validation updated
+
+
+
+User story 3
+
+Go to https://atlas-dev.state.mi.us/employer/home/dashboard
+
+Click Tools menu item
+
+check if 3 dropdowns visible > classification code, retirement system, document category
+
+select classification code
+
+check if data populated
+
+click clear selection
+
+chack if data removed
+
+check if 2 tabs visible > Recent Document and History
+
+click History
+
+Type text in search box
+
+check if search is working
+
+select any date 
+
+check if change date is working
+
+select status form dropdown
+
+check if status working
+
+click on clear selection
+
+check if data is updated
+
+
+User story 4
+
+Go to https://atlas-dev.state.mi.us/employer/home/dashboard
+
+Click Tools menu item
+
+click Recent Document
+
+Type text in search box
+
+check if search is working
+
+select status form dropdown
+
+check if status working
+
+click on clear selection
+
+check if data is updated
+
+select classification code
+
+select checkbox for first item in data table
+
+click generate
+
+check if generate functionality working 
+
+
+
+
