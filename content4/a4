@@ -1,0 +1,42 @@
+Playwright/Locust dom selectors best practice
+
+1. Use Data Attributes
+Data attributes are often recommended for selecting elements in automated tests. They are less likely to change than class names or IDs that might be tied to styling or JavaScript functionalities. Use custom data attributes (e.g., data-testid, data-test, data-cy) specifically for testing purposes.
+
+HTML: <button data-testid="submit-button">Submit</button>
+Playwright Selector: await page.click('[data-testid="submit-button"]');
+BeautifulSoup Usage: soup.find_all(attrs={"data-testid": "submit-button"})
+
+2. Role Selectors
+Allow you to select elements by their accessible role, which can be more stable than classes or element tags and also improves the accessibility of web application.
+
+Playwright Selector: await page.getByRole('button', { name: 'Submit' }).click();
+BeautifulSoup Usage: soup.find_all(attrs={"role": "button", "aria-label": "Submit"})
+
+
+3. Text Selectors
+Selecting elements based on their text content can be a good option, especially for elements like buttons or links. Playwright allows you to target elements by their visible text.
+
+Playwright Selector: await page.click('text=Submit');
+BeautifulSoup Usage: soup.find_all(text="Submit")
+
+
+4. XPath
+While not always recommended due to its complexity and potential for fragility, XPath can be powerful for selecting elements based on relationships or specific attributes not easily targeted otherwise.
+
+Playwright Selector: await page.click('//button[contains(text(),"Submit")]');
+BeautifulSoup does not support XPath directly. If needed XPath capabilities, consider using libraries like lxml or xml.etree.ElementTree for parsing and querying. However, this approach is less common in the context of Locust testing.
+
+
+5. CSS Selectors with nth-child or nth-of-type
+When you have no other option but to rely on the structure, CSS selectors with :nth-child() or :nth-of-type() can pinpoint an element based on its position among its siblings.
+
+Playwright Selector: await page.click('div > span:nth-child(2)');
+BeautifulSoup Usage: soup.select('div > span:nth-of-type(2)')
+
+
+6. Combine Selectors
+Sometimes, combining selectors can provide a more specific and reliable way to locate an element. You can combine different types of selectors to narrow down the target.
+
+Playwright Selector: await page.click('.container >> text=Submit');
+Can combine different criteria (like class names, ids, attributes) to create a more specific query in BeautifulSoup.
