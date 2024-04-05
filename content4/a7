@@ -1,0 +1,68 @@
+package gov.mipath.atlas.admin.controller;
+
+import gov.mipath.atlas.admin.common.dto.UserProfileDto;
+import gov.mipath.atlas.admin.common.exception.CustomExceptions.ResourceNotFoundException;
+import gov.mipath.atlas.admin.common.exception.CustomExceptions.ValidationException;
+import gov.mipath.atlas.admin.common.model.UserProfile;
+import gov.mipath.atlas.admin.common.service.UserProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/admin/users")
+public class UserProfileController {
+
+    @Autowired
+    private UserProfileService service;
+
+    @GetMapping()
+    public ResponseEntity<List<UserProfileDto>> findAll() {
+        List<UserProfileDto> userProfiles = service.findAll().stream()
+                .map(UserProfileDto::create)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userProfiles);
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserProfileDto> findByEmail(@PathVariable String email) {
+        UserProfile userProfile = service.findByEmailAndIsActive(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found or not active"));
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserProfileDto> findById(@PathVariable Long id) {
+        UserProfile userProfile = service.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User profile not found"));
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @PostMapping()
+    public ResponseEntity<UserProfileDto> create(@RequestBody UserProfileDto model) {
+        // Validation can be performed here. If validation fails, throw ValidationException
+        UserProfile entity = service.addOrUpdate(model.parse());
+        return new ResponseEntity<>(UserProfileDto.create(entity), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserProfileDto> update(@PathVariable Long id, @RequestBody UserProfileDto model) {
+        if (!service.existsById(id)) {
+            throw new ResourceNotFoundException("User profile not found");
+        }
+        model.setId(id); // Ensure the model's ID is set correctly before updating
+        UserProfile updatedEntity = service.addOrUpdate(model.parse());
+        return ResponseEntity.ok(UserProfileDto.create(updatedEntity));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!service.existsById(id)) {
+            throw new ResourceNotFoundException("User profile not found");
+        }
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
