@@ -1,3 +1,10 @@
+INSERT INTO user_profile 
+(application_cd, source_record_nm, login_nm, full_nm, email_nm, active_ind, security_agreement_ind, lock_released_ind, security_level_id, user_type_id)
+VALUES 
+('ApplicationCodeValue', 'SourceRecordNameValue', 'LoginNameValue', 'FullNameValue', 'EmailAddressValue', ActiveIndicatorValue, SecurityAgreementIndicatorValue, LockReleasedIndicatorValue, SecurityLevelIdValue, UserTypeIdValue);
+
+
+
 @Column(name = "application_cd")
     private String applicationCode;
 
