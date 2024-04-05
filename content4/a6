@@ -255,3 +255,46 @@ public ResponseEntity<?> findByEmail(@PathVariable String email) {
     }
 }
 
+
+
+
+package gov.mipath.atlas.admin.common.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import gov.mipath.atlas.admin.common.model.UserProfile;
+import gov.mipath.atlas.admin.common.repository.UserProfileRepository;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+@Service
+public class UserProfileService {
+    
+    @Autowired
+    private UserProfileRepository repository;
+   
+    public List<UserProfile> findAll() {
+        return repository.findAll();
+    }
+
+    public UserProfile findById(long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public UserProfile addOrUpdate(UserProfile entity) {
+        return repository.save(entity);
+    }
+
+    public void delete(long id) {
+        repository.deleteById(id);
+    }
+
+    public Optional<UserProfile> findByEmailAndIsActive(String email) {
+    return repository.findByEmailAddressAndActiveIndicator(email, true);
+}
+}
+
+
