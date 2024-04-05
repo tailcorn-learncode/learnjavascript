@@ -1,0 +1,29 @@
+@Column(name = "application_cd")
+    private String applicationCode;
+
+    @Column(name = "source_record_nm")
+    private String sourceRecordName;
+
+    @Column(name = "login_nm")
+    private String loginName;
+
+    @Column(name = "full_nm")
+    private String fullName;
+
+    @Column(name = "email_nm")
+    private String emailAddress;
+
+    @Column(name = "active_ind")
+    private Boolean activeIndicator;
+
+    @Column(name = "security_agreement_ind")
+    private Boolean securityAgreementIndicator;
+
+    @Column(name = "lock_released_ind")
+    private Boolean lockReleasedIndicator;
+
+    @Column(name = "security_level_id")
+    private Integer securityLevelId;
+
+    @Column(name = "user_type_id")
+    private Integer userTypeId;
