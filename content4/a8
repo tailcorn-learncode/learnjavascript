@@ -1,0 +1,61 @@
+package gov.mipath.atlas.admin.common.exception;
+
+// Import statements...
+
+@ControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // Existing exception handlers...
+
+    // Handle MethodArgumentNotValidException: triggers on @Valid validation
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+        String error = "Validation error";
+        String details = ex.getBindingResult()
+                           .getFieldErrors()
+                           .stream()
+                           .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                           .collect(Collectors.joining(", "));
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, error + ": " + details, request.getContextPath());
+    }
+
+    // Handle MethodArgumentTypeMismatchException: when method argument is not the expected type
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, error, request.getContextPath());
+    }
+
+    // Handle HttpMediaTypeNotSupportedException: when the request's content type is not supported
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+                                                                     HttpHeaders headers, HttpStatus status, WebRequest request) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(ex.getContentType());
+        builder.append(" media type is not supported. Supported media types are ");
+        ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
+        return buildResponseEntity(HttpStatus.UNSUPPORTED_MEDIA_TYPE, builder.substring(0, builder.length() - 2), request.getContextPath());
+    }
+
+    // Handle HttpRequestMethodNotSupportedException: when a method is not supported for the requested URL
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex,
+                                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(ex.getMethod());
+        builder.append(" method is not supported for this request. Supported methods are ");
+        ex.getSupportedHttpMethods().forEach(t -> builder.append(t).append(" "));
+        return buildResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, builder.toString().trim(), request.getContextPath());
+    }
+
+    // Utility method to build the ResponseEntity object
+    private ResponseEntity<ApiErrorResponse> buildResponseEntity(HttpStatus status, String message, String path) {
+        ApiErrorResponse response = new ApiErrorResponse(LocalDateTime.now(), status.value(), message, path);
+        return new ResponseEntity<>(response, status);
+    }
+
+    // Other existing handlers...
+}
