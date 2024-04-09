@@ -15,6 +15,71 @@ public class ErrorConstants {
 
 package gov.mipath.atlas.arch.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+
+import static gov.mipath.atlas.arch.exception.ErrorConstants.*;
+
+@ControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        log.error("ResourceNotFoundException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.NOT_FOUND, USER_PROFILE_NOT_FOUND, request.getRequestURI());
+    }  
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        log.error("ConflictException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, CONFLICT_ERROR, request.getRequestURI());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        log.error("AccessDeniedException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.FORBIDDEN, ACCESS_DENIED, request.getRequestURI());
+    }   
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.error("DataIntegrityViolationException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, DATABASE_ERROR, request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String error = String.format(TYPE_MISMATCH_ERROR, ex.getName(), ex.getRequiredType().getName());
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, error, request.getRequestURI());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+        log.error("GenericException: {}", ex.getMessage(), ex);
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, UNEXPECTED_ERROR_OCCURRED, request.getRequestURI());
+    }
+
+    private ResponseEntity<ApiErrorResponse> buildResponseEntity(HttpStatus status, String message, String path) {
+        ApiErrorResponse response = new ApiErrorResponse(LocalDateTime.now(), status.value(), message, path);
+        return new ResponseEntity<>(response, status);
+    }
+}
+
+
+
+
+package gov.mipath.atlas.arch.exception;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
