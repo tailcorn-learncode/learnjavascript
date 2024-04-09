@@ -1,3 +1,31 @@
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.FieldError;
+import java.util.List;
+import java.util.stream.Collectors;
+
+// Inside AtlasExceptionHandler
+
+@ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity<AtlasErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    List<String> errors = ex.getBindingResult()
+            .getAllErrors()
+            .stream()
+            .map(error -> {
+                String fieldName = ((FieldError) error).getField();
+                String errorMessage = error.getDefaultMessage();
+                return fieldName + ": " + errorMessage;
+            })
+            .collect(Collectors.toList());
+
+    String errorMessage = String.join(", ", errors);
+    log.error("ValidationException: {}", errorMessage);
+    return buildResponseEntity(HttpStatus.BAD_REQUEST, errorMessage, request.getRequestURI());
+}
+
+
+
+
+
 I'm doing POC for springboot exception handling with best approach. As a part of that I want to write example on exception hierarchy or error handling hierarchy.
 I mean I set exception types and expend into another and so on and catch based on their types. I need to come up with with some examples to put in poc.
 you can rewrite all codes to acheive this. Think all types of errors we may get while working with API in spring boot and you can pick one. Or you can imagine your own.
