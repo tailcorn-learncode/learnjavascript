@@ -70,6 +70,77 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
 
+package gov.mipath.atlas.admin.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import gov.mipath.atlas.admin.common.dto.UserProfileDto;
+import gov.mipath.atlas.admin.common.model.UserProfile;
+import gov.mipath.atlas.admin.common.service.UserProfileService;
+import gov.mipath.atlas.arch.exception.CustomExceptions.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+
+import static gov.mipath.atlas.arch.exception.ErrorConstants.*;
+
+@RestController
+@RequestMapping("/api/admin/users")
+@Slf4j
+public class UserProfileController {
+
+    @Autowired
+    private UserProfileService service;
+
+    // findAll method remains the same
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserProfileDto> findByEmail(@PathVariable String email) {
+        UserProfile userProfile = service.findByEmailAndIsActive(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_OR_NOT_ACTIVE));
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserProfileDto> findById(@PathVariable Long id) {
+        UserProfile userProfile = service.findById(id);
+        if (userProfile == null) {
+            throw new ResourceNotFoundException(USER_PROFILE_NOT_FOUND);
+        }
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @PostMapping()
+    public ResponseEntity<UserProfileDto> create(@RequestBody UserProfileDto model) {
+        UserProfile entity = service.addOrUpdate(model.parse());
+        return new ResponseEntity<>(UserProfileDto.create(entity), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserProfileDto> update(@PathVariable Long id, @RequestBody UserProfileDto model) {
+        if (!service.existsById(id)) {
+            throw new ResourceNotFoundException(USER_PROFILE_NOT_FOUND);
+        }
+        model.setId(id);
+        UserProfile updatedEntity = service.addOrUpdate(model.parse());
+        return ResponseEntity.ok(UserProfileDto.create(updatedEntity));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!service.existsById(id)) {
+            throw new ResourceNotFoundException(USER_PROFILE_NOT_FOUND);
+        }
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+
+
+
+
+
+
+
+
 
 package gov.mipath.atlas.admin.controller;
 
