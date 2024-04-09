@@ -1,0 +1,236 @@
+I'm doing POC for springboot exception handling with best approach. As a part of that I want to write example on exception hierarchy or error handling hierarchy.
+I mean I set exception types and expend into another and so on and catch based on their types. I need to come up with with some examples to put in poc.
+you can rewrite all codes to acheive this. Think all types of errors we may get while working with API in spring boot and you can pick one. Or you can imagine your own.
+It may not be perfect but just some working example.
+
+
+
+
+AtlasCustomExceptions..
+
+package gov.mipath.atlas.arch.exception;
+
+public class AtlasCustomExceptions {
+
+    public static class ApiException extends RuntimeException {
+        public ApiException(String message) {
+            super(message);
+        }
+    }
+
+    public static class ResourceNotFoundException extends ApiException {
+
+        public ResourceNotFoundException(String message) {
+            super(message);
+        }
+
+    }
+
+    public static class BadRequestException extends ApiException {
+        public BadRequestException(String message) {
+            super(message);
+        }
+    }
+
+    public static class ConflictException extends ApiException {
+        public ConflictException(String message) {
+            super(message);
+        }
+    }
+
+    public static class ValidationException extends ApiException {
+        public ValidationException(String message) {
+            super(message);
+        }
+    }
+
+}
+
+
+AtlasErrorConstants..
+
+package gov.mipath.atlas.arch.exception;
+
+public class AtlasErrorConstants {
+    public static final String USER_NOT_FOUND_OR_NOT_ACTIVE = "User not found or not active";
+    public static final String USER_PROFILE_NOT_FOUND = "User profile not found";
+    public static final String DATABASE_ERROR = "Database error";
+    public static final String UNEXPECTED_ERROR_OCCURRED = "An unexpected error occurred";
+    public static final String ACCESS_DENIED = "Access denied";
+    public static final String TYPE_MISMATCH_ERROR = "%s should be of type %s";
+    public static final String CONFLICT_ERROR = "Conflict occurred";
+}
+
+
+AtlasErrorResponse..
+package gov.mipath.atlas.arch.exception;
+
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Data
+public class AtlasErrorResponse {
+    private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private String path;
+
+    public AtlasErrorResponse(LocalDateTime timestamp, int status, String error, String path) {
+        this.timestamp = timestamp;
+        this.status = status;
+        this.error = error;
+        this.path = path;
+    }
+}
+
+
+
+AtlasExceptionHandler..
+
+package gov.mipath.atlas.arch.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import gov.mipath.atlas.arch.exception.AtlasCustomExceptions.ConflictException;
+import gov.mipath.atlas.arch.exception.AtlasCustomExceptions.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
+
+import static gov.mipath.atlas.arch.exception.AtlasErrorConstants.*;
+
+@ControllerAdvice
+public class AtlasExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(AtlasExceptionHandler.class);
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<AtlasErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        log.error("ResourceNotFoundException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.NOT_FOUND, USER_PROFILE_NOT_FOUND, request.getRequestURI());
+    }  
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<AtlasErrorResponse> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        log.error("ConflictException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, CONFLICT_ERROR, request.getRequestURI());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<AtlasErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        log.error("AccessDeniedException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.FORBIDDEN, ACCESS_DENIED, request.getRequestURI());
+    }   
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<AtlasErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.error("DataIntegrityViolationException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, DATABASE_ERROR, request.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<AtlasErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String error = String.format(TYPE_MISMATCH_ERROR, ex.getName(), ex.getRequiredType().getName());
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, error, request.getRequestURI());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<AtlasErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+        log.error("GenericException: {}", ex.getMessage(), ex);
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, UNEXPECTED_ERROR_OCCURRED, request.getRequestURI());
+    }
+
+    private ResponseEntity<AtlasErrorResponse> buildResponseEntity(HttpStatus status, String message, String path) {
+        AtlasErrorResponse response = new AtlasErrorResponse(LocalDateTime.now(), status.value(), message, path);
+        return new ResponseEntity<>(response, status);
+    }
+}
+
+
+UserProfileController..
+
+package gov.mipath.atlas.admin.controller;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import gov.mipath.atlas.admin.common.dto.UserProfileDto;
+import gov.mipath.atlas.admin.common.model.UserProfile;
+import gov.mipath.atlas.admin.common.service.UserProfileService;
+import gov.mipath.atlas.arch.exception.AtlasCustomExceptions.ResourceNotFoundException;
+import static gov.mipath.atlas.arch.exception.AtlasErrorConstants.*;
+import lombok.extern.slf4j.Slf4j;
+
+@RestController
+@RequestMapping("/api/admin/users")
+@Slf4j
+public class UserProfileController {
+
+    @Autowired
+    private UserProfileService service;
+
+    @GetMapping()
+    public ResponseEntity<List<UserProfileDto>> findAll() {
+        List<UserProfileDto> userProfiles = service.findAll().stream()
+                .map(UserProfileDto::create)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userProfiles);
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserProfileDto> findByEmail(@PathVariable String email) {
+        UserProfile userProfile = service.findByEmailAndIsActive(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_OR_NOT_ACTIVE));
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserProfileDto> findById(@PathVariable Long id) {
+        UserProfile userProfile = service.findById(id);
+        if (userProfile == null) {
+            throw new ResourceNotFoundException(USER_PROFILE_NOT_FOUND);
+        }
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @PostMapping()
+    public ResponseEntity<UserProfileDto> create(@RequestBody UserProfileDto model) {
+        UserProfile entity = service.addOrUpdate(model.parse());
+        return new ResponseEntity<>(UserProfileDto.create(entity), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserProfileDto> update(@PathVariable Long id, @RequestBody UserProfileDto model) {
+        if (!service.existsById(id)) {
+            throw new ResourceNotFoundException(USER_PROFILE_NOT_FOUND);
+        }
+        model.setId(id);
+        UserProfile updatedEntity = service.addOrUpdate(model.parse());
+        return ResponseEntity.ok(UserProfileDto.create(updatedEntity));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!service.existsById(id)) {
+            throw new ResourceNotFoundException(USER_PROFILE_NOT_FOUND);
+        }
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+
+
