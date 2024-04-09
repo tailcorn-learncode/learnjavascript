@@ -1,0 +1,122 @@
+package gov.mipath.atlas.arch.exception;
+
+public class ErrorConstants {
+
+    public static final String USER_NOT_FOUND_OR_NOT_ACTIVE = "User not found or not active";
+    public static final String USER_PROFILE_NOT_FOUND = "User profile not found";
+    public static final String DATABASE_ERROR = "Database error";
+    public static final String UNEXPECTED_ERROR_OCCURRED = "An unexpected error occurred";
+    public static final String ACCESS_DENIED = "Access denied";
+    public static final String TYPE_MISMATCH_ERROR = "%s should be of type %s";
+    public static final String CONFLICT_ERROR = "Conflict occurred";
+    // Add any additional constants as required
+}
+
+
+package gov.mipath.atlas.arch.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+
+@ControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // ResourceNotFoundException handler remains the same
+
+    // ConflictException handler
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        log.error("ConflictException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, CONFLICT_ERROR, request.getRequestURI());
+    }
+
+    // AccessDeniedException handler
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        log.error("AccessDeniedException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.UNAUTHORIZED, ACCESS_DENIED, request.getRequestURI());
+    }
+
+    // DataIntegrityViolationException handler
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.error("DataIntegrityViolationException: {}", ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, DATABASE_ERROR, request.getRequestURI());
+    }
+
+    // MethodArgumentTypeMismatchException handler
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String error = String.format(TYPE_MISMATCH_ERROR, ex.getName(), ex.getRequiredType().getName());
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, error, request.getRequestURI());
+    }
+
+    // Generic Exception handler
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+        log.error("GenericException: {}", ex.getMessage(), ex);
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, UNEXPECTED_ERROR_OCCURRED, request.getRequestURI());
+    }
+
+    // buildResponseEntity method remains the same
+}
+
+
+
+
+package gov.mipath.atlas.admin.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import gov.mipath.atlas.admin.common.dto.UserProfileDto;
+import gov.mipath.atlas.admin.common.model.UserProfile;
+import gov.mipath.atlas.admin.common.service.UserProfileService;
+import gov.mipath.atlas.arch.exception.CustomExceptions.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+
+import static gov.mipath.atlas.arch.exception.ErrorConstants.*;
+
+@RestController
+@RequestMapping("/api/admin/users")
+@Slf4j
+public class UserProfileController {
+
+    @Autowired
+    private UserProfileService service;
+
+    // findAll method remains the same
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserProfileDto> findByEmail(@PathVariable String email) {
+        UserProfile userProfile = service.findByEmailAndIsActive(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_OR_NOT_ACTIVE));
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserProfileDto> findById(@PathVariable Long id) {
+        UserProfile userProfile = service.findById(id);
+        if (userProfile == null) {
+            throw new ResourceNotFoundException(USER_PROFILE_NOT_FOUND);
+        }
+        return ResponseEntity.ok(UserProfileDto.create(userProfile));
+    }
+
+    @PostMapping()
+    public ResponseEntity<UserProfileDto> create(@RequestBody UserProfileDto model) {
+        UserProfile entity = service.addOrUpdate(model.parse());
+        return new ResponseEntity<>(UserProfileDto.create(entity), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserProfileDto> update(@PathVariable Long id, @RequestBody UserProfileDto model) {
+        if (!service.existsById(id)) {
+            throw new
+
