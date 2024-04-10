@@ -1,3 +1,10 @@
+String forwardedHeader = exchange.getRequest().getHeaders().getFirst("X-Forwarded-For");
+if (forwardedHeader != null) {
+    ipAddress = forwardedHeader.split(",")[0]; // Take the first IP if there are multiple
+}
+
+
+
 In this example springboot code below, i want to read ipaddress of angular application
 
 package gov.mipath.atlas.gateway.util;
