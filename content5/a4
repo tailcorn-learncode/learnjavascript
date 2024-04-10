@@ -1,3 +1,28 @@
+@Override
+public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    // Initially attempt to get the client IP from the X-Forwarded-For header
+    String ipAddress = exchange.getRequest().getHeaders().getFirst("X-Forwarded-For");
+    if (ipAddress != null) {
+        // If the header contains multiple IP addresses, take the first one
+        ipAddress = ipAddress.split(",")[0];
+    } else {
+        // If the X-Forwarded-For header is not present, fall back to the remote address
+        if (exchange.getRequest().getRemoteAddress() != null && exchange.getRequest().getRemoteAddress().getAddress() != null) {
+            ipAddress = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
+        }
+    }
+    
+    System.out.println("Client IP Address: " + ipAddress); // For demonstration; use a logger in production code
+
+    // Existing code for JWT authentication...
+    String authorizationHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+    // The rest of your filter method...
+    return chain.filter(exchange); // Make sure to return this at the end of your method
+}
+
+
+
 String forwardedHeader = exchange.getRequest().getHeaders().getFirst("X-Forwarded-For");
 if (forwardedHeader != null) {
     ipAddress = forwardedHeader.split(",")[0]; // Take the first IP if there are multiple
