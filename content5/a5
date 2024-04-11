@@ -1,3 +1,25 @@
+import requests
+from requests_ntlm import HttpNtlmAuth
+
+# Replace the following details with your actual credentials and the target URL
+domain = 'your_domain'
+username = 'your_username'
+password = 'your_password'
+url = 'url_to_protected_resource'
+
+# Setting up the NTLM authentication handler
+auth = HttpNtlmAuth(f'{domain}\\{username}', password)
+
+# Trying to access the resource
+response = requests.get(url, auth=auth)
+
+# Print the status code and response content
+print("Status Code:", response.status_code)
+print("Response Content:", response.text)
+
+
+
+
 pip install requests_ntlm
 
 
