@@ -1,0 +1,21 @@
+pip install requests_ntlm
+
+
+from locust import HttpUser, task, between
+from requests_ntlm import HttpNtlmAuth
+
+class WebsiteUser(HttpUser):
+    wait_time = between(1, 5)
+
+    def on_start(self):
+        """ This is called when a User starts before any task is scheduled """
+        self.client.auth = HttpNtlmAuth('DOMAIN\\username', 'password')
+
+    @task
+    def load_test(self):
+        self.client.get("/path/to/resource")
+
+# Run the script: locust -f this_script.py
+
+
+
