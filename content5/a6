@@ -1,3 +1,49 @@
+import requests
+from requests_ntlm import HttpNtlmAuth
+
+# Setup your credentials and the URL
+username = 'your_username'
+password = 'your_password'
+domain = 'your_domain'
+url = 'url_to_protected_resource'
+
+# Combine domain and username
+full_username = f'{domain}\\{username}'
+
+# Create an NTLM authentication handler
+auth = HttpNtlmAuth(full_username, password)
+
+# Use a session object to maintain state across requests
+session = requests.Session()
+session.auth = auth
+
+# Set user-agent if needed
+session.headers.update({
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+})
+
+# Make a request
+response = session.get(url)
+
+# Check the status code and print relevant information
+print("Status Code:", response.status_code)
+print("URL:", response.url)
+print("Response Headers:", response.headers)
+print("Response Content:", response.text[:500])  # print first 500 characters of the response content
+
+# Additional debug information
+if response.history:
+    print("Redirect history:")
+    for resp in response.history:
+        print(resp.status_code, resp.url)
+    print("Final destination:")
+    print(response.status_code, response.url)
+else:
+    print("No redirection occurred.")
+
+
+
+
 <head>
     <title>Sign in to your account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
