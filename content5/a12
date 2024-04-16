@@ -1,0 +1,80 @@
+given below are is files for playwright python ui testing kept in folder named ess.
+And to execute it, i just give pytest command.
+Now i want to run this in docker.
+So, write docker file or docker compose and show me steps on how to build, run docker.
+i have already docker setup in my machine
+
+pytest.ini
+
+[pytest]
+addopts = -k test_contact_information --headed --slowmo 1000 --base-url https://attri.io/employer/home/dashboard
+
+test_init.py..
+
+import pytest
+from playwright.sync_api import Page, expect
+
+from models.home_page import HomePage
+
+@pytest.fixture(scope="session")
+def home_url(base_url):
+    return base_url
+
+@pytest.fixture
+def setup_home_page(page: Page, home_url):
+    home_page = HomePage(page)
+    home_page.navigate(home_url)
+    home_page.login(home_url)
+    return home_page
+
+def test_has_title(setup_home_page: HomePage):
+    setup_home_page.is_header_title()
+
+
+home_page.py..
+
+from playwright.sync_api import Page,expect
+
+from models.base_page import BasePage
+
+class HomePage(BasePage):
+    def __init__(self, page: Page):
+        super().__init__(page)
+        self.header_title = page.get_by_text("Employer Self Services")
+        self.reporting_menu_item = page.get_by_test_id("route-Reporting")
+        self.document_center_menu_item = page.get_by_test_id("route-Tools")           
+        self.member_menu_item = page.get_by_test_id("route-Member Account")
+
+    def navigate(self, url):
+        self.page.goto(url, timeout=5000)
+
+    def login(self,url):
+        self.page.get_by_placeholder("Email, phone, or Skype").click()
+        self.page.get_by_placeholder("Email, phone, or Skype").fill("cc@attri.com")
+        self.page.get_by_role("button", name="Next").click()
+        self.page.wait_for_url(url)
+
+    def is_header_title(self):
+       expect(self.header_title).to_be_visible()
+
+
+base_page.py..
+
+from playwright.sync_api import Page
+
+class BasePage:
+    def __init__(self, page: Page):
+        self.page = page
+
+    def is_title_contains(self, text):
+        title = self.page.title()
+        if title.find(text) == -1:
+            return False
+        else:
+            return True
+
+    def is_url_contains(self, text):
+        if self.page.url.find(text) == -1:
+            return False
+        else:
+            return True
