@@ -1,0 +1,21 @@
+from bs4 import BeautifulSoup
+from locust import HttpUser, task, between
+
+from test_example import get_authenticated_cookies
+
+class AuthenticatedUser(HttpUser):
+    wait_time = between(1, 5)
+
+    def on_start(self):
+        self.cookies = get_authenticated_cookies()
+        for cookie in self.cookies:
+            self.client.cookies.set(cookie['name'], cookie['value'], domain=cookie['domain'])
+
+    @task
+    def load_test(self):
+        response = self.client.get("/home/dashboard")
+        soup = BeautifulSoup(response.text, 'html.parser')
+        #print(soup)
+        f = open("test.html", "w")
+        f.write(response.text)
+        f.close()
