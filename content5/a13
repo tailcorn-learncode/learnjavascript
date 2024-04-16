@@ -4,6 +4,35 @@ FROM mcr.microsoft.com/playwright:v1.25.0-focal
 # Set the working directory
 WORKDIR /app
 
+# Fix potential repository issues and ensure we're using the latest listings
+RUN sed -i 's/http:\/\/archive./http:\/\/old-releases./g' /etc/apt/sources.list
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the Python requirements file and install Python dependencies
+COPY requirements.txt ./
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Run Playwright install to setup browsers
+RUN playwright install
+
+# Copy the rest of your application code
+COPY . .
+
+# Command to run when starting the container
+CMD ["pytest"]
+
+
+
+
+# Use an official Playwright image
+FROM mcr.microsoft.com/playwright:v1.25.0-focal
+
+# Set the working directory
+WORKDIR /app
+
 # Install pip and Python tools if not already installed (Just to be sure)
 RUN apt-get update && apt-get install -y python3-pip
 
