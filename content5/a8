@@ -10,3 +10,38 @@ class AuthenticatedUser(HttpUser):
         f = open("test.html", "w")
         f.write(response.text)
         f.close()
+
+
+
+from locust import HttpUser, task, between
+from playwright.sync_api import sync_playwright
+
+class AuthenticatedUser(HttpUser):
+    wait_time = between(1, 5)
+
+    def on_start(self):
+        # Set up Playwright in synchronous mode
+        self.playwright = sync_playwright().start()
+        self.browser = self.playwright.chromium.launch(headless=True)  # or .firefox or .webkit
+        self.page = self.browser.new_page()
+
+    @task
+    def load_test(self):
+        # Navigate to the page with Playwright
+        self.page.goto(self.host + "/home/dashboard")
+
+        # Wait for the JavaScript to execute; modify this according to your page's specifics
+        self.page.wait_for_load_state('networkidle')
+
+        # Get the rendered HTML
+        rendered_html = self.page.content()
+
+        # Save the rendered HTML to a file
+        with open("rendered_html.html", "w") as file:
+            file.write(rendered_html)
+
+    def on_stop(self):
+        # Close the browser when done
+        self.page.close()
+        self.browser.close()
+        self.playwright.stop()
