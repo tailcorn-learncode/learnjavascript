@@ -1,3 +1,28 @@
+# Use an official Playwright image
+FROM mcr.microsoft.com/playwright:v1.25.0-focal
+
+# Set the working directory
+WORKDIR /app
+
+# Install pip and Python tools if not already installed (Just to be sure)
+RUN apt-get update && apt-get install -y python3-pip
+
+# Copy the Python requirements file and install Python dependencies
+COPY requirements.txt ./
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Run Playwright install to setup browsers
+RUN playwright install
+
+# Copy the rest of your application code
+COPY . .
+
+# Command to run when starting the container
+CMD ["pytest"]
+
+
+
+
 # Use an official Python runtime as a parent image
 FROM mcr.microsoft.com/playwright:v1.25.0-focal
 
