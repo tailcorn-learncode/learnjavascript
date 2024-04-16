@@ -1,3 +1,43 @@
+import pytest
+from playwright.sync_api import Page, expect
+
+from models.home_page import HomePage
+from models.reporting_page import ReportingPage
+from models.document_center_page import DocumentCenterPage
+from models.member_page import MemberPage
+
+@pytest.fixture(scope="session")
+def home_url(base_url):
+    return base_url
+
+@pytest.fixture
+def setup_home_page(page: Page, home_url):
+    home_page = HomePage(page)
+    home_page.navigate(home_url)
+    home_page.login(home_url)
+    return home_page
+
+def test_has_title(setup_home_page: HomePage):
+    setup_home_page.is_header_title()
+
+def test_reporting_has_panel_title(page: Page, setup_home_page: HomePage):
+    setup_home_page.reporting_menu_click()
+    reporting_page = ReportingPage(page)
+    reporting_page.is_panel_title()
+
+def test_document_center_has_panel_title(page: Page, setup_home_page: HomePage):
+    setup_home_page.document_center_menu_click()
+    document_center_page = DocumentCenterPage(page)
+    document_center_page.is_panel_title()
+
+def test_member_has_panel_title(page: Page, setup_home_page: HomePage):
+    setup_home_page.member_menu_click()
+    member_page = MemberPage(page)
+    member_page.is_panel_title()
+
+
+
+
 in this playwright python code.. execute these below lines inside beforeall test. I mean beforeall test these should be executed
 home_page = HomePage(page)
     home_page.navigate(home_url)
