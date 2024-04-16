@@ -1,0 +1,41 @@
+from locust import HttpUser, task, between
+from playwright.sync_api import sync_playwright
+
+class AuthenticatedUser(HttpUser):
+    wait_time = between(1, 5)
+
+    def on_start(self):
+        self.cookies = self.get_authenticated_cookies()
+        self.client.cookies.clear()
+        for cookie in self.cookies:
+            self.client.cookies.set(cookie['name'], cookie['value'], domain=cookie['domain'])
+
+    @task
+    def load_test(self):
+        # Use Playwright to get fully rendered HTML
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            for cookie in self.cookies:
+                page.context.add_cookies([cookie])
+            page.goto("https://attr.io/employer/home/dashboard")
+            rendered_html = page.content()
+            browser.close()
+
+            # Print or save the fully rendered HTML
+            print(rendered_html)
+            with open("test.html", "w") as f:
+                f.write(rendered_html)
+
+    def get_authenticated_cookies(self):
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto("https://attr.io/employer/home/dashboard")
+            page.get_by_placeholder("Email, phone, or Skype").click()
+            page.get_by_placeholder("Email, ")
+            page.get_by_role("button", name="Next").click()
+            page.wait_for_url('https://attr.io/employer/home/dashboard')
+            cookies = page.context.cookies()
+            browser.close()
+            return cookies
