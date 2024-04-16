@@ -1,0 +1,40 @@
+from bs4 import BeautifulSoup
+from locust import HttpUser, task, between
+
+from test_example import get_authenticated_cookies
+
+class AuthenticatedUser(HttpUser):
+    wait_time = between(1, 5)
+
+    def on_start(self):
+        self.cookies = get_authenticated_cookies()
+        for cookie in self.cookies:
+            self.client.cookies.set(cookie['name'], cookie['value'], domain=cookie['domain'])
+
+    @task
+    def load_test(self):
+        response = self.client.get("/home/dashboard")
+        soup = BeautifulSoup(response.text, 'html.parser')
+        #print(soup)
+        f = open("test.html", "w")
+        f.write(response.text)
+        f.close()
+
+
+
+
+from playwright.sync_api import sync_playwright
+
+def get_authenticated_cookies():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)  
+        page = browser.new_page()
+        page.goto("https://attr.io/employer/home/dashboard")
+        page.get_by_placeholder("Email, phone, or Skype").click()
+        page.get_by_placeholder("Email, phone, or Skype").fill("CheekooriS1@michigan.gov")
+        page.get_by_role("button", name="Next").click()
+        #page.wait_for_load_state('networkidle')
+        page.wait_for_url('https://attr.io/employer/home/dashboard')
+        cookies = page.context.cookies()
+        browser.close()
+        return cookies
