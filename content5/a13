@@ -1,0 +1,47 @@
+# Use an official Python runtime as a parent image
+FROM mcr.microsoft.com/playwright:v1.25.0-focal
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+COPY requirements.txt /app
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Run Playwright install to setup browsers
+RUN playwright install
+
+# Command to run tests
+CMD ["pytest"]
+
+playwright==1.25.0
+pytest==7.1.2
+
+
+
+docker build -t playwright-tests .
+
+
+
+docker run --rm playwright-tests
+
+version: '3.8'
+services:
+  web-tests:
+    build: .
+    volumes:
+      - .:/app
+    command: pytest
+
+
+docker-compose up --build
+
+
+
+
+
+
+
