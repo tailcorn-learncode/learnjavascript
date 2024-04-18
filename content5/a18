@@ -1,0 +1,58 @@
+export class BaseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = this.constructor.name;
+
+    // Maintaining proper stack trace for where our error was thrown (only in V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+}
+
+
+
+import { BaseError } from './base-error';
+
+export class InvalidUserIdError extends BaseError {
+  constructor(userId: number) {
+    super(`Invalid user ID: ${userId}. ID must be greater than zero.`);
+  }
+}
+
+export class UserNotFoundError extends BaseError {
+  constructor(userId: number) {
+    super(`User with ID: ${userId} not found.`);
+  }
+}
+
+
+import { Injectable } from '@angular/core';
+import { InvalidUserIdError, UserNotFoundError } from './user-errors';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  private users = [
+    { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
+    { id: 2, name: 'Jane Doe', email: 'jane.doe@example.com' }
+  ];
+
+  constructor() {}
+
+  getUser(userId: number) {
+    if (userId <= 0) {
+      throw new InvalidUserIdError(userId);
+    }
+
+    const user = this.users.find(user => user.id === userId);
+    if (!user) {
+      throw new UserNotFoundError(userId);
+    }
+
+    return user;
+  }
+}
+
+
