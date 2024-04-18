@@ -1,0 +1,63 @@
+import { ErrorHandler, Injectable } from '@angular/core';
+
+@Injectable()
+export class GlobalErrorHandlerService implements ErrorHandler {
+  constructor() { }
+
+  handleError(error: any): void {
+    // Implement your error handling logic here
+    // For example, log to the console or send to server
+    console.error('Global Error Handler:', error);
+
+    // Optionally, you can add user-friendly error handling
+    alert('An unexpected error occurred. Please try again later.');
+  }
+}
+
+
+import { NgModule, ErrorHandler } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { GlobalErrorHandlerService } from './global-error-handler.service';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandlerService
+    }
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  constructor() {}
+
+  getUser(userId: number) {
+    if (userId <= 0) {
+      throw new Error('Invalid user ID. ID must be greater than zero.');
+    }
+
+    // Simulate fetching user data
+    return {
+      id: userId,
+      name: 'John Doe',
+      email: 'john.doe@example.com'
+    };
+  }
+}
+
+
