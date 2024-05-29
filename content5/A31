@@ -1,0 +1,93 @@
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+@Service
+public class ApiService {
+
+    private final WebClient webClient;
+    private final String baseUrl;
+
+    public ApiService(WebClient webClient, @Value("${crm.base-url}") String baseUrl) {
+        this.webClient = webClient;
+        this.baseUrl = baseUrl;
+    }
+
+    public Mono<String> whoAmI() {
+        return this.webClient
+            .get()
+            .uri(baseUrl + "/WhoAmI")
+            .header("Content-Type", "application/atom+xml;type=entry;charset=utf-8")
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+    public Mono<String> getCaseAndAssociatedActivities(String caseId) {
+        return this.webClient
+            .get()
+            .uri(uriBuilder -> uriBuilder
+                .path(baseUrl + "/incidents({caseId})")
+                .queryParam("$select", "incidentid,sss_agentcomment,sss_appcode,sss_atlasid,sss_caseid,sss_casename,sss_casesource,sss_casetype,sss_dr_comment")
+                .queryParam("$expand", "Incident_ActivityPointers($select=activityid,statecode,activitytypecode,createdon,description)")
+                .build(caseId))
+            .header("OData-MaxVersion", "4.0")
+            .header("OData-Version", "4.0")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .header("Accept", "application/json")
+            .header("Prefer", "odata.include-annotations=*")
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+    public Mono<String> getContactWithActivities(String contactId) {
+        return this.webClient
+            .get()
+            .uri(uriBuilder -> uriBuilder
+                .path(baseUrl + "/contacts({contactId})")
+                .queryParam("$select", "firstname,lastname")
+                .queryParam("$expand", "Contact_ActivityPointers($select=activityid,statecode,activitytypecode,actualdurationminutes,actualend,actualstart,_createdby_value,createdon,description,statuscode)")
+                .build(contactId))
+            .header("OData-MaxVersion", "4.0")
+            .header("OData-Version", "4.0")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .header("Accept", "application/json")
+            .header("Prefer", "odata.include-annotations=*")
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+    public Mono<String> updateCaseStatusReason(String caseId, String requestBody) {
+        return this.webClient
+            .patch()
+            .uri(uriBuilder -> uriBuilder
+                .path(baseUrl + "/incidents({caseId})")
+                .queryParam("$select", "incidentid,statuscode")
+                .build(caseId))
+            .header("OData-MaxVersion", "4.0")
+            .header("OData-Version", "4.0")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .header("Accept", "application/json")
+            .header("Prefer", "odata.include-annotations=*,return=representation")
+            .bodyValue(requestBody)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+    public Mono<String> updateContact(String contactId, String requestBody) {
+        return this.webClient
+            .patch()
+            .uri(uriBuilder -> uriBuilder
+                .path(baseUrl + "/contacts({contactId})")
+                .queryParam("$select", "contactid,address1_telephone1,sss_surityid")
+                .build(contactId))
+            .header("OData-MaxVersion", "4.0")
+            .header("OData-Version", "4.0")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .header("Accept", "application/json")
+            .header("Prefer", "odata.include-annotations=*,return=representation")
+            .bodyValue(requestBody)
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+}
