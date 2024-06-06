@@ -1,0 +1,37 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Service
+public class ApiService {
+
+    @Autowired
+    private WebClient webClient;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    public Mono<String> makeRequest() {
+        return webClient.get()
+                        .uri("/your-endpoint") // Specify your endpoint
+                        .retrieve()
+                        .bodyToMono(String.class);
+    }
+
+    public Mono<String> processResponse() {
+        return makeRequest()
+                .flatMap(response -> {
+                    try {
+                        // Convert response to JSON (if not already JSON)
+                        Object json = objectMapper.readValue(response, Object.class);
+                        String jsonResponse = objectMapper.writeValueAsString(json);
+                        return Mono.just(jsonResponse);
+                    } catch (Exception e) {
+                        // Handle JSON conversion error
+                        return Mono.error(new RuntimeException("Failed to convert response to JSON", e));
+                    }
+                });
+    }
+}
