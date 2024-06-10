@@ -1,0 +1,39 @@
+Tasks:
+
+Task 1: Implement Token Retrieval
+Description:
+
+As a system tester,
+
+I want to configure Locust to use tenantid, clientid, clientsecret, scope, and issuerUrl to request and retrieve an access token,
+
+so that I can use this token for authenticated requests to the WhoAmI endpoint.
+
+Acceptance Criteria:
+Given the Locust script is configured with tenantid, clientid, clientsecret, scope, and issuerUrl,
+
+When the script requests an access token,
+
+Then the token should be successfully obtained using the provided credentials.
+
+Task 2: Perform Load Test on WhoAmI Endpoint
+Description:
+
+As a system tester,
+
+I want to configure Locust to call the WhoAmI endpoint at http://crmapp/api/data/v9.2/WhoAmI using the obtained authorization bearer token,
+
+so that I can verify the endpoint's performance and reliability under load.
+
+Acceptance Criteria:
+
+Given the access token is obtained,
+When the Locust script calls the WhoAmI endpoint at http://crmapp/api/data/v9.2/WhoAmI,
+
+Then the call should include the authorization bearer token in the header.
+
+Given the WhoAmI endpoint is called with the correct authorization,
+
+When the Locust script performs the load test,
+
+Then the WhoAmI endpoint should respond appropriately and handle the load without errors or performance degradation.
