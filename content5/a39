@@ -1,3 +1,26 @@
+org.springframework.web.reactive.function.client.WebClientRequestException: Content type 'application/x-www-form-urlencoded' not supported for bodyType=java.util.HashMap[?, ?]
+ at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
+ Suppressed: The stacktrace has been enhanced by Reactor, refer to additional information below: 
+Error has been observed at the following site(s):
+ *__checkpoint ⇢ Request to POST https://login.microsoftonline.com/d5fb7087-3777-42ad-966a-892ef47225d1/oauth2/v2.0/token [DefaultWebClient]
+Original Stack Trace:
+ at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
+ at reactor.core.publisher.MonoErrorSupplied.subscribe(MonoErrorSupplied.java:55)
+ at reactor.core.publisher.Mono.subscribe(Mono.java:4495)
+ at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:103)
+ at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+ at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+ at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+ at reactor.core.publisher.MonoNext$NextSubscriber.onError(MonoNext.java:93)
+ at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onError(MonoFlatMapMany.java:204)
+ at reactor.core.publisher.SerializedSubscriber.onError(SerializedSubscriber.java:124)
+ at reactor.core.publisher.FluxRetryWhen$RetryWhenMainSubscriber.whenError(FluxRetryWhen.java:225)
+ at reactor.core.publisher.FluxRetryWhen$RetryWhenOtherSubscriber.onError(FluxR
+
+
+
+
+
 package com.example.gateway.controller;
 
 import io.restassured.RestAssured;
