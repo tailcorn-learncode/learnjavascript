@@ -1,3 +1,36 @@
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import java.io.IOException;
+
+public class OAuth2RestTemplateInterceptor implements ClientHttpRequestInterceptor {
+
+    private final OAuth2AuthorizedClientManager authorizedClientManager;
+    private final String clientRegistrationId;
+
+    public OAuth2RestTemplateInterceptor(OAuth2AuthorizedClientManager authorizedClientManager, String clientRegistrationId) {
+        this.authorizedClientManager = authorizedClientManager;
+        this.clientRegistrationId = clientRegistrationId;
+    }
+
+    @Override
+    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId(this.clientRegistrationId)
+                .principal("principal")
+                .build();
+        OAuth2AccessToken accessToken = this.authorizedClientManager.authorize(authorizeRequest).getAccessToken();
+        request.getHeaders().add("Authorization", "Bearer " + accessToken.getTokenValue());
+        return execution.execute(request, body);
+    }
+}
+
+
+
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
