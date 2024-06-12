@@ -1,0 +1,158 @@
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+@EnableOAuth2Client
+@EnableResourceServer
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+            .authorizeRequests()
+            .antMatchers("/**").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .oauth2Login()
+            .and()
+            .oauth2Client();
+        return http.build();
+    }
+}
+
+
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.web.client.RestTemplate;
+
+@Configuration
+public class RestTemplateConfig {
+
+    @Value("${webclient.client-registration-id}")
+    private String clientRegistrationId;
+
+    @Value("${webclient.crm-url}")
+    private String crmBaseUrl;
+
+    @Value("${webclient.cc-url}")
+    private String ccBaseUrl;
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+            ClientRegistrationRepository clientRegistrationRepository,
+            OAuth2AuthorizedClientService authorizedClientService) {
+        return new AuthorizedClientServiceOAuth2AuthorizedClientManager(
+                clientRegistrationRepository, authorizedClientService);
+    }
+
+    @Bean
+    public OAuth2AuthorizedClientResolver authorizedClientResolver(
+            OAuth2AuthorizedClientManager authorizedClientManager) {
+        return new OAuth2AuthorizedClientResolver(authorizedClientManager);
+    }
+}
+
+
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientResolver;
+import org.springframework.security.oauth2.client.OAuth2AuthorizationContext;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class CrmClientService {
+
+    private final RestTemplate restTemplate;
+    private final OAuth2AuthorizedClientManager authorizedClientManager;
+    private final ClientRegistrationRepository clientRegistrationRepository;
+
+    @Value("${webclient.crm-url}")
+    private String crmBaseUrl;
+
+    public CrmClientService(RestTemplate restTemplate,
+                            OAuth2AuthorizedClientManager authorizedClientManager,
+                            ClientRegistrationRepository clientRegistrationRepository) {
+        this.restTemplate = restTemplate;
+        this.authorizedClientManager = authorizedClientManager;
+        this.clientRegistrationRepository = clientRegistrationRepository;
+    }
+
+    private OAuth2AccessToken getAccessToken() {
+        OAuth2AuthenticationToken authentication = OAuth2AuthenticationToken.builder()
+                .clientRegistrationId(clientRegistrationId)
+                .build();
+        OAuth2AuthorizedClient authorizedClient = this.authorizedClientManager.authorize(
+                OAuth2AuthorizationContext.withClientRegistrationId(clientRegistrationId)
+                        .principal(authentication)
+                        .build());
+
+        return authorizedClient.getAccessToken();
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getAccessToken().getTokenValue());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+
+    public String whoAmI() {
+        HttpEntity<String> entity = new HttpEntity<>(getHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(
+                crmBaseUrl + "/WhoAmI", HttpMethod.GET, entity, String.class);
+        return response.getBody();
+    }
+
+    public String getCaseAndAssociatedActivities(String caseId) {
+        HttpEntity<String> entity = new HttpEntity<>(getHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(
+                crmBaseUrl + "/incidents(" + caseId + ")?$select=incidentid,or_agentcomment,or_appcode,ors_atlasid,or_caseid,or_casename,or_casesource,or_casetype,or_dr_comment&$expand=Incident_ActivityPointers($select=activityid,statecode,activitytypecode,createdon,description)",
+                HttpMethod.GET, entity, String.class);
+        return response.getBody();
+    }
+
+    public String updateCaseStatusReason(String caseId, String requestBody) {
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, getHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(
+                crmBaseUrl + "/incidents(" + caseId + ")?$select=incidentid,statuscode",
+                HttpMethod.PATCH, entity, String.class);
+        return response.getBody();
+    }
+}
+
+
+
+
