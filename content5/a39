@@ -1,3 +1,111 @@
+package com.example.gateway.controller;
+
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.util.Map;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
+public class GatewayControllerIT {
+
+    private static WebClient webClient;
+    private static String clientId = "your-client-id";
+    private static String clientSecret = "your-client-secret";
+    private static String tenantId = "your-tenant-id";
+
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = 8080;
+        webClient = WebClient.builder().baseUrl("https://login.microsoftonline.com/" + tenantId + "/oauth2/v2.0/token").build();
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        // Cleanup code if needed
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        // Any setup code before each test if needed
+    }
+
+    @Test
+    void helloEndpoint_authenticated_returnsHelloWorld() {
+        given()
+            .auth()
+            .oauth2(getAccessToken(clientId, clientSecret))
+            .header("apicode", "22")
+            .header("accesscode", "44")
+        .when()
+            .get("/hello")
+        .then()
+            .statusCode(200)
+            .body(is("Hello World"));
+    }
+
+    @Test
+    void helloEndpoint_invalidClientCredentials_returnsForbidden() {
+        given()
+            .auth()
+            .oauth2(getAccessToken("invalid-client-id", "invalid-client-secret"))
+            .header("apicode", "22")
+            .header("accesscode", "44")
+        .when()
+            .get("/hello")
+        .then()
+            .statusCode(403);
+    }
+
+    @Test
+    void helloEndpoint_missingClientCredentials_returnsForbidden() {
+        given()
+            .auth()
+            .oauth2(getAccessToken("", ""))
+            .header("apicode", "22")
+            .header("accesscode", "44")
+        .when()
+            .get("/hello")
+        .then()
+            .statusCode(403);
+    }
+
+    private String getAccessToken(String clientId, String clientSecret) {
+        try {
+            return webClient.post()
+                .uri(uriBuilder -> uriBuilder.build())
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .body(BodyInserters.fromFormData("client_id", clientId)
+                                   .with("client_secret", clientSecret)
+                                   .with("scope", "api://your-api-scope/.default")
+                                   .with("grant_type", "client_credentials"))
+                .retrieve()
+                .bodyToMono(Map.class)
+                .map(response -> (String) response.get("access_token"))
+                .block();
+        } catch (WebClientResponseException e) {
+            return "";
+        }
+    }
+}
+
+
+
+
+
+
 org.springframework.web.reactive.function.client.WebClientRequestException: Content type 'application/x-www-form-urlencoded' not supported for bodyType=java.util.HashMap[?, ?]
  at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
  Suppressed: The stacktrace has been enhanced by Reactor, refer to additional information below: 
