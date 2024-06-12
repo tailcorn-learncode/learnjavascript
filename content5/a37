@@ -1,4 +1,42 @@
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/crm")
+public class CrmController {
+
+    private final CrmClientService crmClientService;
+
+    @Autowired
+    public CrmController(CrmClientService crmClientService) {
+        this.crmClientService = crmClientService;
+    }
+
+    @GetMapping("/whoami")
+    public ResponseEntity<String> whoAmI() {
+        String response = crmClientService.whoAmI();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/case/{caseId}")
+    public ResponseEntity<String> getCaseAndAssociatedActivities(@PathVariable String caseId) {
+        String response = crmClientService.getCaseAndAssociatedActivities(caseId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/case/{caseId}")
+    public ResponseEntity<String> updateCaseStatusReason(@PathVariable String caseId, @RequestBody String requestBody) {
+        String response = crmClientService.updateCaseStatusReason(caseId, requestBody);
+        return ResponseEntity.ok(response);
+    }
+}
+
+
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
