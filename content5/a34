@@ -1,0 +1,153 @@
+i want to convert below files to springweb instead spring webflux. i implemented below to use oauth2 and webclient to coonect to extertnal api. That 
+i need to change to springweb because spring webflux.
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.server.WebSessionServerOAuth2AuthorizedClientRepository;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+
+@Configuration
+@EnableWebFluxSecurity
+public class SecurityConfig implements WebFluxConfigurer {
+       
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        http.csrf(ServerHttpSecurity.CsrfSpec::disable).authorizeExchange(exchanges -> exchanges
+                .pathMatchers("/**").permitAll()
+                .anyExchange().authenticated()                
+            )
+            .oauth2Login()
+            .and()
+            .oauth2Client();
+        return http.build();
+    }
+    
+    @Bean
+    public ServerOAuth2AuthorizedClientRepository authorizedClientRepository() {
+        return new WebSessionServerOAuth2AuthorizedClientRepository();
+    }
+}
+
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
+import org.springframework.web.reactive.function.client.WebClient;
+ 
+@Configuration
+public class WebClientConfig {      
+        
+    @Value("${webclient.client-registration-id}")
+    private String clientRegistrationId;     
+    
+    @Value("${webclient.crm-url}")
+    private String crmBaseUrl;
+
+    @Value("${webclient.cc-url}")
+    private String ccBaseUrl;
+ 
+    @Bean
+    public WebClient crmWebClient(ReactiveClientRegistrationRepository clientRegistrations,
+                               ServerOAuth2AuthorizedClientRepository authorizedClients) {
+        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
+                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrations, authorizedClients);
+        oauth2Client.setDefaultClientRegistrationId(clientRegistrationId);
+
+        return WebClient.builder()
+                .filter(oauth2Client)
+                .baseUrl(crmBaseUrl)
+                .build();
+    }
+    @Bean
+    public WebClient ccWebClient() {
+            return WebClient.builder()
+                .baseUrl(ccBaseUrl)
+                .build();
+    }
+
+}
+
+
+
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import reactor.core.publisher.Mono;
+
+@Service
+public class CrmClientService {    
+    private final WebClient crmWebClient;
+
+    public CrmClientService(WebClient crmWebClient) {
+        this.crmWebClient = crmWebClient;
+    }
+
+    public Mono<String> whoAmI() {
+        return this.crmWebClient
+            .get()
+            .uri("/WhoAmI")
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+
+    public Mono<String> getCaseAndAssociatedActivities(String caseId) {
+        return this.crmWebClient
+            .get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/incidents({caseId})")
+                .queryParam("$select", "incidentid,or_agentcomment,or_appcode,ors_atlasid,or_caseid,or_casename,or_casesource,or_casetype,or_dr_comment")
+                .queryParam("$expand", "Incident_ActivityPointers($select=activityid,statecode,activitytypecode,createdon,description)")
+                .build(caseId))
+            .retrieve()
+            .bodyToMono(String.class);
+    }    
+
+    public Mono<String> updateCaseStatusReason(String caseId, String requestBody) {
+        return this.crmWebClient
+            .patch()
+            .uri(uriBuilder -> uriBuilder
+                .path("/incidents({caseId})")
+                .queryParam("$select", "incidentid,statuscode")
+                .build(caseId))
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(requestBody)
+            .retrieve()
+            .bodyToMono(String.class);
+    }    
+}
+
+
+
+
+
+security:
+     oauth2:
+      client:
+        registration:
+          azure:
+            client-id: 
+            client-secret: 
+            scope: 
+            authorization-grant-type: client_credentials
+        provider:
+          azure:
+            issuer-uri: 
+      resourceserver:
+        jwt:
+          issuer-uri: 
+
+webclient:
+    client-registration-id: azure
+    crm-url: 
+    cc-url: 
+
+ 
