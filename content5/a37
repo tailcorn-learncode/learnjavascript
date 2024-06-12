@@ -1,3 +1,44 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class CrmClientService {
+
+    private final RestTemplate crmRestTemplate;
+
+    @Autowired
+    public CrmClientService(RestTemplate crmRestTemplate) {
+        this.crmRestTemplate = crmRestTemplate;
+    }
+
+    public String whoAmI() {
+        return this.crmRestTemplate.getForObject("/WhoAmI", String.class);
+    }
+
+    public String getCaseAndAssociatedActivities(String caseId) {
+        return this.crmRestTemplate.getForObject("/incidents({caseId})?$select=incidentid,or_agentcomment,or_appcode,ors_atlasid,or_caseid,or_casename,or_casesource,or_casetype,or_dr_comment&$expand=Incident_ActivityPointers($select=activityid,statecode,activitytypecode,createdon,description)", 
+                String.class, caseId);
+    }
+
+    public String updateCaseStatusReason(String caseId, String requestBody) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+
+        return this.crmRestTemplate.exchange("/incidents({caseId})?$select=incidentid,statuscode",
+                HttpMethod.PATCH, entity, String.class, caseId).getBody();
+    }
+}
+
+
+
+
+
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
