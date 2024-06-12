@@ -1,0 +1,10 @@
+Add Unit test for client credential flow code (80% code coverage target)
+Add E2E (End-to-End) tests for client credential flow to Gateway project
+
+E2E Tests
+valid client id / secret
+response code 200
+invalid client id / secret
+response code 403 Forbidden
+missing client id / secret
+response code 403 Forbidden
