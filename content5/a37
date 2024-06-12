@@ -5,6 +5,56 @@ import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2A
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
+
+@Configuration
+public class WebClientConfig {
+
+    @Value("${webclient.client-registration-id}")
+    private String clientRegistrationId;
+
+    @Value("${webclient.crm-url}")
+    private String crmBaseUrl;
+
+    @Value("${webclient.cc-url}")
+    private String ccBaseUrl;
+
+    @Bean
+    public RestTemplate crmRestTemplate(RestTemplateBuilder restTemplateBuilder, OAuth2AuthorizedClientManager authorizedClientManager) {
+        return restTemplateBuilder
+                .additionalInterceptors(new OAuth2RestTemplateInterceptor(authorizedClientManager, clientRegistrationId))
+                .rootUri(crmBaseUrl)
+                .build();
+    }
+
+    @Bean
+    public RestTemplate ccRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder
+                .rootUri(ccBaseUrl)
+                .build();
+    }
+
+    @Bean
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+            ClientRegistrationRepository clientRegistrationRepository,
+            OAuth2AuthorizedClientRepository authorizedClientRepository) {
+
+        return new AuthorizedClientServiceOAuth2AuthorizedClientManager(
+                clientRegistrationRepository, authorizedClientRepository);
+    }
+}
+
+
+
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 
