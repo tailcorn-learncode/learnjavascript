@@ -1,3 +1,7 @@
+org.springframework.web.reactive.function.client.WebClientRequestException: Content type 'application/x-www-form-urlencoded' not supported for bodyType=java.util.HashMap[?, ?]
+
+
+
 package com.example.gateway.controller;
 
 import io.restassured.RestAssured;
