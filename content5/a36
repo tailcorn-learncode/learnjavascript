@@ -1,3 +1,57 @@
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CrmClientService {
+
+    private final OAuth2RestTemplate oauth2RestTemplate;
+
+    @Value("${webclient.crm-url}")
+    private String crmBaseUrl;
+
+    public CrmClientService(OAuth2RestTemplate oauth2RestTemplate) {
+        this.oauth2RestTemplate = oauth2RestTemplate;
+    }
+
+    public String whoAmI() {
+        ResponseEntity<String> response = oauth2RestTemplate.getForEntity(crmBaseUrl + "/WhoAmI", String.class);
+        return response.getBody();
+    }
+
+    public String getCaseAndAssociatedActivities(String caseId) {
+        ResponseEntity<String> response = oauth2RestTemplate.exchange(
+                crmBaseUrl + "/incidents(" + caseId + ")?$select=incidentid,or_agentcomment,or_appcode,ors_atlasid,or_caseid,or_casename,or_casesource,or_casetype,or_dr_comment&$expand=Incident_ActivityPointers($select=activityid,statecode,activitytypecode,createdon,description)",
+                HttpMethod.GET, new HttpEntity<>(createHeaders()), String.class);
+        return response.getBody();
+    }
+
+    public String updateCaseStatusReason(String caseId, String requestBody) {
+        HttpHeaders headers = createHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = oauth2RestTemplate.exchange(
+                crmBaseUrl + "/incidents(" + caseId + ")?$select=incidentid,statuscode",
+                HttpMethod.PATCH, entity, String.class);
+        return response.getBody();
+    }
+
+    private HttpHeaders createHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+}
+
+
+
+
+
 <dependencies>
     <!-- Spring Boot Starter Web -->
     <dependency>
