@@ -1,0 +1,5 @@
+Controller: Handles incoming API calls, processes requests, and returns responses to the client.
+Service: Contains business logic and interacts with repositories to process data.
+Repository: Interacts with the database to perform CRUD operations.
+Model: Represents the data structure and is used to map database entities.
+DTO (Data Transfer Object): Transfers data between layers, often used to encapsulate data for communication between the service and controller.
