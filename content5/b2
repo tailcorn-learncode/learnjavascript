@@ -1,0 +1,12 @@
+List<Address> addresses = employerDto.getAddresses().stream().map(dto -> {
+            Address address = dto.parse();
+            address.setCreatedByName(employerDto.getModifiedBy());
+            address.setCreatedTimestamp(employerDto.getModifiedTimestamp());
+            return address;
+        }).collect(Collectors.toList());
+        List<Phone> phones = employerDto.getPhones().stream().map(dto -> {
+            Phone phone = dto.parse();
+            phone.setCreatedByName(employerDto.getModifiedBy());
+            phone.setCreatedTimestamp(employerDto.getModifiedTimestamp());
+            return phone;
+        }).collect(Collectors.toList());
