@@ -1,0 +1,68 @@
+import io.restassured.RestAssured;
+import static io.restassured.RestAssured.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.hamcrest.Matchers.*;
+
+public class MemberServiceDetailsControllerIT {
+
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "http://localhost/";
+        RestAssured.port = 8900;
+        RestAssured.basePath = "api/admin/memberservice";
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        // Any cleanup after all tests
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        // Any setup before each test
+    }
+    
+    @Test
+    void getYearsOfService_validPayload_success() {
+        given().contentType("application/json")
+               .when()
+               .get("/{member_id}/yearsOfService?plan_id={plan_id}", 123, 2)
+               .then()
+               .statusCode(200)
+               .body("yearsOfService", notNullValue())
+               .body("lastDateOfServiceEarned", notNullValue());
+    }
+
+    @Test
+    void getYearsOfService_invalidMemberId_fails() {
+        given().contentType("application/json")
+               .when()
+               .get("/{member_id}/yearsOfService?plan_id={plan_id}", "invalid_member_id", 2)
+               .then()
+               .statusCode(404)
+               .body("error", containsString("member does not exist"));
+    }
+
+    @Test
+    void getYearsOfService_invalidPlanId_fails() {
+        given().contentType("application/json")
+               .when()
+               .get("/{member_id}/yearsOfService?plan_id={plan_id}", 123, "invalid_plan_id")
+               .then()
+               .statusCode(404)
+               .body("error", containsString("plan does not exist"));
+    }
+
+    @Test
+    void getYearsOfService_memberNotInPlan_fails() {
+        given().contentType("application/json")
+               .when()
+               .get("/{member_id}/yearsOfService?plan_id={plan_id}", 123, 3)
+               .then()
+               .statusCode(400)
+               .body("error", containsString("member is not part of plan"));
+    }
+}
