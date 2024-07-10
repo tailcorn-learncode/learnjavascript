@@ -1,0 +1,124 @@
+In this example in getYearsOfService method appCd getting and hence test fails
+
+@ExtendWith(MockitoExtension.class)
+public class MemberServiceDetailsServiceTest {
+
+    @InjectMocks
+    private MemberServiceDetailsService service;
+
+    @Mock
+    private RestTemplate claretyRestTemplate;
+
+    @Mock
+    private Environment environment;    
+
+    private MemberServiceDetails details;
+    private MemberServiceDetailsDto dto;
+
+    @BeforeEach
+    void setUp() {
+        details = new MemberServiceDetails();
+        details.setMemberId("123");
+        details.setPlanId("456");
+        details.setLastDateOfServiceEarned("06/30/1996");
+        details.setYearsOfService("10");
+
+        dto = new MemberServiceDetailsDto();
+        dto.setMemberId("123");
+        dto.setPlanId("456");
+        dto.setLastDateOfServiceEarned("06/30/1996");
+        dto.setYearsOfService("10");
+        
+        when(environment.getProperty("webclient.clarety-url")).thenReturn("http://localhost:9080/internal-clarety");
+        when(environment.getProperty("webclient.app-cd")).thenReturn("INRL");
+    }
+
+    @Test
+    void getYearsOfService_validRequest_returnsDetails() throws IOException {
+        String externalEndpoint = "/worksiteRestService/srvcCrdt?memberId=123&planId=456&appCd=INRL";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonResponse = objectMapper.createObjectNode().put("yearsOfService", 10).put("lastDateOfServiceEarned", "06/30/1996");
+        when(claretyRestTemplate.getForEntity(externalEndpoint, String.class)).thenReturn(new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK));
+
+        MemberServiceDetails result = service.getYearsOfService("123", "456");
+
+        assertEquals(details.getYearsOfService(), result.getYearsOfService());
+    }
+
+    @Test
+    void getYearsOfService_invalidMemberId_throwsResourceNotFoundException() throws IOException {
+        String externalEndpoint = "/worksiteRestService/srvcCrdt?memberId=999&planId=456&appCd=INRL";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonResponse = objectMapper.createObjectNode().put("message", "member id is invalid");
+        when(claretyRestTemplate.getForEntity(externalEndpoint, String.class)).thenReturn(new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK));
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> service.getYearsOfService("999", "456"));
+        assertEquals("member id is invalid", exception.getMessage());
+    }
+
+    @Test
+    void getYearsOfService_invalidPlanId_throwsResourceNotFoundException() throws IOException {
+        String externalEndpoint = "/worksiteRestService/srvcCrdt?memberId=123&planId=999&appCd=INRL";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonResponse = objectMapper.createObjectNode().put("message", "plan id is invalid");
+        when(claretyRestTemplate.getForEntity(externalEndpoint, String.class)).thenReturn(new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK));
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> service.getYearsOfService("123", "999"));
+        assertEquals("plan id is invalid", exception.getMessage());
+    }
+
+    @Test
+    void getYearsOfService_memberNotPartOfPlan_throwsResourceNotFoundException() throws IOException {
+        String externalEndpoint = "/worksiteRestService/srvcCrdt?memberId=123&planId=456&appCd=INRL";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonResponse = objectMapper.createObjectNode().put("message", "member id does not belong to plan");
+        when(claretyRestTemplate.getForEntity(externalEndpoint, String.class)).thenReturn(new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK));
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> service.getYearsOfService("123", "456"));
+        assertEquals("member id does not belong to plan", exception.getMessage());
+    }
+}
+
+
+
+
+
+@Service
+public class MemberServiceDetailsService {
+
+    private final RestTemplate claretyRestTemplate;
+    private final String appCd;
+
+    public MemberServiceDetailsService(RestTemplate claretyRestTemplate, @Value("${webclient.app-cd}") String appCd) {
+        this.claretyRestTemplate = claretyRestTemplate;
+        this.appCd = appCd;
+    }
+
+    public MemberServiceDetails getYearsOfService(String memberId, String planId) {
+        String srcCreditQuery = String.format("/worksiteRestService/srvcCrdt?memberId=%s&planId=%s&appCd=%s", memberId, planId, appCd);
+        try {
+            ResponseEntity<String> response = claretyRestTemplate.getForEntity(srcCreditQuery, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            if (rootNode.has("yearsOfService") && rootNode.has("lastDateOfServiceEarned")) {
+                MemberServiceDetailsDto dto = new MemberServiceDetailsDto();
+                dto.setMemberId(memberId);
+                dto.setPlanId(planId);
+                dto.setLastDateOfServiceEarned(rootNode.get("lastDateOfServiceEarned").asText());
+                dto.setYearsOfService(rootNode.get("yearsOfService").asText());
+                return dto.parse();
+            } else if (rootNode.has("message")) {
+                String error = rootNode.get("message").asText();
+                throw new ResourceNotFoundException(error);
+            } else {
+                throw new ResourceNotFoundException("Unexpected response format");
+            }
+        } catch (IOException e) {
+            throw new ResourceNotFoundException("Error parsing response from external service");
+        }
+    }
+}
+
+
+
