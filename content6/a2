@@ -1,0 +1,472 @@
+im using rest assured for sprint boot api testing. i have put example below for case flow, we need to follow same format..
+my api is for yearofservice end point.. given below are test coverage we need to do, controller class, dto, model and service class
+
+Send valid payload (GET) to /member/{member_id}/yearsOfService?plan_id={plan_id} with valid member_id and plan_id
+Response is returned, Status Code 200, Response contains Last Date of Service Earned, Years of Service, Member ID, Plan ID
+
+Send valid payload (GET) to /member/{member_id}/yearsOfService?plan_id={plan_id} with invalid member_id
+Status Code 404, Response contains 'member does not exist'
+
+Send valid payload (GET) to /member/{member_id}/yearsOfService?plan_id={plan_id} with valid member_id and invalid plan_id
+Status Code 404, Response contains 'plan does not exist'
+
+Send valid payload (GET) to /member/{member_id}/yearsOfService?plan_id={plan_id} with valid member_id and plan_id but member is not part of plan
+Status Code 400, Response contains 'member is not part of plan'
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import gov.mipath.atlas.admin.common.dto.ErrorResponseDto;
+import gov.mipath.atlas.admin.common.dto.MemberServiceDetailsDto;
+import gov.mipath.atlas.admin.common.service.MemberServiceDetailsService;
+import gov.mipath.atlas.arch.exception.AtlasCustomExceptions.ResourceNotFoundException;
+
+@Validated
+@RestController
+@RequestMapping("/api/admin/memberservice")
+public class MemberServiceDetailsController {
+
+    private final MemberServiceDetailsService service;
+
+    public MemberServiceDetailsController(MemberServiceDetailsService service) {
+        this.service = service;
+    }
+
+    @GetMapping("/{member_id}/yearsOfService")
+    public ResponseEntity<?> getYearsOfService(@PathVariable("member_id") String memberId,
+                                               @RequestParam("plan_id") String planId) {
+        try {
+            var details = service.getYearsOfService(memberId, planId);
+            return new ResponseEntity<>(MemberServiceDetailsDto.create(details), HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            ErrorResponseDto errorResponse = new ErrorResponseDto();
+            errorResponse.setError(e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+}
+
+
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.mipath.atlas.admin.common.dto.MemberServiceDetailsDto;
+import gov.mipath.atlas.admin.common.model.MemberServiceDetails;
+import gov.mipath.atlas.arch.exception.AtlasCustomExceptions.ResourceNotFoundException;
+
+@Service
+public class MemberServiceDetailsService {
+
+    private final RestTemplate claretyRestTemplate;
+    private final String appCd;
+
+    public MemberServiceDetailsService(RestTemplate claretyRestTemplate, @Value("${webclient.app-cd}") String appCd) {
+        this.claretyRestTemplate = claretyRestTemplate;
+        this.appCd = appCd;
+    }
+
+    public MemberServiceDetails getYearsOfService(String memberId, String planId) {
+        String srcCreditQuery = String.format("/worksiteRestService/srvcCrdt?memberId=%s&planId=%s&appCd=%s", memberId, planId, appCd);
+        try {
+            ResponseEntity<String> response = claretyRestTemplate.getForEntity(srcCreditQuery, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            if (rootNode.has("yearsOfService") && rootNode.has("lastDateOfServiceEarned")) {
+                MemberServiceDetailsDto dto = new MemberServiceDetailsDto();
+                dto.setMemberId(memberId);
+                dto.setPlanId(planId);
+                dto.setLastDateOfServiceEarned(rootNode.get("lastDateOfServiceEarned").asText());
+                dto.setYearsOfService(rootNode.get("yearsOfService").asText());
+                return dto.parse();
+            } else if (rootNode.has("message")) {
+                String error = rootNode.get("message").asText();
+                throw new ResourceNotFoundException(error);
+            } else {
+                throw new ResourceNotFoundException("Unexpected response format");
+            }
+        } catch (IOException e) {
+            throw new ResourceNotFoundException("Error parsing response from external service");
+        }
+    }
+}
+
+
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import gov.mipath.atlas.admin.common.model.MemberServiceDetails;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class MemberServiceDetailsDto {
+    private String memberId;
+    private String planId;
+    private String lastDateOfServiceEarned;
+    private String yearsOfService;
+
+    public static MemberServiceDetailsDto create(MemberServiceDetails entity) {
+        var dto = new MemberServiceDetailsDto();
+        dto.setMemberId(entity.getMemberId());
+        dto.setPlanId(entity.getPlanId());
+        dto.setLastDateOfServiceEarned(entity.getLastDateOfServiceEarned());
+        dto.setYearsOfService(entity.getYearsOfService());
+        return dto;
+    }
+
+    public MemberServiceDetails parse() {
+        var entity = new MemberServiceDetails();
+        entity.setMemberId(this.getMemberId());
+        entity.setPlanId(this.getPlanId());
+        entity.setLastDateOfServiceEarned(this.getLastDateOfServiceEarned());
+        entity.setYearsOfService(this.getYearsOfService());
+        return entity;
+    }
+}
+
+
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class MemberServiceDetails {
+    private String memberId;
+    private String planId;
+    private String lastDateOfServiceEarned;
+    private String yearsOfService;
+}
+
+
+case flow example
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import gov.mipath.atlas.admin.common.dto.CaseRefDto;
+import gov.mipath.atlas.admin.common.service.CaseRefService;
+
+@RestController
+@RequestMapping("/api/admin/case")
+public class CaseRefController {
+    
+    private final CaseRefService service;
+
+    public CaseRefController(CaseRefService service) {
+        this.service = service;
+    }
+    
+    @GetMapping()
+    public List<CaseRefDto> getAll() { 
+      return this.service.findAll()
+                .stream()
+                .map(t -> CaseRefDto.create(t))
+                .collect(Collectors.toList());			
+    }
+    
+    @GetMapping(value = "/{id}")
+    public CaseRefDto getCaseById(@PathVariable long id) { 
+      var target = service.findById(id);
+      if (target == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Case not found");
+      }
+      return CaseRefDto.create(target);
+    }
+
+    @PostMapping()
+    public CaseRefDto create(@RequestBody CaseRefDto model) { 
+		var entity = service.addOrUpdate(model.parse());
+		return CaseRefDto.create(entity);
+    }
+ 
+    @PatchMapping("/{id}")
+    public CaseRefDto update(@PathVariable long id, @RequestBody CaseRefDto model) { 
+      var target = service.findById(id);
+      if (target == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Case not found");
+      }
+      model.setId(id);			
+      var result = service.addOrUpdate(model.parse());
+      return CaseRefDto.create(result);
+    }
+   
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable long id) {
+		  service.delete(id);		
+    }
+}
+
+
+import io.restassured.RestAssured;
+
+import static io.restassured.RestAssured.*;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import gov.mipath.atlas.admin.common.dto.CaseActivityLogDto;
+import gov.mipath.atlas.admin.common.dto.CaseFlowDto;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+public class CaseFlowControllerIT {
+
+    private CaseFlowDto caseFlowDto;
+
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "http://localhost/";
+        RestAssured.port = 8900;
+        RestAssured.basePath = "api/admin";
+    }
+
+    @AfterAll
+    public static void cleanup() {
+
+    }
+
+    @BeforeEach
+    void beforeEach() {        
+        this.caseFlowDto = new CaseFlowDto();
+        this.caseFlowDto.setCaseRefId("10");
+        this.caseFlowDto.setCaseTypeDescription("Death Report");
+        this.caseFlowDto.setCreatedBy("John Doe");
+        this.caseFlowDto.setCreatedOn(LocalDateTime.now().toString());
+        this.caseFlowDto.setCrmCaseId(UUID.randomUUID().toString());
+        this.caseFlowDto.setCaseDescription("foo");
+        this.caseFlowDto.setMemberId("8675309");
+        this.caseFlowDto.setModifiedBy("Jane Doe");
+        this.caseFlowDto.setModifiedOn(LocalDateTime.now().toString());
+        this.caseFlowDto.setOrganizationId("115809");
+        this.caseFlowDto.setWorkStatusRefId("2"); // Ready
+
+        var activityList = new ArrayList<CaseActivityLogDto>();
+        
+        var activity = new CaseActivityLogDto();
+        activity.setActivityName("Activity Name");
+        activity.setActivityTypeDescription("Activity Type Description");
+        activity.setCreatedBy("John Doe");
+        activity.setCreatedOn(LocalDateTime.now().toString());
+        activity.setCrmActivityId(UUID.randomUUID().toString());
+        activity.setModifiedBy("Jane Doe");
+        activity.setModifiedOn(LocalDateTime.now().toString());
+        activity.setReasonId(7L);
+        activity.setUserProfileId(11);
+        activity.setWorkStatusId(3L);
+
+        activityList.add(activity);
+
+        this.caseFlowDto.setActivities(activityList.stream()
+                                             .collect(Collectors.toSet()));
+    }
+    
+    @Test
+    void create_validPayloadWithActivites_success() {
+        var response = given().contentType("application/json")
+                              .body(this.caseFlowDto)
+                              .when()
+                              .post("caseflow");
+
+        var created = response.as(CaseFlowDto.class);
+
+        response.then()
+                .statusCode(200);
+
+        assertTrue(created.getId() > 0);
+        assertEquals(this.caseFlowDto.getCaseRefId(), created.getCaseRefId());
+        assertEquals(this.caseFlowDto.getCrmCaseId(), created.getCrmCaseId());
+        assertEquals(this.caseFlowDto.getOrganizationId(), created.getOrganizationId());
+        assertEquals(this.caseFlowDto.getMemberId(), created.getMemberId());
+        assertEquals(this.caseFlowDto.getCaseDescription(), created.getCaseDescription());
+        assertEquals(this.caseFlowDto.getCaseTypeDescription(), created.getCaseTypeDescription());
+        assertEquals(this.caseFlowDto.getCreatedBy(), created.getCreatedBy());
+        assertEquals(this.caseFlowDto.getCreatedOn(), created.getCreatedOn());
+        assertEquals(this.caseFlowDto.getModifiedBy(), created.getModifiedBy());
+        assertEquals(this.caseFlowDto.getModifiedOn(), created.getModifiedOn());
+        assertEquals(this.caseFlowDto.getWorkStatusRefId(), created.getWorkStatusRefId());
+        assertTrue(this.caseFlowDto.getActivities().size() == created.getActivities().size());
+    }
+
+    @Test
+    void create_validPayloadNoActivitesProvided_success() {
+        this.caseFlowDto.setActivities(new HashSet<>());
+
+        var response = given()
+                            .contentType("application/json")
+                            .body(this.caseFlowDto)
+                            .when()
+                            .post("caseflow");
+
+        var resultDto = response.as(CaseFlowDto.class);
+
+        response.then().statusCode(200);
+
+        assertTrue(resultDto.getId() > 0);
+        assertEquals(this.caseFlowDto.getCaseRefId(), resultDto.getCaseRefId());
+        assertEquals(this.caseFlowDto.getCrmCaseId(), resultDto.getCrmCaseId());
+        assertEquals(this.caseFlowDto.getOrganizationId(), resultDto.getOrganizationId());
+        assertEquals(this.caseFlowDto.getMemberId(), resultDto.getMemberId());
+        assertEquals(this.caseFlowDto.getCaseDescription(), resultDto.getCaseDescription());
+        assertEquals(this.caseFlowDto.getCaseTypeDescription(), resultDto.getCaseTypeDescription());
+        assertEquals(this.caseFlowDto.getCreatedBy(), resultDto.getCreatedBy());
+        assertEquals(this.caseFlowDto.getCreatedOn(), resultDto.getCreatedOn());
+        assertEquals(this.caseFlowDto.getModifiedBy(), resultDto.getModifiedBy());
+        assertEquals(this.caseFlowDto.getModifiedOn(), resultDto.getModifiedOn());
+        assertEquals(this.caseFlowDto.getWorkStatusRefId(), resultDto.getWorkStatusRefId());
+        assertTrue(this.caseFlowDto.getActivities().size() == this.caseFlowDto.getActivities().size());                        
+    }
+
+    @Test
+    void create_invalidPayload_fails() {
+        this.caseFlowDto.setCaseRefId("0");
+        this.caseFlowDto.setCrmCaseId("foo");
+        this.caseFlowDto.setCaseDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmode tempor incididunt ut labbore");
+        this.caseFlowDto.setCaseTypeDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmode tempor incididunt ut labbore");
+        this.caseFlowDto.setCreatedBy(null);
+        this.caseFlowDto.setCreatedOn("bar");
+        this.caseFlowDto.setModifiedBy(null);
+        this.caseFlowDto.setModifiedOn("baz");
+        this.caseFlowDto.setWorkStatusRefId("Not a number");
+
+        given().contentType("application/json")
+               .body(this.caseFlowDto)
+               .when()
+               .post("caseflow")
+               .then()
+               .statusCode(400)
+               .body(
+                "caseRefId", containsString("Must be greater than 0"),
+                "crmCaseId", containsString("Must be a valid GUID"),
+                    "createdBy", containsString("Required"),
+                    "createdOn", containsString("Must be a valid ISO-8601 string"),
+                    "modifiedBy", containsString("Required"),
+                    "modifiedOn", containsString("Must be a valid ISO-8601 string"),
+                    "workStatusRefId", containsString("Must be greater than 0"));
+    }
+
+    @Test
+    void update_validPayload_success() {
+        
+        // setup - create our update target
+        var createResponse =  given().contentType("application/json")
+               .body(this.caseFlowDto)
+               .post("caseflow");        
+        var createdEntity = createResponse.as(CaseFlowDto.class);
+
+        var time = LocalDateTime.now().toString();
+        this.caseFlowDto.setId(createdEntity.getId());
+        this.caseFlowDto.setOrganizationId("111");
+        this.caseFlowDto.setMemberId("222");
+        this.caseFlowDto.setCaseDescription("foo");
+        this.caseFlowDto.setCaseTypeDescription("bar");
+        this.caseFlowDto.setWorkStatusRefId("4");
+        this.caseFlowDto.setCreatedBy("Fred");
+        this.caseFlowDto.setCreatedOn(time);
+        this.caseFlowDto.setModifiedBy("Bob");
+        this.caseFlowDto.setModifiedOn(time);
+
+        var response = given().contentType("application/json")
+               .body(this.caseFlowDto)
+               .pathParam("id", this.caseFlowDto.getId())
+               .when()
+               .put("caseflow/{id}");
+
+        var resultDto = response.as(CaseFlowDto.class);     
+
+        assertTrue(resultDto.getId() > 0);
+        assertEquals(this.caseFlowDto.getCaseRefId(), resultDto.getCaseRefId());
+        assertEquals(this.caseFlowDto.getCrmCaseId(), resultDto.getCrmCaseId());
+        assertEquals(this.caseFlowDto.getOrganizationId(), resultDto.getOrganizationId());
+        assertEquals(this.caseFlowDto.getMemberId(), resultDto.getMemberId());
+        assertEquals(this.caseFlowDto.getCaseDescription(), resultDto.getCaseDescription());
+        assertEquals(this.caseFlowDto.getCaseTypeDescription(), resultDto.getCaseTypeDescription());
+        assertEquals(this.caseFlowDto.getCreatedBy(), resultDto.getCreatedBy());
+        assertEquals(this.caseFlowDto.getCreatedOn(), resultDto.getCreatedOn());
+        assertEquals(this.caseFlowDto.getModifiedBy(), resultDto.getModifiedBy());
+        assertEquals(this.caseFlowDto.getModifiedOn(), resultDto.getModifiedOn());
+        assertEquals(this.caseFlowDto.getWorkStatusRefId(), resultDto.getWorkStatusRefId());
+        assertTrue(this.caseFlowDto.getActivities().size() == this.caseFlowDto.getActivities().size());              
+        response.then().statusCode(200);
+    }
+
+    @Test
+    void update_idDoesNotExist_fails() {
+        this.caseFlowDto.setId(916511);
+
+        given().contentType("application/json")
+               .body(this.caseFlowDto)
+               .pathParam("id", this.caseFlowDto.getId())
+               .put("caseflow/{id}")
+               .then()
+               .statusCode(404);
+    }
+
+    @Test
+    void update_invalidPayload_fails() {
+        this.caseFlowDto.setId(10);
+        this.caseFlowDto.setCaseRefId("0");
+        this.caseFlowDto.setCrmCaseId("foo");
+        this.caseFlowDto.setCaseDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmode tempor incididunt ut labbore");
+        this.caseFlowDto.setCaseTypeDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmode tempor incididunt ut labbore");
+        this.caseFlowDto.setCreatedBy(null);
+        this.caseFlowDto.setCreatedOn("bar");
+        this.caseFlowDto.setModifiedBy(null);
+        this.caseFlowDto.setModifiedOn("baz");
+        this.caseFlowDto.setWorkStatusRefId("NAN");
+
+        given().contentType("application/json")
+               .body(this.caseFlowDto)
+               .pathParam("id", this.caseFlowDto.getId())
+               .when()
+               .put("caseflow/{id}")
+               .then()
+               .statusCode(400)
+               .body(
+                "caseRefId", containsString("Must be greater than 0"),
+                "crmCaseId", containsString("Must be a valid GUID"),
+                    "createdBy", containsString("Required"),
+                    "createdOn", containsString("Must be a valid ISO-8601 string"),
+                    "modifiedBy", containsString("Required"),
+                    "modifiedOn", containsString("Must be a valid ISO-8601 string"),
+                    "workStatusRefId", containsString("Must be greater than 0"));
+    }
+}
+
+
