@@ -1,0 +1,219 @@
+public class OAuthConstants {
+    public static final String WORKER = "WORKER";
+    public static final String ACCEPT = "Accept";
+    public static final String ALLOW = "*/*";
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String URL_ENCODED_CONTENT = "application/x-www-form-urlencoded";
+    public static final String CACHE_CONTROL = "Cache-Control";
+    public static final String NO_CACHE = "no-cache";
+    public static final String POST = "POST";
+    public static final String CODE_VERIFIER = "code_verifier";
+    public static final String US_ASCII = "US-ASCII";
+    public static final String SHA_256 = "SHA-256";
+
+    // Azure AD specific constants
+    public static final String AZURE_TENANT_ID = "your-azure-tenant-id";
+    public static final String AZURE_CLIENT_ID = "your-azure-client-id";
+    public static final String AZURE_CLIENT_SECRET = "your-azure-client-secret";
+    public static final String AZURE_SCOPE = "https://graph.microsoft.com/.default";
+    public static final String AZURE_TOKEN_URL = "https://login.microsoftonline.com/" + AZURE_TENANT_ID + "/oauth2/v2.0/token";
+    public static final String AZURE_AUDIENCE = "api://" + AZURE_CLIENT_ID;
+    public static final String AZURE_ISSUER = "https://login.microsoftonline.com/" + AZURE_TENANT_ID + "/v2.0";
+}
+
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.oltu.oauth2.client.OAuthClient;
+import org.apache.oltu.oauth2.client.URLConnectionClient;
+import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import org.apache.oltu.oauth2.client.request.OAuthClientRequest.TokenRequestBuilder;
+import org.apache.oltu.oauth2.common.OAuth;
+import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
+import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
+import org.apache.oltu.oauth2.common.message.types.GrantType;
+
+import javax.json.bind.JsonbBuilder;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.interfaces.RSAPublicKey;
+
+public class OAuthUtils {
+
+    public OAuthToken getToken(String userType) throws OAuthSystemException, OAuthProblemException {
+        String clientId = OAuthConstants.AZURE_CLIENT_ID;
+        String secret = OAuthConstants.AZURE_CLIENT_SECRET;
+        String tokenURL = OAuthConstants.AZURE_TOKEN_URL;
+
+        TokenRequestBuilder reqBuilder = OAuthClientRequest.tokenLocation(tokenURL)
+                .setGrantType(GrantType.CLIENT_CREDENTIALS)
+                .setClientId(clientId)
+                .setClientSecret(secret)
+                .setScope(OAuthConstants.AZURE_SCOPE);
+
+        return getToken(reqBuilder);
+    }
+
+    private OAuthToken getToken(TokenRequestBuilder reqBuilder) throws OAuthSystemException, OAuthProblemException {
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        OAuthClientRequest clientRequest = reqBuilder.buildBodyMessage();
+        clientRequest.addHeader(OAuthConstants.ACCEPT, OAuthConstants.ALLOW);
+        clientRequest.addHeader(OAuthConstants.CONTENT_TYPE, OAuthConstants.URL_ENCODED_CONTENT);
+        clientRequest.addHeader(OAuthConstants.CACHE_CONTROL, OAuthConstants.NO_CACHE);
+
+        String token = oAuthClient.accessToken(clientRequest, OAuthConstants.POST, OAuth.HttpMethod.POST).getBody();
+        
+        return JsonbBuilder.create().fromJson(token, OAuthToken.class);
+    }
+
+    public boolean verifySignature(DecodedJWT token) {
+        String pubKeyUrl = "https://login.microsoftonline.com/" + OAuthConstants.AZURE_TENANT_ID + "/discovery/v2.0/keys";
+        String aud = OAuthConstants.AZURE_AUDIENCE;
+        String iss = OAuthConstants.AZURE_ISSUER;
+        
+        Algorithm algorithm;
+        try {
+            JwkProvider provider = new UrlJwkProvider(new URL(pubKeyUrl));
+            Jwk jwk = provider.get(token.getKeyId());
+            algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
+
+            JWT.require(algorithm)
+               .withIssuer(iss)
+               .withAudience(aud)
+               .acceptExpiresAt(10)
+               .ignoreIssuedAt()
+               .build()
+               .verify(token);
+
+        } catch (Exception e) {
+            System.out.println("Exception in verifySignature: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public DecodedJWT decodeToken(String token) {
+        return JWT.decode(token);
+    }
+
+    // Other methods from your original OAuthUtils class...
+}
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+public class ExternalApiWorkflowAdapter implements IWorkflowAdapter {
+
+    private static final String API_URL = "https://external-api-url.com/workflow";
+    private final OAuthUtils oAuthUtils;
+    private final ObjectMapper objectMapper;
+
+    public ExternalApiWorkflowAdapter() {
+        this.oAuthUtils = new OAuthUtils();
+        this.objectMapper = new ObjectMapper();
+    }
+
+    @Override
+    public void initiateWorkFlow(String pPrcsCd, String pPrsnOrgID, String pInitiatorName, WorkObject pWorkObj) throws ClaretyException {
+        try {
+            String token = getAuthToken();
+            String payload = objectMapper.writeValueAsString(pWorkObj);
+
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpPost request = new HttpPost(API_URL + "/initiate");
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Authorization", "Bearer " + token);
+            request.setEntity(new StringEntity(payload));
+
+            HttpResponse response = client.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            if (statusCode != 200) {
+                throw new ClaretyException("Failed to initiate workflow. Status code: " + statusCode);
+            }
+
+            // Process response if needed
+        } catch (Exception e) {
+            throw new ClaretyException("Error initiating workflow: " + e.getMessage(), e);
+        }
+    }
+
+    private String getAuthToken() throws OAuthSystemException, OAuthProblemException {
+        OAuthToken token = oAuthUtils.getToken(OAuthConstants.WORKER);
+        return token.getAccessToken();
+    }
+
+    // Implement other IWorkflowAdapter methods as needed...
+}
+
+
+public class FABMWorkflow {
+
+    private IWorkflowAdapter workflowAdapter;
+
+    public FABMWorkflow() {
+        this.workflowAdapter = new ExternalApiWorkflowAdapter();
+    }
+
+    public BEPrcs initiateWorkflow(BVInitWorkflow pBVInitWorkflow, BEPrcs bePrcsReady) throws ClaretyException {
+        startBenchMark("initiateWorkflow", FABM_METHODENTRY);
+        addTraceMessage("initiateWorkflow", FABM_METHODENTRY);
+
+        // ... (existing code for setting up variables and processing)
+
+        WorkObject workObj = new WorkObject(getAppContext().getWorkflowMgr().getMetadata());
+        
+        // Populate workObj with data from pBVInitWorkflow
+        populateWorkObject(workObj, pBVInitWorkflow, bePrcs, sUserName, sDateInitiated);
+
+        try {
+            workflowAdapter.initiateWorkFlow(
+                pBVInitWorkflow.prcs_cli_cd,
+                sBPInstName,
+                sUserName,
+                workObj
+            );
+        } catch (ClaretyException e) {
+            addErrorMsg(61, new String[]{"Failed to initiate workflow: " + e.getMessage()});
+            return null;
+        }
+
+        pBVInitWorkflow.prcs_id = bePrcs.prcs_id;
+
+        addTraceMessage("initiateWorkflow", FABM_METHODEXIT);
+        takeBenchMark("initiateWorkflow", FABM_METHODEXIT);
+        return bePrcs;
+    }
+
+    private void populateWorkObject(WorkObject workObj, BVInitWorkflow pBVInitWorkflow, BEPrcs bePrcs, String sUserName, String sDateInitiated) {
+        workObj.setAttribute(AppWorkflowMetadata.PROCESS_ID, String.valueOf(bePrcs.prcs_id));
+        workObj.setAttribute(AppWorkflowMetadata.WHOINITIATED, sUserName);
+        workObj.setAttribute(AppWorkflowMetadata.FUNCTION_SYS_CD, pBVInitWorkflow.func_cd);
+        workObj.setAttribute(AppWorkflowMetadata.DOCUMENT_NAME, pBVInitWorkflow.doc_nm);
+        
+        String sPrcsNm = pBVInitWorkflow.prcs_cli_dsc + ";" + pBVInitWorkflow.prcs_cd;
+        workObj.setAttribute(AppWorkflowMetadata.PROCESS_SYS_CODE, sPrcsNm);
+
+        workObj.setAttribute(AppWorkflowMetadata.PLAN_CODE, pBVInitWorkflow.pln_cd);
+        workObj.setAttribute(AppWorkflowMetadata.DOCUMENT_KEY, pBVInitWorkflow.doc_key);
+        workObj.setAttribute(AppWorkflowMetadata.FOLDER_KEY, pBVInitWorkflow.fldr_key);
+        workObj.setAttribute(AppWorkflowMetadata.NOTEBOOK_ID, "0");
+        workObj.setAttribute(AppWorkflowMetadata.HOWINITIATED, pBVInitWorkflow.crt_typ_cd);
+        workObj.setAttribute(AppWorkflowMetadata.DATEINITIATED, sDateInitiated);
+        workObj.setAttribute(AppWorkflowMetadata.PARTICIPANT_TYPE_IND, String.valueOf(pBVInitWorkflow.part_typ_id));
+        workObj.setAttribute(AppWorkflowMetadata.ASSIGNED_TO, pBVInitWorkflow.assigned_to);
+        workObj.setAttribute(AppWorkflowMetadata.PRIORITY, pBVInitWorkflow.priority);
+
+        // Add more attributes as needed
+    }
+
+    // ... (other methods from your original FABMWorkflow class)
+}
+
