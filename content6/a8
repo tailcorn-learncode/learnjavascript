@@ -1,0 +1,21 @@
+keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore mykeystore.p12 -validity 365
+
+
+keytool -importkeystore -srckeystore mykeystore.p12 -srcstoretype PKCS12 -destkeystore mykeystore.jks -deststoretype JKS
+
+
+
+<keyStore id="defaultKeyStore" password="your_password" location="${server.config.dir}/resources/security/key.jks"/>
+
+
+<ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" />
+
+
+<openidConnectClient id="azure" 
+                     clientId="your_client_id"
+                     clientSecret="your_client_secret"
+                     authorizationEndpointUrl="https://login.microsoftonline.com/your_tenant_id/oauth2/v2.0/authorize"
+                     tokenEndpointUrl="https://login.microsoftonline.com/your_tenant_id/oauth2/v2.0/token"
+                     scope="openid profile email"
+                     responseType="code"
+                     sslRef="defaultSSLConfig" />
